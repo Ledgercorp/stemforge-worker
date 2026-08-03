@@ -1,0 +1,21 @@
+{
+  "delayTime": 8960,
+  "executionTime": 209,
+  "id": "5e950491-dadb-466f-aa8b-a573128ef01a-u1",
+  "output": {
+    "memory": {
+      "approved_lyric_timings": {},
+      "artist": "sounddecay",
+      "feedback": [],
+      "preferences": {
+        "avoid_vocal_time_warping": true,
+        "metadata_policy": "clean audio export plus JSON sidecar",
+        "prefer_stereo_mix_as_coherence_anchor": true
+      },
+      "version": 1
+    },
+    "status": "completed"
+  },
+  "status": "COMPLETED",
+  "workerId": "3t5x7eu3q2uev8"
+}
