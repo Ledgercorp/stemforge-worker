@@ -1,0 +1,163 @@
+name: StemForge Relay
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "jobs/**/*.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stemforge-relay
+  cancel-in-progress: false
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Validate secret
+        shell: bash
+        run: |
+          if [ -z "$RUNPOD_API_KEY" ]; then
+            echo "RUNPOD_API_KEY repository secret is missing."
+            exit 1
+          fi
+
+      - name: Submit changed job files and collect results
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p results
+
+          mapfile -t JOB_FILES < <(
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" \
+              | grep -E '^jobs/.+\.json$' || true
+          )
+
+          if [ "${#JOB_FILES[@]}" -eq 0 ]; then
+            echo "No changed StemForge job files found."
+            exit 0
+          fi
+
+          for JOB_FILE in "${JOB_FILES[@]}"; do
+            JOB_NAME="$(basename "$JOB_FILE" .json)"
+            RESULT_FILE="results/${JOB_NAME}.json"
+            SUBMIT_FILE="results/${JOB_NAME}.submit.json"
+
+            echo "Processing $JOB_FILE"
+
+            if ! jq -e '.input.action and (.input.action | type == "string")' "$JOB_FILE" >/dev/null; then
+              jq -n \
+                --arg status "REJECTED" \
+                --arg reason "Job file must contain input.action as a string." \
+                --arg source "$JOB_FILE" \
+                '{status:$status, reason:$reason, source:$source}' > "$RESULT_FILE"
+              continue
+            fi
+
+            HTTP_BODY="$(mktemp)"
+            HTTP_CODE="$(
+              curl -sS \
+                -o "$HTTP_BODY" \
+                -w '%{http_code}' \
+                -X POST \
+                "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+                -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+                -H "Content-Type: application/json" \
+                --data-binary "@${JOB_FILE}"
+            )"
+
+            jq . "$HTTP_BODY" > "$SUBMIT_FILE" 2>/dev/null || cp "$HTTP_BODY" "$SUBMIT_FILE"
+
+            if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+              jq -n \
+                --arg status "SUBMIT_FAILED" \
+                --argjson http_code "$HTTP_CODE" \
+                --arg source "$JOB_FILE" \
+                --rawfile response "$HTTP_BODY" \
+                '{status:$status, http_code:$http_code, source:$source, response:$response}' > "$RESULT_FILE"
+              rm -f "$HTTP_BODY"
+              continue
+            fi
+
+            RUNPOD_JOB_ID="$(jq -r '.id // empty' "$HTTP_BODY")"
+            rm -f "$HTTP_BODY"
+
+            if [ -z "$RUNPOD_JOB_ID" ]; then
+              jq -n \
+                --arg status "SUBMIT_FAILED" \
+                --arg reason "RunPod response did not include a job ID." \
+                --arg source "$JOB_FILE" \
+                '{status:$status, reason:$reason, source:$source}' > "$RESULT_FILE"
+              continue
+            fi
+
+            TERMINAL=0
+            for ATTEMPT in $(seq 1 150); do
+              STATUS_BODY="$(mktemp)"
+              STATUS_CODE="$(
+                curl -sS \
+                  -o "$STATUS_BODY" \
+                  -w '%{http_code}' \
+                  "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${RUNPOD_JOB_ID}" \
+                  -H "Authorization: Bearer ${RUNPOD_API_KEY}"
+              )"
+
+              if [ "$STATUS_CODE" -ge 200 ] && [ "$STATUS_CODE" -lt 300 ]; then
+                STATE="$(jq -r '.status // empty' "$STATUS_BODY")"
+                jq . "$STATUS_BODY" > "$RESULT_FILE" 2>/dev/null || cp "$STATUS_BODY" "$RESULT_FILE"
+
+                case "$STATE" in
+                  COMPLETED|FAILED|TIMED_OUT|CANCELLED)
+                    TERMINAL=1
+                    rm -f "$STATUS_BODY"
+                    break
+                    ;;
+                esac
+              else
+                jq -n \
+                  --arg status "STATUS_HTTP_ERROR" \
+                  --argjson http_code "$STATUS_CODE" \
+                  --arg runpod_job_id "$RUNPOD_JOB_ID" \
+                  --rawfile response "$STATUS_BODY" \
+                  '{status:$status, http_code:$http_code, runpod_job_id:$runpod_job_id, response:$response}' > "$RESULT_FILE"
+              fi
+
+              rm -f "$STATUS_BODY"
+              sleep 10
+            done
+
+            if [ "$TERMINAL" -ne 1 ]; then
+              jq -n \
+                --arg status "RELAY_TIMEOUT" \
+                --arg runpod_job_id "$RUNPOD_JOB_ID" \
+                --arg source "$JOB_FILE" \
+                '{status:$status, runpod_job_id:$runpod_job_id, source:$source}' > "$RESULT_FILE"
+            fi
+          done
+
+      - name: Commit result files
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git status --short results | grep -q .; then
+            git config user.name "stemforge-relay"
+            git config user.email "stemforge-relay@users.noreply.github.com"
+            git add results
+            git commit -m "Add StemForge relay results [skip ci]"
+            git push
+          else
+            echo "No result changes to commit."
+          fi
