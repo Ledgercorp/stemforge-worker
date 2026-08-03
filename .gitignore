@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.DS_Store
+workspace/*
+!workspace/.gitkeep
+reports/*
+!reports/.gitkeep
+output/*
+!output/.gitkeep
+models/*
+!models/.gitkeep
