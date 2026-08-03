@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import binascii
 import hashlib
 import os
 import re
@@ -26,8 +28,35 @@ def safe_filename_from_url(url: str, fallback: str = "audio.wav") -> str:
     return name or fallback
 
 
+def _decode_data_url(url: str, destination: Path) -> Path:
+    if "," not in url:
+        raise ValueError("Malformed data URL.")
+
+    header, encoded = url.split(",", 1)
+    if ";base64" not in header.lower():
+        raise ValueError("Only base64 data URLs are supported.")
+
+    encoded = "".join(encoded.split())
+    if len(encoded) > 9_000_000:
+        raise ValueError("Embedded audio exceeds the safe request-size limit.")
+
+    try:
+        payload = base64.b64decode(encoded, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise ValueError("Embedded audio contains invalid base64.") from exc
+
+    if not payload:
+        raise ValueError("Embedded audio decoded to an empty file.")
+
+    destination.write_bytes(payload)
+    return destination
+
+
 def download_file(url: str, destination: Path, timeout: int = 900) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
+
+    if url.startswith("data:"):
+        return _decode_data_url(url, destination)
 
     with requests.get(url, stream=True, timeout=timeout) as response:
         response.raise_for_status()
