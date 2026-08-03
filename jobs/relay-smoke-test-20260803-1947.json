@@ -1,0 +1,9 @@
+{
+  "input": {
+    "action": "get_memory",
+    "artist": "sounddecay"
+  },
+  "policy": {
+    "ttl": 3600000
+  }
+}
