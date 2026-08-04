@@ -40,6 +40,15 @@ def system_info_job(payload: dict | None = None) -> dict:
             "level_matched_residual_comparison": True,
             "strict_stem_reconstruction_gate": True,
             "master_anchored_delta_fallback": True,
+            "non_finite_sample_rejection": True,
+            "strict_output_write_available": True,
+        },
+        "reliability_guards": {
+            "atomic_input_downloads": True,
+            "input_retry_and_stale_link_detection": True,
+            "optional_size_and_sha256_validation": True,
+            "dynamic_workflow_asset_counts": True,
+            "failure_diagnostic_artifacts": True,
         },
         "feature_groups": {
             "lyrics": ["align_lyrics", "align_lyrics_smart"],
