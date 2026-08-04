@@ -1,0 +1,62 @@
+name: StemForge v2 Verify
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "v2_jobs/**/*.json"
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Submit and poll v2 verification jobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RUNPOD_API_KEY"
+          mkdir -p v2_results
+          mapfile -t JOB_FILES < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^v2_jobs/.+\.json$' || true)
+          for JOB_FILE in "${JOB_FILES[@]}"; do
+            NAME="$(basename "$JOB_FILE" .json)"
+            RESULT="v2_results/${NAME}.json"
+            SUBMIT="$(curl -sS -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" -H "Authorization: Bearer ${RUNPOD_API_KEY}" -H "Content-Type: application/json" --data-binary "@${JOB_FILE}")"
+            JOB_ID="$(printf '%s' "$SUBMIT" | jq -r '.id // empty')"
+            if [ -z "$JOB_ID" ]; then
+              printf '%s' "$SUBMIT" | jq . > "$RESULT" 2>/dev/null || printf '%s' "$SUBMIT" > "$RESULT"
+              continue
+            fi
+            for ATTEMPT in $(seq 1 100); do
+              BODY="$(curl -sS "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" -H "Authorization: Bearer ${RUNPOD_API_KEY}")"
+              printf '%s' "$BODY" | jq . > "$RESULT"
+              STATE="$(printf '%s' "$BODY" | jq -r '.status // empty')"
+              case "$STATE" in
+                COMPLETED|FAILED|TIMED_OUT|CANCELLED) break ;;
+              esac
+              sleep 10
+            done
+          done
+
+      - name: Commit verification results
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git status --short v2_results | grep -q .; then
+            git config user.name "stemforge-v2-verifier"
+            git config user.email "stemforge-v2-verifier@users.noreply.github.com"
+            git add v2_results
+            git commit -m "Add StemForge v2 verification results [skip ci]"
+            git push
+          fi
