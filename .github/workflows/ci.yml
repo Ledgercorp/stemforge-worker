@@ -1,0 +1,30 @@
+name: StemForge CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "handler.py"
+      - "requirements.txt"
+      - "Dockerfile"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "app/**"
+      - "handler.py"
+      - "requirements.txt"
+      - "Dockerfile"
+
+jobs:
+  syntax-and-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile source
+        run: python -m compileall -q app handler.py
+      - name: Run dependency-light tests
+        run: python -m unittest discover -s tests -p "test_*.py"
