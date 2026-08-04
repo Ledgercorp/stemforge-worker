@@ -1,0 +1,210 @@
+name: StemForge Full Pass Direct Fetch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "full_pass_direct_requests/**/*.json"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: stemforge-full-pass-direct-fetch
+  cancel-in-progress: false
+
+jobs:
+  full-pass-and-fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve request and publish started manifest
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^full_pass_direct_requests/.+\.json$' | head -n 1)"
+          test -n "$REQUEST"
+          NAME="$(basename "$REQUEST" .json)"
+          ARTIFACT_NAME="$(jq -r '.artifact_name // "stemforge-full-pass-direct"' "$REQUEST")"
+          echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
+          echo "request_name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+          MANIFEST="$(jq -n --arg request "$NAME" --arg artifact_name "$ARTIFACT_NAME" --argjson run_id "$GITHUB_RUN_ID" --arg commit "$GITHUB_SHA" '{request:$request,artifact_name:$artifact_name,run_id:$run_id,commit:$commit,status:"started"}')"
+          ENCODED="$(printf '%s' "$MANIFEST" | base64 -w0)"
+          gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/full_pass_direct_manifests/${NAME}-started.json" \
+            -f message="Start StemForge direct full pass [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
+
+      - name: Run full pass and retrieve from same warm worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="${{ steps.meta.outputs.request }}"
+          mkdir -p fetched_output
+
+          submit_job() {
+            local payload_file="$1"
+            local submit_file="$2"
+            curl -sS --max-time 120 \
+              -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload_file}" > "$submit_file"
+            jq -e '.id' "$submit_file" >/dev/null
+          }
+
+          poll_job() {
+            local job_id="$1"
+            local response_file="$2"
+            for attempt in $(seq 1 1200); do
+              curl -sS --max-time 120 \
+                "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${job_id}" \
+                -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$response_file"
+              state="$(jq -r '.status // empty' "$response_file")"
+              case "$state" in
+                COMPLETED)
+                  jq -e '.output.status == "completed"' "$response_file" >/dev/null
+                  return 0
+                  ;;
+                FAILED|TIMED_OUT|CANCELLED)
+                  cat "$response_file" >&2
+                  exit 1
+                  ;;
+              esac
+              sleep 1
+            done
+            echo "Timed out waiting for RunPod job $job_id" >&2
+            exit 1
+          }
+
+          call_job() {
+            local payload_file="$1"
+            local response_file="$2"
+            local submit_file
+            submit_file="$(mktemp)"
+            submit_job "$payload_file" "$submit_file"
+            local job_id
+            job_id="$(jq -r '.id' "$submit_file")"
+            rm -f "$submit_file"
+            poll_job "$job_id" "$response_file"
+          }
+
+          FULL_SUBMIT="$(mktemp)"
+          FULL_RESULT="fetched_output/RunPod_FullPass_Result.json"
+          submit_job "$REQUEST" "$FULL_SUBMIT"
+          FULL_JOB_ID="$(jq -r '.id' "$FULL_SUBMIT")"
+          rm -f "$FULL_SUBMIT"
+          poll_job "$FULL_JOB_ID" "$FULL_RESULT"
+
+          test "$(jq -r '.output.stemforge_version' "$FULL_RESULT")" = "2.1.0"
+          test "$(jq -r '.output.action' "$FULL_RESULT")" = "full_pass"
+          test "$(jq -r '.output.input_summary.stem_count' "$FULL_RESULT")" = "8"
+          test "$(jq -r '.output.input_summary.midi_file_count' "$FULL_RESULT")" = "7"
+          test "$(jq '.output.candidates | length' "$FULL_RESULT")" = "3"
+
+          FULL_WORKER="$(jq -r '.workerId // empty' "$FULL_RESULT")"
+          printf 'full_pass_job_id=%s\nfull_pass_worker_id=%s\n' "$FULL_JOB_ID" "$FULL_WORKER" > fetched_output/RunPod_Execution.txt
+          : > fetched_output/SHA256SUMS.txt
+
+          fetch_volume_file() {
+            local remote_path="$1"
+            local filename="$2"
+            local target="fetched_output/$filename"
+            local info_payload info_response
+            info_payload="$(mktemp)"
+            info_response="$(mktemp)"
+            jq -n --arg path "$remote_path" '{input:{action:"volume_file_info",path:$path}}' > "$info_payload"
+            call_job "$info_payload" "$info_response"
+            local info_worker
+            info_worker="$(jq -r '.workerId // empty' "$info_response")"
+            if [ -n "$FULL_WORKER" ] && [ -n "$info_worker" ] && [ "$info_worker" != "$FULL_WORKER" ]; then
+              echo "Worker changed before retrieval: $FULL_WORKER -> $info_worker" >&2
+              exit 1
+            fi
+            local size expected_sha
+            size="$(jq -r '.output.size_bytes' "$info_response")"
+            expected_sha="$(jq -r '.output.sha256' "$info_response")"
+            test "$size" -gt 0
+            test -n "$expected_sha"
+            : > "$target"
+            local offset=0
+            while [ "$offset" -lt "$size" ]; do
+              local payload response bytes_read chunk_worker
+              payload="$(mktemp)"
+              response="$(mktemp)"
+              jq -n --arg path "$remote_path" --argjson offset "$offset" --argjson length 5000000 \
+                '{input:{action:"volume_file_chunk",path:$path,offset:$offset,length:$length}}' > "$payload"
+              call_job "$payload" "$response"
+              chunk_worker="$(jq -r '.workerId // empty' "$response")"
+              if [ -n "$FULL_WORKER" ] && [ -n "$chunk_worker" ] && [ "$chunk_worker" != "$FULL_WORKER" ]; then
+                echo "Worker changed during retrieval: $FULL_WORKER -> $chunk_worker" >&2
+                exit 1
+              fi
+              jq -r '.output.data_base64' "$response" | base64 --decode >> "$target"
+              bytes_read="$(jq -r '.output.bytes_read' "$response")"
+              test "$bytes_read" -gt 0
+              offset=$((offset + bytes_read))
+              echo "$filename: $offset / $size bytes"
+              rm -f "$payload" "$response"
+            done
+            local actual_sha actual_size
+            actual_sha="$(sha256sum "$target" | awk '{print $1}')"
+            actual_size="$(stat -c '%s' "$target")"
+            test "$actual_sha" = "$expected_sha"
+            test "$actual_size" = "$size"
+            printf '%s  %s\n' "$actual_sha" "$filename" >> fetched_output/SHA256SUMS.txt
+            rm -f "$info_payload" "$info_response"
+          }
+
+          CANDIDATE_COUNT="$(jq '.output.candidates | length' "$FULL_RESULT")"
+          for index in $(seq 0 $((CANDIDATE_COUNT - 1))); do
+            PROFILE="$(jq -r ".output.candidates[$index].profile" "$FULL_RESULT")"
+            REMOTE="$(jq -r ".output.candidates[$index].output.volume_path" "$FULL_RESULT")"
+            test -n "$REMOTE"
+            case "$PROFILE" in
+              dynamic) FILENAME="Hypervigilant_RunPod_v2.1_Dynamic.wav" ;;
+              balanced) FILENAME="Hypervigilant_RunPod_v2.1_Balanced.wav" ;;
+              dense) FILENAME="Hypervigilant_RunPod_v2.1_Dense.wav" ;;
+              *) FILENAME="Hypervigilant_RunPod_v2.1_${PROFILE}.wav" ;;
+            esac
+            fetch_volume_file "$REMOTE" "$FILENAME"
+          done
+
+          MASTER_REPORT_REMOTE="$(jq -r '.output.mastering_report_output.volume_path' "$FULL_RESULT")"
+          FULL_REPORT_REMOTE="$(jq -r '.output.full_pass_report_output.volume_path' "$FULL_RESULT")"
+          fetch_volume_file "$MASTER_REPORT_REMOTE" "Hypervigilant_RunPod_v2.1_Mastering_Report.json"
+          fetch_volume_file "$FULL_REPORT_REMOTE" "Hypervigilant_RunPod_v2.1_FullPass_Report.json"
+          cp "$REQUEST" fetched_output/request.json
+
+      - name: Upload verified RunPod full-pass artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: fetched_output/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Publish completion manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME="${{ steps.meta.outputs.request_name }}"
+          ARTIFACT_NAME="${{ steps.meta.outputs.artifact_name }}"
+          MANIFEST="$(jq -n --arg request "$NAME" --arg artifact_name "$ARTIFACT_NAME" --argjson run_id "$GITHUB_RUN_ID" --arg commit "$GITHUB_SHA" '{request:$request,artifact_name:$artifact_name,run_id:$run_id,commit:$commit,status:"completed"}')"
+          ENCODED="$(printf '%s' "$MANIFEST" | base64 -w0)"
+          gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/full_pass_direct_manifests/${NAME}-completed.json" \
+            -f message="Complete StemForge direct full pass [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
