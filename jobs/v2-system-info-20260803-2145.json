@@ -1,0 +1,8 @@
+{
+  "input": {
+    "action": "system_info"
+  },
+  "policy": {
+    "ttl": 3600000
+  }
+}
