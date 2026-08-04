@@ -1,30 +1,36 @@
-# StemForge v2
+# StemForge v2.4
 
-StemForge is a private RunPod Serverless audio-production worker operated through the GitHub relay.
+StemForge is a private RunPod Serverless audio-production worker operated through a guarded GitHub relay.
+
+## Release identity
+
+```text
+stemforge_version: 2.4.0
+build: v2.4.0-naturalize-balanced-vocoder
+```
+
+A GitHub release or merge does not by itself prove that the live RunPod endpoint has rolled forward. Production work must verify the exact version and build through `system_info` before accepting a render.
 
 ## Live capabilities
 
 ### Lyrics
 
 - WhisperX `large-v3` transcription and word alignment
-- monotonic reconciliation against exact supplied lyrics
-- section-label removal and repeated-chorus preservation
-- intro-skip and first-visible-line rules
-- final-master duration clamping and gap-aware caption endings
-- SRT, word-timed ASS, LRC, CSV and JSON exports
+- monotonic reconciliation against supplied lyrics
+- repeated-section preservation and section-label removal
+- intro-skip and first-visible-line controls
+- SRT, ASS, LRC, CSV and JSON exports
 
 ### Audio analysis and comparison
 
-- full-song integrated loudness, true peak, RMS and crest factor
-- clipping, discontinuity, DC offset and silence-region detection
+- integrated loudness, true peak, RMS and crest factor
+- clipping, discontinuity, DC-offset and silence detection
 - stereo correlation, transient density and spectral distribution
-- ten-second metric timeline
-- waveform and spectrogram rendering
-- level-matched objective A/B residual and safety comparison
-- residual-noise, derivative-growth, click/discontinuity and high-frequency-noise gates
-- noise-floor-aware high-band comparison with raw diagnostic values retained
+- level-matched A/B residual comparison
+- derivative, click, discontinuity and high-frequency artifact gates
+- noise-floor-aware high-band analysis with raw diagnostics retained
 
-Objective comparison is a DSP proxy, not human hearing.
+Objective comparison is a DSP proxy, not a substitute for listening.
 
 ### Stems and separation
 
@@ -32,91 +38,141 @@ Objective comparison is a DSP proxy, not human hearing.
 - timeline-offset estimates
 - duplicate-stem fingerprinting
 - master reconstruction and null-residual testing
-- strict remix-safety flagging
-- Demucs source separation, clearly labeled as estimated stems
+- strict remix-safety decisions
+- Demucs separation, clearly labeled as estimated stems
 
 ### Coherence-safe stem remix
 
-StemForge v2.3.0 supports two explicit remix modes:
+StemForge uses two explicit remix modes:
 
-- `full_stem_mix`: used only when the supplied stems reconstruct the master to strict null-residual and correlation thresholds
-- `master_anchored_delta`: keeps the coherent stereo master as the foundation and applies controlled stem-derived fader and processing changes around it
-- `auto`: selects `full_stem_mix` only when the strict reconstruction gate passes; otherwise it selects `master_anchored_delta`
+- `full_stem_mix`: only when supplied stems pass strict reconstruction thresholds
+- `master_anchored_delta`: preserves the coherent stereo master while applying controlled stem-derived changes around it
+- `auto`: selects full stem replacement only when reconstruction is safe
 
-Auxiliary stems such as bass pads can be marked with `"role": "bass_pad"` or `"overlay": true`. They are excluded from reconstruction fitting and mixed directly at the requested gain.
+Auxiliary stems such as bass pads can use `"role": "bass_pad"` or `"overlay": true`. They are excluded from reconstruction fitting and mixed directly at the requested level.
 
-The remix path does not use autonomous stereo widening. Every final render is rejected if it introduces non-finite samples, clipping, excessive derivative energy, new discontinuities, meaningful high-frequency noise growth, or unacceptable reference-correlation loss.
+The remix path does not use autonomous stereo widening. Every render is rejected for non-finite samples, clipping, excessive derivative energy, new discontinuities, meaningful high-frequency noise growth or unacceptable reference-correlation loss.
 
-### Naturalize / authenticity processing
+## Naturalize Balanced
 
-`naturalize` is a non-destructive Naturalness / Authenticity enhancement for restoring restrained pitch, amplitude and phase micro-variation.
+`naturalize` is a non-destructive Naturalness / Authenticity enhancement that restores restrained pitch, amplitude, timing, phase and harmonic micro-variation while prioritizing transparency.
 
-Mandatory order:
+Default preset:
 
-1. 15 Hz vibrato, nominal depth 10
-2. 15 Hz tremolo, nominal depth 10
-3. 10 Hz vibrato, nominal depth 10
-4. 1 ms flanger, modulation 0.90, nominal depth 9
-5. light denoise after all modulation
+```text
+Naturalize Balanced
+```
 
-Modes:
+### Core cocktail
 
-- `quick`: applies the complete chain to the full mix
-- `surgical`: treats vocals more assertively, applies lighter modulation and level preservation to the instrumental, recombines, then performs final gentle denoise
-- `auto`: prefers Surgical when a vocal stem is available and falls back to Quick otherwise
+The order is mandatory:
 
-The `intensity` control scales effective depth while retaining the nominal cocktail in the report. Surgical mode validates vocal-plus-instrumental reconstruction and uses a coherent `master - vocal` instrumental anchor when supplied stems are unsafe. Explicit Surgical requests can run Demucs two-stem separation when `separate_if_needed` is enabled.
+1. Primary vibrato: 14–16 Hz, default 15 Hz; 8–12 cents, default 10; sine
+2. Tremolo: 12–16 Hz, default 15 Hz; 6–12%, default 10%; sine or soft triangle
+3. Secondary vibrato: 8–11 Hz, default 10 Hz; 6–10 cents, default 9
+4. Flanger: 0.8–1.2 ms, default 1.0 ms; modulation rate 0.6–1.1 Hz, default 0.9 Hz; depth 7–10, default 9; feedback capped at 15%; wet mix 20–40%
+5. Optional humanization layers
+6. Constrained adaptive denoise after all modulation
+7. Optional neural vocoder after denoise
 
-By default the source is never overwritten and an original PCM A/B reference is retained. Reports include the exact operation order, nominal and effective parameters, mode and anchor decisions, before/after metrics, safety comparisons and measured naturalness characteristics.
+Modulation depth is frequency-dependent: the musical midrange receives more movement while spectral extremes remain lighter.
+
+### Constrained denoise
+
+- adaptive music-oriented spectral denoise only
+- always after the cocktail and optional humanization layers
+- 3–8 dB maximum reduction, default 5 dB
+- noise profile selected from the quietest 200–500 ms after modulation, default 350 ms
+- fast attack, slower release and explicit transient protection
+- dry preservation component to retain introduced micro-variation
+- never used to restore artificial spectral uniformity
+
+### Optional humanization layers
+
+- shaped pink or tape-hiss noise floor between -72 and -60 dBFS
+- onset-aware, velocity-sensitive micro-timing jitter between ±1.5 and ±3 ms
+- low-drive, gain-compensated tape/tube-style saturation
+- optional gentle multiband compression
+- frequency-dependent modulation depth
+
+### Stem-aware routing
+
+- vocals: 1.20× default depth, constrained to the 1.1–1.3× policy range
+- harmonic instruments: 1.00× default, constrained to 0.9–1.1×
+- percussion and drums: 0.65× default, constrained to 0.5–0.8×
+- unknown roles: conservative fallback treatment
+
+`auto` always prefers Surgical mode when a vocal stem exists. Quick mode is used only when stem-aware processing is unavailable or explicitly requested.
+
+### Modes
+
+- `quick`: processes the supplied full mix
+- `surgical`: processes vocal, harmonic, percussion and other stems independently, then recombines them
+- `auto`: prefers Surgical when vocal stems exist and falls back to Quick only when necessary
+
+Surgical mode validates stem reconstruction. Unsafe stems use a master-anchored processing delta instead of replacing the coherent source. If the anchored result still fails the transparency gate, the operation aborts cleanly.
+
+### Intensity and iteration
+
+- global intensity range: 0.6–1.4
+- default intensity: 1.0
+- explicit `0` is a true bypass
+- rates remain fixed while intensity scales depths, wetness and optional feature perturbation
+- maximum two passes
+- second pass capped at 0.70× the selected intensity
+- unsafe results trigger automatic intensity reduction attempts before rejection
+
+### Neural vocoders
+
+Neural reconstruction always occurs after the cocktail and constrained denoise.
+
+- Vocos: default Surgical fast path when installed; default model `charactr/vocos-mel-24khz`
+- BigVGAN-v2: explicit higher-quality path; default model `nvidia/bigvgan_v2_44khz_128band_512x`
+- DisCoder: explicit environment-provisioned maximum-music-fidelity path
+
+Default wet routing:
+
+- vocals: 0.85
+- harmonic instruments: 0.60
+- percussion: 0.20
+- other stems: 0.45
+
+The intensity scaler controls vocoder wetness and optional feature perturbation. Every vocoder result is independently checked for aliasing, metallic artifacts, transient loss and clarity degradation. Unsafe or unavailable backends fall back to the pure DSP render.
+
+### Safety and A/B behavior
+
+Naturalize retains by default:
+
+- original PCM reference
+- pre-denoise intermediate
+- final Naturalized render
+- complete JSON report
+
+Quality gates detect:
+
+- audible-warble risk
+- pumping and envelope damage
+- metallic or derivative artifacts
+- transient loss
+- aliasing or high-frequency growth
+- clipping and non-finite samples
+- spectral and waveform clarity loss
+
+Reports log every resolved parameter, denoise reduction, quiet-profile selection, noise-floor level, pass intensity, stem role and multiplier, reconstruction decision, vocoder model, wet ratio, feature perturbation, quality attempt and fallback decision.
 
 Naturalize is a fidelity/authenticity enhancement. It is not an audio-origin detector, concealment method or detection-evasion tool.
 
-### Processing
+## Processing and delivery
 
 - dynamic, balanced and dense 24-bit mastering candidates
 - balanced and heavy coherence-safe stem-remix candidates
 - optional Naturalize stage in autonomous `full_pass` before mastering
-- a true premaster generated before final loudness normalization and peak trimming
-- post-render safety rejection for clipping, phase risk, artifact growth and excessive crest loss
-- conservative click repair, hum notching and restrained harshness control
-- deterministic phrase microdynamics and transient variation
-- no vocal time warping or pitch correction
-
-### Transfer and delivery
-
-- URL, base64, S3 storage key and restricted RunPod-volume inputs
-- atomic URL downloads with retries and stale-link detection
-- optional expected byte size and SHA-256 validation for every input
-- HTML/browser-confirmation response rejection
-- remote URL preflight with ranged-GET fallback when HEAD is unsupported
-- optional private expiring S3-compatible upload and download links
-- private GitHub release-asset delivery with artifact checksums
-
-Signed transfer requires:
-
-```text
-STEMFORGE_S3_BUCKET
-STEMFORGE_S3_ENDPOINT_URL
-STEMFORGE_S3_REGION
-STEMFORGE_S3_ACCESS_KEY_ID
-STEMFORGE_S3_SECRET_ACCESS_KEY
-```
-
-Without those variables, files remain on the attached RunPod volume.
-
-### Video and DAW
-
-- deterministic horizontal, vertical and square lyric-video rendering through FFmpeg
-- supplied real background media, subtitles, logo, grain and slow motion
-- no generative narrative footage
+- true premaster before loudness normalization and peak trimming
+- conservative click repair, hum notching and harshness control
+- URL, base64, S3 storage-key and RunPod-volume inputs
+- atomic downloads with retries, stale-link detection, optional size and SHA-256 verification
+- private GitHub release-asset delivery
 - Reaper RPP, marker CSV, MIDI marker track, chapter text and ZIP export
-
-### Persistent memory
-
-- raw feedback and approved lyric timings
-- structured production rules with global or song scope
-- confidence, provenance and confirmation counts
-- applicable production-profile retrieval for later jobs
 
 ## Main actions
 
@@ -147,24 +203,58 @@ record_rule
 get_production_profile
 ```
 
-Legacy v1 analysis and alignment actions remain available for compatibility.
+## Naturalize request examples
 
-## Naturalize request guidance
-
-Standalone automatic selection:
+Automatic stem-aware processing:
 
 ```json
 {
   "input": {
     "action": "naturalize",
     "mode": "auto",
-    "intensity": 0.35,
+    "intensity": 1.0,
+    "passes": 1,
     "audio_url": "https://...",
     "stems": [
-      {"name": "Lead Vocals", "url": "https://..."},
-      {"name": "Instrumental", "url": "https://..."}
+      {"name": "Lead Vocals", "role": "vocal", "url": "https://..."},
+      {"name": "Guitars", "role": "harmonic", "url": "https://..."},
+      {"name": "Drums", "role": "percussion", "url": "https://..."}
     ],
-    "retain_original": true
+    "vocoder": "auto",
+    "retain_original": true,
+    "retain_pre_denoise": true
+  }
+}
+```
+
+Advanced Surgical processing:
+
+```json
+{
+  "input": {
+    "action": "naturalize",
+    "mode": "surgical",
+    "intensity": 1.1,
+    "passes": 2,
+    "second_pass_intensity": 0.65,
+    "audio_url": "https://...",
+    "stems": [
+      {"name": "Lead Vocals", "role": "vocal", "url": "https://..."},
+      {"name": "Instrumental", "role": "harmonic", "url": "https://..."}
+    ],
+    "parameters": {
+      "denoise_reduction_db": 5.0,
+      "noise_profile_ms": 350,
+      "noise_floor_dbfs": -66,
+      "noise_floor_shape": "pink",
+      "timing_jitter_ms": 2.25,
+      "saturation_drive": 0.10,
+      "multiband_compression": false
+    },
+    "vocoder": {
+      "backend": "vocos",
+      "feature_perturbation": 0.0025
+    }
   }
 }
 ```
@@ -177,51 +267,29 @@ Autonomous full pass:
     "action": "full_pass",
     "master_url": "https://...",
     "stems": [
-      {"name": "Lead Vocals", "url": "https://..."},
-      {"name": "Bass", "url": "https://..."},
-      {"name": "Drums", "url": "https://..."}
+      {"name": "Lead Vocals", "role": "vocal", "url": "https://..."},
+      {"name": "Bass", "role": "harmonic", "url": "https://..."},
+      {"name": "Drums", "role": "percussion", "url": "https://..."}
     ],
     "naturalize": {
       "mode": "auto",
-      "intensity": 0.35,
-      "retain_original": true
+      "intensity": 1.0,
+      "vocoder": "auto",
+      "retain_original": true,
+      "retain_pre_denoise": true
     }
   }
 }
 ```
 
-Only a safety-approved Naturalize render is passed into mastering.
+Only a safety-approved Naturalized render is passed into mastering.
 
-## Stem-remix request guidance
+## Production boundaries
 
-A production request should include:
-
-```json
-{
-  "input": {
-    "action": "stem_remix",
-    "remix_mode": "auto",
-    "minimum_worker_version": "2.3.0",
-    "required_build": "v2.3.0-naturalize-quality",
-    "master_url": "https://...",
-    "stems": [
-      {"name": "Lead Vocals", "role": "lead_vocals", "url": "https://..."},
-      {"name": "Breakdown Bass Pad", "role": "bass_pad", "overlay": true, "gain_db": -3.0, "url": "https://..."}
-    ],
-    "midi_zip_url": "https://...",
-    "expected_midi_count": 7,
-    "mix_profiles": ["balanced", "heavy"]
-  }
-}
-```
-
-Use `size_bytes` and `sha256` in an input object when the transfer source supports stable integrity metadata.
-
-## Boundaries
-
-- Demucs outputs are estimated stems, not original multitracks.
-- A full stem-replacement mix is refused when reconstruction quality is insufficient unless an explicit unsafe override is supplied.
+- Demucs outputs are estimates, not original multitracks.
+- Unsafe stem replacement is refused; master anchoring does not guarantee acceptance.
+- Vocoder availability depends on the deployed image and compute budget.
+- A vocoder fallback is not treated as an error when the DSP path passes safely.
 - Mastering, remix and Naturalize candidates still require level-matched listening before artistic approval.
-- Offset estimates may be weak on ambient or sparse stems.
-- Direct live control of Logic is not included. DAW integration is currently file-based.
-- Removing metadata does not prove or conceal how audio was created.
+- Direct live control of Logic is not included; DAW integration is file-based.
+- Metadata removal does not prove or conceal how audio was created.
