@@ -1,0 +1,1 @@
+Verify the published v2.3.0 release, exact live RunPod build, and Quick Naturalize smoke render after fixing release publication.
