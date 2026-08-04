@@ -1,0 +1,123 @@
+name: Fetch StemForge v2 Outputs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "v2_output_requests/**/*.json"
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Download output files from RunPod volume
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RUNPOD_API_KEY"
+          mkdir -p fetched_output v2_artifact_manifests
+          mapfile -t REQUESTS < <(
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" |
+              grep -E '^v2_output_requests/.+\.json$' || true
+          )
+          if [ "${#REQUESTS[@]}" -ne 1 ]; then
+            echo "Exactly one output request must change per commit." >&2
+            exit 1
+          fi
+
+          REQUEST="${REQUESTS[0]}"
+          REQUEST_NAME="$(basename "$REQUEST" .json)"
+          CHUNK_SIZE=4000000
+          : > fetched_output/checksums.txt
+
+          COUNT="$(jq '.files | length' "$REQUEST")"
+          for INDEX in $(seq 0 $((COUNT - 1))); do
+            REMOTE_PATH="$(jq -r ".files[$INDEX].path" "$REQUEST")"
+            FILENAME="$(jq -r ".files[$INDEX].filename" "$REQUEST")"
+            TARGET="fetched_output/${FILENAME}"
+            INFO_PAYLOAD="$(mktemp)"
+            INFO_RESPONSE="$(mktemp)"
+            jq -n --arg path "$REMOTE_PATH" '{input:{action:"volume_file_info",path:$path}}' > "$INFO_PAYLOAD"
+            curl -sS --max-time 900 \
+              -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/runsync" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${INFO_PAYLOAD}" > "$INFO_RESPONSE"
+            jq -e '.status == "COMPLETED" and .output.status == "completed"' "$INFO_RESPONSE" >/dev/null
+            SIZE="$(jq -r '.output.size_bytes' "$INFO_RESPONSE")"
+            EXPECTED_SHA="$(jq -r '.output.sha256' "$INFO_RESPONSE")"
+            : > "$TARGET"
+
+            OFFSET=0
+            while [ "$OFFSET" -lt "$SIZE" ]; do
+              PAYLOAD="$(mktemp)"
+              RESPONSE="$(mktemp)"
+              jq -n \
+                --arg path "$REMOTE_PATH" \
+                --argjson offset "$OFFSET" \
+                --argjson length "$CHUNK_SIZE" \
+                '{input:{action:"volume_file_chunk",path:$path,offset:$offset,length:$length}}' > "$PAYLOAD"
+              curl -sS --max-time 900 \
+                -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/runsync" \
+                -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+                -H "Content-Type: application/json" \
+                --data-binary "@${PAYLOAD}" > "$RESPONSE"
+              jq -e '.status == "COMPLETED" and .output.status == "completed"' "$RESPONSE" >/dev/null
+              jq -r '.output.data_base64' "$RESPONSE" | base64 --decode >> "$TARGET"
+              READ="$(jq -r '.output.bytes_read' "$RESPONSE")"
+              if [ "$READ" -le 0 ]; then
+                echo "RunPod returned an empty chunk before EOF." >&2
+                exit 1
+              fi
+              OFFSET=$((OFFSET + READ))
+              rm -f "$PAYLOAD" "$RESPONSE"
+            done
+
+            ACTUAL_SHA="$(sha256sum "$TARGET" | awk '{print $1}')"
+            ACTUAL_SIZE="$(stat -c '%s' "$TARGET")"
+            test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+            test "$ACTUAL_SIZE" = "$SIZE"
+            printf '%s  %s\n' "$ACTUAL_SHA" "$FILENAME" >> fetched_output/checksums.txt
+            rm -f "$INFO_PAYLOAD" "$INFO_RESPONSE"
+          done
+
+          cp "$REQUEST" fetched_output/request.json
+          jq -n \
+            --arg request "$REQUEST_NAME" \
+            --arg artifact_name "stemforge-output" \
+            --argjson run_id "$GITHUB_RUN_ID" \
+            --arg commit "$GITHUB_SHA" \
+            '{request:$request,artifact_name:$artifact_name,run_id:$run_id,commit:$commit,status:"artifact_uploaded"}' \
+            > "v2_artifact_manifests/${REQUEST_NAME}.json"
+
+      - name: Upload fetched StemForge files
+        uses: actions/upload-artifact@v4
+        with:
+          name: stemforge-output
+          path: fetched_output/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Commit artifact manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "stemforge-v2-output-fetcher"
+          git config user.email "stemforge-v2-output-fetcher@users.noreply.github.com"
+          git add v2_artifact_manifests
+          git commit -m "Add StemForge v2 artifact manifest [skip ci]"
+          git push
