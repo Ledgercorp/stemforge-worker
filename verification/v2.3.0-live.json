@@ -1,0 +1,116 @@
+{
+  "status": "completed",
+  "verified_at": "2026-08-04T20:37:56Z",
+  "workflow_run_id": 30948647339,
+  "commit": "e2c14cca0053677e0b10ef7fa83ad7ace636f493",
+  "release": {
+    "isDraft": false,
+    "isPrerelease": false,
+    "name": "StemForge v2.3.0 Naturalize, Quality, and Reliability",
+    "tagName": "v2.3.0",
+    "targetCommitish": "d6e25f716ee90f01178be9071e43e81c8591bbc0"
+  },
+  "live_worker": {
+    "stemforge_version": "2.3.0",
+    "build": "v2.3.0-naturalize-quality",
+    "naturalize": {
+      "ab_reference_default": true,
+      "agent_policy": {
+        "classification": "fidelity_authenticity_enhancement",
+        "denoise_must_follow_all_modulation": true,
+        "fall_back_to_quick_without_vocal_stems": true,
+        "not_a_detection_tool": true,
+        "prefer_surgical_when_vocal_stems_are_available": true,
+        "surgical_can_run_demucs_when_explicitly_requested": true
+      },
+      "callable_action": "naturalize",
+      "default_intensity": 0.35,
+      "default_mode": "auto",
+      "label": "Naturalness / Authenticity enhancement",
+      "modes": [
+        "auto",
+        "quick",
+        "surgical"
+      ],
+      "nominal_processing_order": [
+        {
+          "depth": 10,
+          "operation": "vibrato",
+          "rate_hz": 15
+        },
+        {
+          "depth": 10,
+          "operation": "tremolo",
+          "rate_hz": 15
+        },
+        {
+          "depth": 10,
+          "operation": "vibrato",
+          "rate_hz": 10
+        },
+        {
+          "delay_ms": 1,
+          "depth": 9,
+          "modulation": 0.9,
+          "operation": "flanger"
+        },
+        {
+          "operation": "light_denoise",
+          "position": "after_modulation"
+        }
+      ],
+      "non_destructive_default": true
+    }
+  },
+  "smoke_test": {
+    "action": "naturalize",
+    "status": "completed",
+    "resolved_mode": "quick",
+    "intensity": 0.05,
+    "processing_order": [
+      "vibrato_15hz_depth_10",
+      "tremolo_15hz_depth_10",
+      "vibrato_10hz_depth_10",
+      "flanger_1ms_modulation_0.90_depth_9",
+      "light_denoise_after_modulation"
+    ],
+    "non_destructive": true,
+    "safety": {
+      "accepted": true,
+      "comparison": {
+        "derivative": {
+          "candidate_maximum": 0.00843201,
+          "candidate_outlier_count": 0,
+          "candidate_p999": 0.008101614,
+          "candidate_rms": 0.004071114,
+          "p999_delta_db": 0.0484,
+          "reference_maximum": 0.008056641,
+          "reference_outlier_count": 0,
+          "reference_p999": 0.008056641,
+          "reference_rms": 0.004070866,
+          "rms_delta_db": 0.0005
+        },
+        "high_band_energy_ratio": {
+          "candidate": 2.867E-9,
+          "delta_db": 0,
+          "meaningful_energy_floor": 0.000001,
+          "raw_delta_db": -4.8675,
+          "reference": 5.021E-9
+        },
+        "level_match_gain_db": 0.1155,
+        "level_matched_residual_relative_db": -39.463,
+        "non_finite_sample_count": 0,
+        "waveform_correlation": 0.9999434
+      },
+      "minimum_waveform_correlation": 0.981,
+      "reasons": []
+    },
+    "naturalness_characteristics": {
+      "crest_factor_delta_db": 0.198,
+      "derivative_rms_delta_db": 0.0005,
+      "high_band_energy_ratio_delta_db": 0,
+      "level_matched_residual_relative_db": -39.463,
+      "waveform_correlation": 0.9999434
+    }
+  }
+}
