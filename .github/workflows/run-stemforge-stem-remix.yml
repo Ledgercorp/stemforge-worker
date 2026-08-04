@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: stemforge-stem-remix
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   remix-and-export:
@@ -45,47 +45,18 @@ jobs:
           ARTIFACT_NAME="$(jq -r '.artifact_name // "stemforge-stem-remix"' "$REQUEST")"
           EXPECTED_STEMS="$(jq -r '.input.stems | length' "$REQUEST")"
           EXPECTED_MIDI="$(jq -r 'if .input.midi_zip_base64 or .input.midi_zip_url then 7 else 0 end' "$REQUEST")"
-          TAG="stemforge-stem-remix-${GITHUB_RUN_ID}"
           echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
           echo "request_name=$NAME" >> "$GITHUB_OUTPUT"
           echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
           echo "expected_stems=$EXPECTED_STEMS" >> "$GITHUB_OUTPUT"
           echo "expected_midi=$EXPECTED_MIDI" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-
-      - name: Wait for live StemForge v2.2.0
-        shell: bash
-        run: |
-          set -euo pipefail
-          READY=0
-          for check in $(seq 1 50); do
-            SUBMIT="$(mktemp)"; RESULT="$(mktemp)"
-            curl -sS --max-time 120 -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" -H "Authorization: Bearer ${RUNPOD_API_KEY}" -H "Content-Type: application/json" --data '{"input":{"action":"system_info"}}' > "$SUBMIT"
-            JOB_ID="$(jq -r '.id // empty' "$SUBMIT")"
-            if [ -n "$JOB_ID" ]; then
-              for attempt in $(seq 1 180); do
-                curl -sS --max-time 120 "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT"
-                STATE="$(jq -r '.status // empty' "$RESULT")"
-                case "$STATE" in COMPLETED|FAILED|TIMED_OUT|CANCELLED) break ;; esac
-                sleep 2
-              done
-              VERSION="$(jq -r '.output.stemforge_version // empty' "$RESULT")"
-              BUILD="$(jq -r '.output.build // empty' "$RESULT")"
-              ACTION_READY="$(jq -r '((.output.feature_groups.processing // []) | index("stem_remix")) != null' "$RESULT")"
-              if [ "$VERSION" = "2.2.0" ] && [ "$BUILD" = "v2.2.0-stem-remix" ] && [ "$ACTION_READY" = "true" ]; then READY=1; fi
-            fi
-            rm -f "$SUBMIT" "$RESULT"
-            [ "$READY" -eq 1 ] && break
-            sleep 10
-          done
-          test "$READY" -eq 1
 
       - name: Create temporary private output release
         id: release
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${{ steps.meta.outputs.tag }}"
+          TAG="stemforge-stem-remix-${GITHUB_RUN_ID}"
           TITLE="Temporary StemForge Stem Remix ${GITHUB_RUN_ID}"
           RELEASE_ID="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/releases" -f tag_name="$TAG" -f target_commitish="$GITHUB_SHA" -f name="$TITLE" -f body='Temporary private output container for one RunPod stem remix.' -F draft=true -F prerelease=false --jq '.id')"
           test -n "$RELEASE_ID"
