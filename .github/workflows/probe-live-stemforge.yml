@@ -89,19 +89,44 @@ jobs:
           jq -e '.output.status == "completed"' "$RESULT" >/dev/null
           jq -e '.output.action == "system_info"' "$RESULT" >/dev/null
 
+      - name: Query safe deployment metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          ENDPOINT_RAW="diagnostics/endpoint-raw.json"
+          TEMPLATE_RAW="diagnostics/template-raw.json"
+
+          curl --fail --silent --show-error --max-time 120 \
+            "https://rest.runpod.io/v1/endpoints/${RUNPOD_ENDPOINT_ID}" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$ENDPOINT_RAW"
+
+          TEMPLATE_ID="$(jq -r '.templateId // .template.id // empty' "$ENDPOINT_RAW")"
+          test -n "$TEMPLATE_ID"
+
+          curl --fail --silent --show-error --max-time 120 \
+            "https://rest.runpod.io/v1/templates/${TEMPLATE_ID}" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$TEMPLATE_RAW"
+
+          jq '{id,name,templateId,version,workersMin,workersMax,idleTimeout,executionTimeoutMs,scalerType,scalerValue,gpuTypeIds,gpuCount,flashboot}' \
+            "$ENDPOINT_RAW" > probe_output/endpoint-safe.json
+          jq '{id,name,imageName,isServerless,containerDiskInGb,volumeInGb,volumeMountPath,dockerEntrypoint,dockerStartCmd,ports}' \
+            "$TEMPLATE_RAW" > probe_output/template-safe.json
+
       - name: Publish probe result
         shell: bash
         run: |
           set -euo pipefail
           NAME='${{ steps.meta.outputs.name }}'
           RESULT="probe_output/live-system-info.json"
-          DOCUMENT="$(jq \
+          DOCUMENT="$(jq -n \
+            --slurpfile live "$RESULT" \
+            --slurpfile endpoint probe_output/endpoint-safe.json \
+            --slurpfile template probe_output/template-safe.json \
             --arg request "$NAME" \
-            --arg endpoint "$RUNPOD_ENDPOINT_ID" \
+            --arg endpoint_id "$RUNPOD_ENDPOINT_ID" \
             --arg run_id "$GITHUB_RUN_ID" \
             --arg commit "$GITHUB_SHA" \
-            '{request:$request,endpoint_id:$endpoint,workflow_run_id:($run_id|tonumber),request_commit:$commit,observed_at:(now|todateiso8601),runpod_status:.status,worker_output:.output}' \
-            "$RESULT")"
+            '{request:$request,endpoint_id:$endpoint_id,workflow_run_id:($run_id|tonumber),request_commit:$commit,observed_at:(now|todateiso8601),runpod_status:$live[0].status,worker_output:$live[0].output,deployment:{endpoint:$endpoint[0],template:$template[0]}}')"
           ENCODED="$(printf '%s' "$DOCUMENT" | base64 -w0)"
           gh api --method PUT \
             "repos/${GITHUB_REPOSITORY}/contents/system_probe_results/${NAME}.json" \
