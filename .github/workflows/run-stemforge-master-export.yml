@@ -1,0 +1,208 @@
+name: Run StemForge Master Export
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "v2_export_jobs/**/*.json"
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  render-and-export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve request metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^v2_export_jobs/.+\.json$' | head -n 1)"
+          test -n "$REQUEST"
+          NAME="$(basename "$REQUEST" .json)"
+          ARTIFACT_NAME="$(jq -r '.artifact_name // "stemforge-master-export"' "$REQUEST")"
+          TAG="stemforge-output-${GITHUB_RUN_ID}"
+          echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
+          echo "request_name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+          echo "output_tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for StemForge v2.0.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RUNPOD_API_KEY"
+
+          submit_and_wait() {
+            local payload_file="$1"
+            local response_file="$2"
+            local submit_file
+            submit_file="$(mktemp)"
+            curl -sS --max-time 120 \
+              -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload_file}" > "$submit_file"
+            local job_id
+            job_id="$(jq -r '.id // empty' "$submit_file")"
+            test -n "$job_id"
+            rm -f "$submit_file"
+            for attempt in $(seq 1 180); do
+              curl -sS --max-time 120 \
+                "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${job_id}" \
+                -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$response_file"
+              state="$(jq -r '.status // empty' "$response_file")"
+              case "$state" in
+                COMPLETED) return 0 ;;
+                FAILED|TIMED_OUT|CANCELLED)
+                  cat "$response_file" >&2
+                  return 1
+                  ;;
+              esac
+              sleep 2
+            done
+            return 1
+          }
+
+          PAYLOAD="$(mktemp)"
+          RESPONSE="$(mktemp)"
+          printf '%s\n' '{"input":{"action":"system_info"}}' > "$PAYLOAD"
+          READY=0
+          for check in $(seq 1 60); do
+            if submit_and_wait "$PAYLOAD" "$RESPONSE"; then
+              VERSION="$(jq -r '.output.stemforge_version // empty' "$RESPONSE")"
+              if [ "$VERSION" = "2.0.3" ]; then
+                READY=1
+                break
+              fi
+            fi
+            sleep 10
+          done
+          rm -f "$PAYLOAD" "$RESPONSE"
+          if [ "$READY" -ne 1 ]; then
+            echo "StemForge v2.0.3 did not become active in time." >&2
+            exit 1
+          fi
+
+      - name: Create temporary private release
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.meta.outputs.output_tag }}"
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --draft \
+            --target "$GITHUB_SHA" \
+            --title "Temporary StemForge Output ${GITHUB_RUN_ID}" \
+            --notes "Temporary private transfer container for one RunPod StemForge render."
+          RELEASE_ID="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.id')"
+          echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Run live worker and export before shutdown
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="${{ steps.meta.outputs.request }}"
+          RELEASE_ID="${{ steps.release.outputs.release_id }}"
+          mkdir -p fetched_output
+          RUNTIME_PAYLOAD="$(mktemp)"
+          RESULT_FILE="fetched_output/runpod_result.json"
+
+          jq \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --argjson release_id "$RELEASE_ID" \
+            --arg token "$GH_TOKEN" \
+            '.input.github_release_export = {repository:$repository, release_id:$release_id, token:$token}' \
+            "$REQUEST" > "$RUNTIME_PAYLOAD"
+
+          SUBMIT_FILE="$(mktemp)"
+          curl -sS --max-time 120 \
+            -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${RUNTIME_PAYLOAD}" > "$SUBMIT_FILE"
+          JOB_ID="$(jq -r '.id // empty' "$SUBMIT_FILE")"
+          test -n "$JOB_ID"
+          rm -f "$SUBMIT_FILE" "$RUNTIME_PAYLOAD"
+
+          TERMINAL=0
+          for attempt in $(seq 1 480); do
+            curl -sS --max-time 120 \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT_FILE"
+            STATE="$(jq -r '.status // empty' "$RESULT_FILE")"
+            case "$STATE" in
+              COMPLETED)
+                TERMINAL=1
+                break
+                ;;
+              FAILED|TIMED_OUT|CANCELLED)
+                cat "$RESULT_FILE" >&2
+                exit 1
+                ;;
+            esac
+            sleep 5
+          done
+          test "$TERMINAL" -eq 1
+          jq -e '.output.status == "completed" and .output.stemforge_version == "2.0.3"' "$RESULT_FILE" >/dev/null
+          jq -e '.output.candidates | length == 3' "$RESULT_FILE" >/dev/null
+
+      - name: Download private release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.meta.outputs.output_tag }}"
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir fetched_output
+          find fetched_output -maxdepth 1 -type f -printf '%f\n' | sort
+          WAV_COUNT="$(find fetched_output -maxdepth 1 -type f -iname '*.wav' | wc -l)"
+          test "$WAV_COUNT" -eq 3
+          sha256sum fetched_output/* > fetched_output/checksums.sha256
+          cp "${{ steps.meta.outputs.request }}" fetched_output/request.json
+
+      - name: Upload verified StemForge artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: fetched_output/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Publish completion manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME="${{ steps.meta.outputs.request_name }}"
+          ARTIFACT_NAME="${{ steps.meta.outputs.artifact_name }}"
+          MANIFEST="$(jq -n \
+            --arg request "$NAME" \
+            --arg artifact_name "$ARTIFACT_NAME" \
+            --argjson run_id "$GITHUB_RUN_ID" \
+            --arg commit "$GITHUB_SHA" \
+            '{request:$request,artifact_name:$artifact_name,run_id:$run_id,commit:$commit,status:"completed"}')"
+          ENCODED="$(printf '%s' "$MANIFEST" | base64 -w0)"
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/v2_export_manifests/${NAME}.json" \
+            -f message="Complete StemForge exported master run [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
+
+      - name: Remove temporary release
+        if: always()
+        shell: bash
+        run: |
+          TAG="${{ steps.meta.outputs.output_tag }}"
+          gh release delete "$TAG" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
