@@ -32,29 +32,23 @@ jobs:
           test "${#REQUESTS[@]}" -eq 1
           echo "name=$(basename "${REQUESTS[0]}" .txt)" >> "$GITHUB_OUTPUT"
 
-      - name: Query endpoint and template
+      - name: Query endpoint with attached template
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p template_probe_output diagnostics
           curl --fail --silent --show-error --max-time 120 \
-            "https://rest.runpod.io/v1/endpoints/${RUNPOD_ENDPOINT_ID}" \
+            "https://rest.runpod.io/v1/endpoints?includeTemplate=true" \
             -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
-            > diagnostics/endpoint-raw.json
+            > diagnostics/endpoints-raw.json
 
-          TEMPLATE_ID="$(jq -r '.templateId // .template.id // empty' diagnostics/endpoint-raw.json)"
-          test -n "$TEMPLATE_ID"
-
-          curl --fail --silent --show-error --max-time 120 \
-            "https://rest.runpod.io/v1/templates/${TEMPLATE_ID}?includeEndpointBoundTemplates=true" \
-            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
-            > diagnostics/template-raw.json
+          jq -e --arg id "$RUNPOD_ENDPOINT_ID" '.[] | select(.id == $id)' \
+            diagnostics/endpoints-raw.json > diagnostics/endpoint-selected.json
 
           jq -n \
-            --slurpfile endpoint diagnostics/endpoint-raw.json \
-            --slurpfile template diagnostics/template-raw.json \
+            --slurpfile endpoint diagnostics/endpoint-selected.json \
             --arg observed_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            '{observed_at:$observed_at,endpoint:{id:$endpoint[0].id,name:$endpoint[0].name,templateId:($endpoint[0].templateId // $endpoint[0].template.id),version:$endpoint[0].version,workersMin:$endpoint[0].workersMin,workersMax:$endpoint[0].workersMax,idleTimeout:$endpoint[0].idleTimeout,executionTimeoutMs:$endpoint[0].executionTimeoutMs,scalerType:$endpoint[0].scalerType,scalerValue:$endpoint[0].scalerValue,gpuTypeIds:$endpoint[0].gpuTypeIds,gpuCount:$endpoint[0].gpuCount,flashboot:$endpoint[0].flashboot},template:{id:$template[0].id,name:$template[0].name,imageName:$template[0].imageName,isServerless:$template[0].isServerless,containerDiskInGb:$template[0].containerDiskInGb,volumeInGb:$template[0].volumeInGb,volumeMountPath:$template[0].volumeMountPath,dockerEntrypoint:$template[0].dockerEntrypoint,dockerStartCmd:$template[0].dockerStartCmd,ports:$template[0].ports}}' \
+            '{observed_at:$observed_at,endpoint:{id:$endpoint[0].id,name:$endpoint[0].name,templateId:($endpoint[0].templateId // $endpoint[0].template.id),version:$endpoint[0].version,workersMin:$endpoint[0].workersMin,workersMax:$endpoint[0].workersMax,idleTimeout:$endpoint[0].idleTimeout,executionTimeoutMs:$endpoint[0].executionTimeoutMs,scalerType:$endpoint[0].scalerType,scalerValue:$endpoint[0].scalerValue,gpuTypeIds:$endpoint[0].gpuTypeIds,gpuCount:$endpoint[0].gpuCount,flashboot:$endpoint[0].flashboot},template:{id:$endpoint[0].template.id,name:$endpoint[0].template.name,imageName:$endpoint[0].template.imageName,isServerless:$endpoint[0].template.isServerless,containerDiskInGb:$endpoint[0].template.containerDiskInGb,volumeInGb:$endpoint[0].template.volumeInGb,volumeMountPath:$endpoint[0].template.volumeMountPath,dockerEntrypoint:$endpoint[0].template.dockerEntrypoint,dockerStartCmd:$endpoint[0].template.dockerStartCmd,ports:$endpoint[0].template.ports}}' \
             > template_probe_output/result.json
 
       - name: Publish safe metadata
