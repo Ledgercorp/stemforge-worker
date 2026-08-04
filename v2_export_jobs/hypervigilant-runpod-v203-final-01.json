@@ -1,0 +1,15 @@
+{
+  "artifact_name": "Hypervigilant_RunPod_v2.0.3_FullPass",
+  "input": {
+    "action": "master_audio",
+    "artist": "sounddecay",
+    "song": "Hypervigilant RunPod v2.0.3",
+    "audio_url": "https://drive.google.com/uc?export=download&id=17One3EFHfp0nMPJrRjLA2PzGaqFU3o82",
+    "profiles": ["dynamic", "balanced", "dense"],
+    "output_ttl_seconds": 86400
+  },
+  "policy": {
+    "ttl": 3600000,
+    "executionTimeout": 2400000
+  }
+}
