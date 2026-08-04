@@ -1,0 +1,40 @@
+StemForge v2.3.0 Naturalize, quality, and reliability release
+
+Naturalize / authenticity processing
+- Adds the callable `naturalize` operation with auto, Quick, and Surgical modes.
+- Implements the mandatory Naturalize Cocktail in order: 15 Hz vibrato, 15 Hz tremolo, 10 Hz vibrato, 1 ms / 0.90 modulation flanger, then light denoise.
+- Preserves the nominal depth values while allowing an intensity control to scale effective modulation depth.
+- Prefers Surgical Naturalize when a vocal stem is available and falls back to Quick Naturalize otherwise.
+- Supports explicit Demucs vocal/instrumental separation for Surgical mode when stems are unavailable.
+- Applies a more assertive chain to vocals and lighter modulation plus level preservation to the instrumental.
+- Tests vocal + instrumental reconstruction and falls back to a master-minus-vocal instrumental anchor when supplied stems are unsafe.
+- Keeps processing non-destructive and retains an original PCM A/B reference by default.
+- Logs the exact chain, nominal/effective parameters, mode decision, anchor decision, safety comparison, and measured naturalness characteristics.
+- Integrates optional Naturalize processing into autonomous `full_pass` jobs before mastering.
+- Labels Naturalize as a fidelity/authenticity enhancement, never as an origin-detection or concealment tool.
+
+Audio quality safeguards
+- Adds strict stem reconstruction gating before any full stem-replacement mix.
+- Falls back to a master-anchored delta remix when stems do not reconstruct safely.
+- Excludes auxiliary pad stems from reconstruction fitting and supports direct overlay roles.
+- Removes autonomous per-stem and mix-bus stereo widening from the remix path.
+- Removes the envelope-based independent stem gain solver that amplified leakage and noise.
+- Generates a true clean premaster before loudness normalization and peak trimming.
+- Adds residual, correlation, derivative, discontinuity, non-finite, and high-frequency noise gates.
+- Makes high-band comparisons noise-floor aware while retaining raw spectral diagnostics.
+- Rejects bad audio instead of accepting it solely because it is not clipped.
+
+RunPod and GitHub relay reliability
+- Uses atomic input downloads with retries, stale-link errors, HTML-response detection, and optional size/SHA-256 validation.
+- Queues remix runs instead of cancelling active jobs.
+- Supports manual workflow dispatch with an explicit request path.
+- Derives expected stem, MIDI, profile, WAV, and asset counts from request metadata.
+- Preflights remote URLs before paid RunPod processing begins, with a ranged-GET fallback when HEAD is unsupported.
+- Verifies the exact v2.3.0 worker version and build returned by RunPod.
+- Preserves failure diagnostics and validates downloaded WAV containers and quality reports.
+- Removes obsolete duplicate remix and status-probe workflows.
+
+Testing and compatibility
+- Adds Naturalize tests for mandatory operation order, zero-intensity bypass, Quick/Surgical routing, master anchoring, full-pass configuration, and A/B retention.
+- Adds regression coverage for static-like artifacts, unsafe stem reconstruction, hidden clipping, non-finite audio, high-band noise-floor behavior, and breakdown-pad isolation.
+- Tests on a conservative Python 3.11 scientific stack and adds NumPy 1.x compatibility for shared analysis code.
