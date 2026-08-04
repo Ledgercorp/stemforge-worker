@@ -1,0 +1,30 @@
+name: Publish StemForge v2.1.0
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "release/v2.1.0.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create v2.1.0 release from current main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view v2.1.0 --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "v2.1.0 already exists."
+            exit 0
+          fi
+          gh release create v2.1.0 \
+            --repo "${GITHUB_REPOSITORY}" \
+            --target "${GITHUB_SHA}" \
+            --title "StemForge v2.1.0 Full Pass" \
+            --notes "Adds one-job full-pass processing using a stereo master, stem integrity and reconstruction analysis, MIDI tempo and structure analysis, tempo-linked mastering release timing, stereo-anchor safety decisions, and private GitHub release delivery."
