@@ -52,6 +52,35 @@ def system_info_job(payload: dict | None = None) -> dict:
             "dynamic_workflow_asset_counts": True,
             "failure_diagnostic_artifacts": True,
         },
+        "naturalize": {
+            "label": "Naturalness / Authenticity enhancement",
+            "callable_action": "naturalize",
+            "modes": ["auto", "quick", "surgical"],
+            "default_mode": "auto",
+            "default_intensity": 0.35,
+            "non_destructive_default": True,
+            "ab_reference_default": True,
+            "agent_policy": {
+                "prefer_surgical_when_vocal_stems_are_available": True,
+                "fall_back_to_quick_without_vocal_stems": True,
+                "surgical_can_run_demucs_when_explicitly_requested": True,
+                "denoise_must_follow_all_modulation": True,
+                "classification": "fidelity_authenticity_enhancement",
+                "not_a_detection_tool": True,
+            },
+            "nominal_processing_order": [
+                {"operation": "vibrato", "rate_hz": 15.0, "depth": 10.0},
+                {"operation": "tremolo", "rate_hz": 15.0, "depth": 10.0},
+                {"operation": "vibrato", "rate_hz": 10.0, "depth": 10.0},
+                {
+                    "operation": "flanger",
+                    "delay_ms": 1.0,
+                    "modulation": 0.90,
+                    "depth": 9.0,
+                },
+                {"operation": "light_denoise", "position": "after_modulation"},
+            ],
+        },
         "feature_groups": {
             "lyrics": ["align_lyrics", "align_lyrics_smart"],
             "analysis": [
@@ -73,6 +102,7 @@ def system_info_job(payload: dict | None = None) -> dict:
                 "stem_remix",
                 "repair_audio",
                 "humanize_audio",
+                "naturalize",
             ],
             "visual": ["render_lyric_video"],
             "interchange": ["export_daw"],
