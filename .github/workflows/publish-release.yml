@@ -1,0 +1,37 @@
+name: Publish StemForge Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "release-trigger/**"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Publish v1.0.2 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="v1.0.2"
+          TITLE="StemForge Lyric Alignment v1.0.2"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists."
+            exit 0
+          fi
+
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "$TITLE" \
+            --notes "Deploys the corrected monotonic WhisperX lyric reconciler and direct Google Drive audio support."
