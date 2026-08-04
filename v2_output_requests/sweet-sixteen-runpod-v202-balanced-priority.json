@@ -1,0 +1,13 @@
+{
+  "artifact_name": "Sweet_Sixteen_RunPod_v2.0.2_Balanced",
+  "files": [
+    {
+      "path": "/runpod-volume/stemforge/output/masters/sounddecay/78152fbb57503079/Sweet_Sixteen_RunPod_v2.0.2_balanced_master.wav",
+      "filename": "Sweet_Sixteen_RunPod_v2.0.2_Balanced.wav"
+    },
+    {
+      "path": "/runpod-volume/stemforge/output/masters/sounddecay/6d054966b9a1bfea/mastering_report.json",
+      "filename": "Sweet_Sixteen_RunPod_v2.0.2_Mastering_Report.json"
+    }
+  ]
+}
