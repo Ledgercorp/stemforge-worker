@@ -24,6 +24,10 @@ def _safe_dumps(obj: Any, *args: Any, **kwargs: Any) -> str:
     return _ORIGINAL_DUMPS(obj, *args, **kwargs)
 
 
+if not hasattr(np, "trapezoid"):
+    np.trapezoid = np.trapz  # type: ignore[attr-defined]
+
+
 if not getattr(json.dumps, "_stemforge_numpy_safe", False):
     setattr(_safe_dumps, "_stemforge_numpy_safe", True)
     json.dumps = _safe_dumps

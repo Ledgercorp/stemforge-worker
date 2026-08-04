@@ -1,16 +1,17 @@
 from __future__ import annotations
 
+from app.actions_v2 import SUPPORTED_ACTIONS
 from app.analysis_v2 import analyze_audio_v2_job, compare_audio_v2_job
 from app.audio_analysis import analyze_audio_url
 from app.daw_v2 import export_daw_job
 from app.full_pass_v2 import full_pass_job
 from app.github_delivery import master_audio_github_delivery_job
-from app.lyric_align import ALIGNER_VERSION, align_lyrics_job
 from app.lyrics_v2 import align_lyrics_smart_job
 from app.mastering import mastering_plan as legacy_mastering_plan
 from app.mastering_v2 import master_audio_job, mastering_plan
 from app.memory import get_memory, record_feedback
 from app.memory_v2 import get_production_profile_job, record_rule_job
+from app.naturalize_v2 import naturalize_audio_job
 from app.perceptual_listener import compare_audio_urls
 from app.repair_v2 import humanize_audio_job, repair_audio_job
 from app.separation_v2 import separate_stems_job
@@ -29,18 +30,24 @@ from app.volume_transfer import (
     volume_upload_init_job,
 )
 
-SUPPORTED_ACTIONS = {
-    "system_info", "storage_info", "create_upload", "create_download", "delete_storage_objects",
-    "volume_upload_init", "volume_upload_chunk", "volume_upload_finalize",
-    "volume_file_info", "volume_file_chunk", "volume_delete",
-    "align_lyrics", "align_lyrics_smart", "aligner_info",
-    "analyze_audio", "analyze_audio_v2", "compare_audio", "compare_audio_v2",
-    "inspect_stems", "inspect_stems_v2", "separate_stems", "stem_remix",
-    "mastering_plan", "legacy_mastering_plan", "master_audio", "master_audio_github_delivery",
-    "full_pass",
-    "repair_audio", "humanize_audio", "render_lyric_video", "export_daw",
-    "get_memory", "record_feedback", "record_rule", "get_production_profile",
-}
+
+def _align_lyrics(payload: dict) -> dict:
+    # WhisperX/Torch are GPU-heavy optional dependencies. Import them only when
+    # the caller actually requests lyric alignment so lightweight actions such
+    # as system_info and naturalize remain usable in CPU-only environments.
+    from app.lyric_align import align_lyrics_job
+
+    return align_lyrics_job(payload)
+
+
+def _aligner_info() -> dict:
+    from app.lyric_align import ALIGNER_VERSION
+
+    return {
+        "status": "completed",
+        "aligner_version": ALIGNER_VERSION,
+        "stemforge_version": VERSION,
+    }
 
 
 def handle_job(payload: dict) -> dict:
@@ -65,13 +72,9 @@ def handle_job(payload: dict) -> dict:
         "volume_file_info": lambda: volume_file_info_job(payload),
         "volume_file_chunk": lambda: volume_file_chunk_job(payload),
         "volume_delete": lambda: volume_delete_job(payload),
-        "align_lyrics": lambda: align_lyrics_job(payload),
+        "align_lyrics": lambda: _align_lyrics(payload),
         "align_lyrics_smart": lambda: align_lyrics_smart_job(payload),
-        "aligner_info": lambda: {
-            "status": "completed",
-            "aligner_version": ALIGNER_VERSION,
-            "stemforge_version": VERSION,
-        },
+        "aligner_info": _aligner_info,
         "analyze_audio": lambda: analyze_audio_url(payload),
         "analyze_audio_v2": lambda: analyze_audio_v2_job(payload),
         "compare_audio": lambda: compare_audio_urls(payload),
@@ -87,6 +90,7 @@ def handle_job(payload: dict) -> dict:
         "full_pass": lambda: full_pass_job(payload),
         "repair_audio": lambda: repair_audio_job(payload),
         "humanize_audio": lambda: humanize_audio_job(payload),
+        "naturalize": lambda: naturalize_audio_job(payload),
         "render_lyric_video": lambda: render_lyric_video_job(payload),
         "export_daw": lambda: export_daw_job(payload),
         "get_memory": lambda: {
