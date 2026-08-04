@@ -50,6 +50,18 @@ def test_static_like_alternating_noise_is_rejected() -> None:
     }.intersection(result["reasons"])
 
 
+def test_microscopic_high_band_residue_below_floor_is_not_a_noise_alarm() -> None:
+    reference = _tone()
+    time = np.arange(len(reference), dtype=np.float64) / 48000.0
+    residue = 1e-5 * np.sin(2.0 * np.pi * 12000.0 * time)
+    candidate = reference + np.column_stack((residue, residue)).astype(np.float32)
+    comparison = compare_audio_quality(reference, candidate, 48000)
+    high_band = comparison["high_band_energy_ratio"]
+    assert high_band["candidate"] < high_band["meaningful_energy_floor"]
+    assert high_band["delta_db"] == 0.0
+    assert high_band["raw_delta_db"] > 0.0
+
+
 def test_non_finite_samples_are_rejected() -> None:
     reference = _tone()
     candidate = reference.copy()
