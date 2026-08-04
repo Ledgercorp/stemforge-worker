@@ -1,0 +1,2 @@
+StemForge v2.2.0
+Reference-guided stem remix engine using all stems and MIDI.
