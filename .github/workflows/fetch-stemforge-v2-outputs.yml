@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Download output files from RunPod volume
         shell: bash
@@ -38,9 +38,48 @@ jobs:
             exit 1
           fi
 
+          call_job() {
+            local payload_file="$1"
+            local response_file="$2"
+            local submit_file
+            submit_file="$(mktemp)"
+            curl -sS --max-time 120 \
+              -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload_file}" > "$submit_file"
+            local job_id
+            job_id="$(jq -r '.id // empty' "$submit_file")"
+            if [ -z "$job_id" ]; then
+              cat "$submit_file" >&2
+              exit 1
+            fi
+            rm -f "$submit_file"
+
+            for attempt in $(seq 1 300); do
+              curl -sS --max-time 120 \
+                "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${job_id}" \
+                -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$response_file"
+              state="$(jq -r '.status // empty' "$response_file")"
+              case "$state" in
+                COMPLETED)
+                  jq -e '.output.status == "completed"' "$response_file" >/dev/null
+                  return 0
+                  ;;
+                FAILED|TIMED_OUT|CANCELLED)
+                  cat "$response_file" >&2
+                  exit 1
+                  ;;
+              esac
+              sleep 1
+            done
+            echo "Timed out waiting for RunPod job $job_id" >&2
+            exit 1
+          }
+
           REQUEST="${REQUESTS[0]}"
           REQUEST_NAME="$(basename "$REQUEST" .json)"
-          CHUNK_SIZE=4000000
+          CHUNK_SIZE=5000000
           : > fetched_output/checksums.txt
 
           COUNT="$(jq '.files | length' "$REQUEST")"
@@ -51,12 +90,7 @@ jobs:
             INFO_PAYLOAD="$(mktemp)"
             INFO_RESPONSE="$(mktemp)"
             jq -n --arg path "$REMOTE_PATH" '{input:{action:"volume_file_info",path:$path}}' > "$INFO_PAYLOAD"
-            curl -sS --max-time 900 \
-              -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/runsync" \
-              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
-              -H "Content-Type: application/json" \
-              --data-binary "@${INFO_PAYLOAD}" > "$INFO_RESPONSE"
-            jq -e '.status == "COMPLETED" and .output.status == "completed"' "$INFO_RESPONSE" >/dev/null
+            call_job "$INFO_PAYLOAD" "$INFO_RESPONSE"
             SIZE="$(jq -r '.output.size_bytes' "$INFO_RESPONSE")"
             EXPECTED_SHA="$(jq -r '.output.sha256' "$INFO_RESPONSE")"
             : > "$TARGET"
@@ -70,12 +104,7 @@ jobs:
                 --argjson offset "$OFFSET" \
                 --argjson length "$CHUNK_SIZE" \
                 '{input:{action:"volume_file_chunk",path:$path,offset:$offset,length:$length}}' > "$PAYLOAD"
-              curl -sS --max-time 900 \
-                -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/runsync" \
-                -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
-                -H "Content-Type: application/json" \
-                --data-binary "@${PAYLOAD}" > "$RESPONSE"
-              jq -e '.status == "COMPLETED" and .output.status == "completed"' "$RESPONSE" >/dev/null
+              call_job "$PAYLOAD" "$RESPONSE"
               jq -r '.output.data_base64' "$RESPONSE" | base64 --decode >> "$TARGET"
               READ="$(jq -r '.output.bytes_read' "$RESPONSE")"
               if [ "$READ" -le 0 ]; then
@@ -120,4 +149,5 @@ jobs:
           git config user.email "stemforge-v2-output-fetcher@users.noreply.github.com"
           git add v2_artifact_manifests
           git commit -m "Add StemForge v2 artifact manifest [skip ci]"
+          git pull --rebase origin main
           git push
