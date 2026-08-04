@@ -1,0 +1,98 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,52,&H00FFFFFF,&H000000FF,&H66000000,&H00000000,0,0,0,0,100,100,0,0,1,2,0,2,120,120,110,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:06.13,0:00:10.36,Default,,0,0,0,,I remember the feeling, warm but uneasy,
+Dialogue: 0,0:00:10.42,0:00:14.82,Default,,0,0,0,,new home, new city, low self-esteem.
+Dialogue: 0,0:00:14.84,0:00:19.97,Default,,0,0,0,,I thought being older would somehow come easy,
+Dialogue: 0,0:00:20.09,0:00:25.68,Default,,0,0,0,,but each move felt bigger than anything I'd seen.
+Dialogue: 0,0:00:29.14,0:00:37.63,Default,,0,0,0,,From familiar roots to something new that year,
+Dialogue: 0,0:00:37.65,0:00:42.35,Default,,0,0,0,,I knew every hallway but nobody there.
+Dialogue: 0,0:00:42.37,0:00:47.01,Default,,0,0,0,,I went straight home when the last bell rang,
+Dialogue: 0,0:00:47.03,0:00:51.76,Default,,0,0,0,,shut my bedroom door and let the phone stay blank.
+Dialogue: 0,0:00:52.88,0:00:56.74,Default,,0,0,0,,My dealer answered whenever I called.
+Dialogue: 0,0:00:57.09,0:01:01.37,Default,,0,0,0,,That counted as friendship when I had none at all.
+Dialogue: 0,0:01:01.39,0:01:06.67,Default,,0,0,0,,I smoked by the window with music turned low
+Dialogue: 0,0:01:06.79,0:01:10.88,Default,,0,0,0,,and told myself nobody needed to know.
+Dialogue: 0,0:01:12.22,0:01:15.42,Default,,0,0,0,,I found comfort in my room after dark,
+Dialogue: 0,0:01:16.65,0:01:21.01,Default,,0,0,0,,with the blinds pulled down and the speakers up.
+Dialogue: 0,0:01:21.47,0:01:24.72,Default,,0,0,0,,My dealer knew when I needed a spark,
+Dialogue: 0,0:01:26.13,0:01:30.58,Default,,0,0,0,,and I called that friendship because it was enough.
+Dialogue: 0,0:01:30.75,0:01:35.38,Default,,0,0,0,,I took pill after pill just to quiet my head,
+Dialogue: 0,0:01:35.60,0:01:40.00,Default,,0,0,0,,then smoked by the window and stayed in my bed.
+Dialogue: 0,0:01:40.02,0:01:45.09,Default,,0,0,0,,Dropped acid alone while the ceiling turned strange
+Dialogue: 0,0:01:45.21,0:01:49.37,Default,,0,0,0,,and waited for something inside me to change.
+Dialogue: 0,0:01:50.14,0:01:55.00,Default,,0,0,0,,At sixteen, I thought I had years left to lose.
+Dialogue: 0,0:01:55.14,0:01:59.66,Default,,0,0,0,,At seventeen, I had habits to choose.
+Dialogue: 0,0:01:59.69,0:02:03.95,Default,,0,0,0,,I don't miss the fear or the things I went through.
+Dialogue: 0,0:02:04.11,0:02:08.12,Default,,0,0,0,,I miss being young enough not to know what they'd do.
+Dialogue: 0,0:02:11.94,0:02:16.23,Default,,0,0,0,,My first love came through that apartment door.
+Dialogue: 0,0:02:16.67,0:02:20.73,Default,,0,0,0,,I had never let anyone that close before.
+Dialogue: 0,0:02:21.01,0:02:24.88,Default,,0,0,0,,My mom was nearby, but I lived in my head,
+Dialogue: 0,0:02:25.52,0:02:29.44,Default,,0,0,0,,with pills in the drawer and weed by the bed.
+Dialogue: 0,0:02:29.65,0:02:33.36,Default,,0,0,0,,We sat on the mattress with music turned low.
+Dialogue: 0,0:02:34.07,0:02:38.11,Default,,0,0,0,,I wanted to tell her but never quite spoke.
+Dialogue: 0,0:02:38.53,0:02:42.39,Default,,0,0,0,,I thought being loved might pull me ahead,
+Dialogue: 0,0:02:42.95,0:02:47.31,Default,,0,0,0,,but love couldn't fix what I wouldn't have said.
+Dialogue: 0,0:02:47.50,0:02:51.40,Default,,0,0,0,,I thought getting older would make me feel clear,
+Dialogue: 0,0:02:51.90,0:02:55.63,Default,,0,0,0,,but each new birthday just added a year.
+Dialogue: 0,0:02:55.65,0:03:00.13,Default,,0,0,0,,I wanted to leave and I wanted to stay.
+Dialogue: 0,0:03:00.15,0:03:05.14,Default,,0,0,0,,I wanted tomorrow without changing today.
+Dialogue: 0,0:03:05.94,0:03:10.36,Default,,0,0,0,,I took pill after pill just to quiet my head,
+Dialogue: 0,0:03:10.58,0:03:14.99,Default,,0,0,0,,then smoked by the window and stayed in my bed.
+Dialogue: 0,0:03:15.01,0:03:19.39,Default,,0,0,0,,Dropped acid alone while the ceiling turned strange
+Dialogue: 0,0:03:19.81,0:03:23.86,Default,,0,0,0,,and waited for something inside me to change.
+Dialogue: 0,0:03:24.60,0:03:29.76,Default,,0,0,0,,At sixteen, I thought I had years left to lose.
+Dialogue: 0,0:03:29.93,0:03:33.52,Default,,0,0,0,,At seventeen, I had habits to choose.
+Dialogue: 0,0:03:33.69,0:03:38.01,Default,,0,0,0,,I don't miss the fear or the things I went through.
+Dialogue: 0,0:03:38.15,0:03:42.31,Default,,0,0,0,,I miss being young enough not to know what they'd do.
+Dialogue: 0,0:03:42.46,0:03:46.21,Default,,0,0,0,,I kept the opioids hidden where nobody would see,
+Dialogue: 0,0:03:46.23,0:03:50.58,Default,,0,0,0,,took more than I intended and kept it all with me.
+Dialogue: 0,0:03:50.60,0:03:55.10,Default,,0,0,0,,I overdosed in silence with the bedroom door shut tight,
+Dialogue: 0,0:03:55.60,0:03:59.42,Default,,0,0,0,,then woke up hours later and said that I was alright.
+Dialogue: 0,0:04:00.08,0:04:04.08,Default,,0,0,0,,I didn't know what was wrong or why I hated my skin.
+Dialogue: 0,0:04:04.48,0:04:08.18,Default,,0,0,0,,I only knew the pills could cut the pressure down within.
+Dialogue: 0,0:04:08.20,0:04:12.53,Default,,0,0,0,,Each close call stayed unspoken; I made it look routine.
+Dialogue: 0,0:04:12.59,0:04:16.83,Default,,0,0,0,,I kept destroying parts of me before I turned eighteen.
+Dialogue: 0,0:04:16.93,0:04:20.81,Default,,0,0,0,,I thought I was weak and rotten, too damaged to explain,
+Dialogue: 0,0:04:20.87,0:04:24.99,Default,,0,0,0,,so I punished what I couldn't fix and swallowed it again.
+Dialogue: 0,0:04:25.11,0:04:29.03,Default,,0,0,0,,I wanted out of my body, not a story I could tell.
+Dialogue: 0,0:04:29.39,0:04:34.33,Default,,0,0,0,,I kept taking what could numb me and then hated myself.
+Dialogue: 0,0:04:35.90,0:04:43.00,Default,,0,0,0,,I never called it overdose; I called it getting through.
+Dialogue: 0,0:04:44.43,0:04:50.98,Default,,0,0,0,,I didn't know what was wrong with me. I only knew what pills could do.
+Dialogue: 0,0:04:51.46,0:04:55.22,Default,,0,0,0,,I don't call it good, and I don't call it bad.
+Dialogue: 0,0:04:55.36,0:04:59.55,Default,,0,0,0,,It held some of the worst and the best that I had.
+Dialogue: 0,0:04:59.63,0:05:03.83,Default,,0,0,0,,Now when I remember, I can't make it clean.
+Dialogue: 0,0:05:03.95,0:05:08.07,Default,,0,0,0,,I hated those years, but I still miss sixteen.
+Dialogue: 0,0:05:08.09,0:05:12.13,Default,,0,0,0,,Newark is traffic I pass on the way,
+Dialogue: 0,0:05:12.53,0:05:16.44,Default,,0,0,0,,but part of me stays in that bedroom some days.
+Dialogue: 0,0:05:16.96,0:05:20.58,Default,,0,0,0,,I know what it cost me; I know what it meant.
+Dialogue: 0,0:05:21.18,0:05:25.82,Default,,0,0,0,,I grew without knowing which direction I went.
+Dialogue: 0,0:05:26.16,0:05:29.78,Default,,0,0,0,,I WASN'T CHASING A STORY TO TELL!
+Dialogue: 0,0:05:30.42,0:05:34.02,Default,,0,0,0,,I WAS SIXTEEN AND NOT DOING WELL!
+Dialogue: 0,0:05:34.68,0:05:38.18,Default,,0,0,0,,I WASN'T BRAVE, AND I WASN'T FREE!
+Dialogue: 0,0:05:38.48,0:05:42.51,Default,,0,0,0,,I TOOK WHAT I COULD TO GET AWAY FROM ME!
+Dialogue: 0,0:05:42.68,0:05:46.93,Default,,0,0,0,,THE CITY MOVED ON WHILE I STAYED IN THAT ROOM!
+Dialogue: 0,0:05:47.01,0:05:51.24,Default,,0,0,0,,I KEPT THE BLINDS CLOSED UNTIL AFTER NOON!
+Dialogue: 0,0:05:51.23,0:05:54.99,Default,,0,0,0,,I THOUGHT I HAD TIME, SO I WASTED IT NUMB!
+Dialogue: 0,0:05:55.13,0:05:59.14,Default,,0,0,0,,BY THE TIME I LOOKED UP, SEVENTEEN WAS DONE!
+Dialogue: 0,0:05:59.25,0:06:03.42,Default,,0,0,0,,I took pill after pill just to quiet my head,
+Dialogue: 0,0:06:03.64,0:06:07.64,Default,,0,0,0,,then smoked by the window and stayed in my bed.
+Dialogue: 0,0:06:07.86,0:06:12.00,Default,,0,0,0,,Dropped acid alone while the ceiling turned strange
+Dialogue: 0,0:06:12.44,0:06:16.31,Default,,0,0,0,,and waited for something inside me to change.
+Dialogue: 0,0:06:16.76,0:06:21.41,Default,,0,0,0,,At sixteen, I thought I had years left to lose.
+Dialogue: 0,0:06:21.49,0:06:25.72,Default,,0,0,0,,At seventeen, I had habits to choose.
+Dialogue: 0,0:06:25.86,0:06:29.87,Default,,0,0,0,,I don't miss the fear or the things I went through,
+Dialogue: 0,0:06:30.09,0:06:34.09,Default,,0,0,0,,but I miss that old room more than I want to.
+Dialogue: 0,0:06:34.11,0:06:38.89,Default,,0,0,0,,I remember the feeling, warm but uneasy,
+Dialogue: 0,0:06:38.85,0:06:38.92,Default,,0,0,0,,a new home, a new city, a life in between.
+Dialogue: 0,0:06:38.87,0:06:38.94,Default,,0,0,0,,I don't miss that bedroom, at least not completely,
+Dialogue: 0,0:06:38.89,0:06:42.32,Default,,0,0,0,,but sometimes I miss what it meant to be sixteen.

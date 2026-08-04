@@ -1,0 +1,797 @@
+{
+  "status": "COMPLETED",
+  "runpod_job_id": "c4e89482-b0c6-42f1-a601-b559dfcbad66-u2",
+  "aligner_version": "monotonic_dynamic_programming_v3",
+  "device": "cuda",
+  "language": "en",
+  "metrics": {
+    "alignment_method": "monotonic_dynamic_programming_v2",
+    "anchor_coverage": 0.917,
+    "detected_word_count": 755,
+    "expected_word_count": 795,
+    "recognized_or_fuzzy_anchor_count": 729,
+    "sequence_similarity": 0.9734
+  },
+  "review_required": true,
+  "review_line_indices": [
+    84,
+    85,
+    86
+  ],
+  "lines": [
+    {
+      "index": 1,
+      "start": 6.133,
+      "end": 10.358,
+      "confidence": 0.5946,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I remember the feeling, warm but uneasy,"
+    },
+    {
+      "index": 2,
+      "start": 10.418,
+      "end": 14.824,
+      "confidence": 0.8372,
+      "anchor_coverage": 0.8571,
+      "needs_review": false,
+      "text": "new home, new city, low self-esteem."
+    },
+    {
+      "index": 3,
+      "start": 14.844,
+      "end": 19.97,
+      "confidence": 0.6428,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I thought being older would somehow come easy,"
+    },
+    {
+      "index": 4,
+      "start": 20.09,
+      "end": 25.677,
+      "confidence": 0.775,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "but each move felt bigger than anything I'd seen."
+    },
+    {
+      "index": 5,
+      "start": 29.1416,
+      "end": 37.631,
+      "confidence": 0.6313,
+      "anchor_coverage": 0.875,
+      "needs_review": false,
+      "text": "From familiar roots to something new that year,"
+    },
+    {
+      "index": 6,
+      "start": 37.651,
+      "end": 42.352,
+      "confidence": 0.7047,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I knew every hallway but nobody there."
+    },
+    {
+      "index": 7,
+      "start": 42.372,
+      "end": 47.014,
+      "confidence": 0.7206,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I went straight home when the last bell rang,"
+    },
+    {
+      "index": 8,
+      "start": 47.034,
+      "end": 51.756,
+      "confidence": 0.8128,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "shut my bedroom door and let the phone stay blank."
+    },
+    {
+      "index": 9,
+      "start": 52.877,
+      "end": 56.741,
+      "confidence": 0.6894,
+      "anchor_coverage": 0.8333,
+      "needs_review": false,
+      "text": "My dealer answered whenever I called."
+    },
+    {
+      "index": 10,
+      "start": 57.089925,
+      "end": 61.367,
+      "confidence": 0.6806,
+      "anchor_coverage": 0.9,
+      "needs_review": false,
+      "text": "That counted as friendship when I had none at all."
+    },
+    {
+      "index": 11,
+      "start": 61.387,
+      "end": 66.674,
+      "confidence": 0.503,
+      "anchor_coverage": 0.8889,
+      "needs_review": false,
+      "text": "I smoked by the window with music turned low"
+    },
+    {
+      "index": 12,
+      "start": 66.794,
+      "end": 70.879,
+      "confidence": 0.704,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "and told myself nobody needed to know."
+    },
+    {
+      "index": 13,
+      "start": 72.22,
+      "end": 75.425,
+      "confidence": 0.7227,
+      "anchor_coverage": 0.875,
+      "needs_review": false,
+      "text": "I found comfort in my room after dark,"
+    },
+    {
+      "index": 14,
+      "start": 76.647,
+      "end": 81.014,
+      "confidence": 0.782,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "with the blinds pulled down and the speakers up."
+    },
+    {
+      "index": 15,
+      "start": 81.474,
+      "end": 84.719,
+      "confidence": 0.6844,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "My dealer knew when I needed a spark,"
+    },
+    {
+      "index": 16,
+      "start": 86.128,
+      "end": 90.57512333333332,
+      "confidence": 0.5947,
+      "anchor_coverage": 0.7778,
+      "needs_review": false,
+      "text": "and I called that friendship because it was enough."
+    },
+    {
+      "index": 17,
+      "start": 90.753,
+      "end": 95.378,
+      "confidence": 0.6373,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I took pill after pill just to quiet my head,"
+    },
+    {
+      "index": 18,
+      "start": 95.598,
+      "end": 100.002,
+      "confidence": 0.6352,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "then smoked by the window and stayed in my bed."
+    },
+    {
+      "index": 19,
+      "start": 100.022,
+      "end": 105.087,
+      "confidence": 0.6374,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "Dropped acid alone while the ceiling turned strange"
+    },
+    {
+      "index": 20,
+      "start": 105.207,
+      "end": 109.371,
+      "confidence": 0.6594,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "and waited for something inside me to change."
+    },
+    {
+      "index": 21,
+      "start": 110.13713333333332,
+      "end": 114.999,
+      "confidence": 0.7955,
+      "anchor_coverage": 0.8,
+      "needs_review": false,
+      "text": "At sixteen, I thought I had years left to lose."
+    },
+    {
+      "index": 22,
+      "start": 115.14066666666666,
+      "end": 119.665,
+      "confidence": 0.663,
+      "anchor_coverage": 0.7143,
+      "needs_review": false,
+      "text": "At seventeen, I had habits to choose."
+    },
+    {
+      "index": 23,
+      "start": 119.6905,
+      "end": 123.95,
+      "confidence": 0.6958,
+      "anchor_coverage": 0.9091,
+      "needs_review": false,
+      "text": "I don't miss the fear or the things I went through."
+    },
+    {
+      "index": 24,
+      "start": 124.111,
+      "end": 128.116,
+      "confidence": 0.6718,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I miss being young enough not to know what they'd do."
+    },
+    {
+      "index": 25,
+      "start": 131.942,
+      "end": 136.227,
+      "confidence": 0.785,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "My first love came through that apartment door."
+    },
+    {
+      "index": 26,
+      "start": 136.667,
+      "end": 140.732,
+      "confidence": 0.8496,
+      "anchor_coverage": 0.875,
+      "needs_review": false,
+      "text": "I had never let anyone that close before."
+    },
+    {
+      "index": 27,
+      "start": 141.012,
+      "end": 144.876,
+      "confidence": 0.8738,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "My mom was nearby, but I lived in my head,"
+    },
+    {
+      "index": 28,
+      "start": 145.517,
+      "end": 149.441,
+      "confidence": 0.8061,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "with pills in the drawer and weed by the bed."
+    },
+    {
+      "index": 29,
+      "start": 149.65095,
+      "end": 153.365,
+      "confidence": 0.6664,
+      "anchor_coverage": 0.7778,
+      "needs_review": false,
+      "text": "We sat on the mattress with music turned low."
+    },
+    {
+      "index": 30,
+      "start": 154.066,
+      "end": 158.109,
+      "confidence": 0.7449,
+      "anchor_coverage": 0.7778,
+      "needs_review": false,
+      "text": "I wanted to tell her but never quite spoke."
+    },
+    {
+      "index": 31,
+      "start": 158.53,
+      "end": 162.393,
+      "confidence": 0.6184,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I thought being loved might pull me ahead,"
+    },
+    {
+      "index": 32,
+      "start": 162.954,
+      "end": 167.31152333333333,
+      "confidence": 0.6927,
+      "anchor_coverage": 0.7778,
+      "needs_review": false,
+      "text": "but love couldn't fix what I wouldn't have said."
+    },
+    {
+      "index": 33,
+      "start": 167.498,
+      "end": 171.403,
+      "confidence": 0.752,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I thought getting older would make me feel clear,"
+    },
+    {
+      "index": 34,
+      "start": 171.903,
+      "end": 175.628,
+      "confidence": 0.7119,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "but each new birthday just added a year."
+    },
+    {
+      "index": 35,
+      "start": 175.648,
+      "end": 180.134,
+      "confidence": 0.6978,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I wanted to leave and I wanted to stay."
+    },
+    {
+      "index": 36,
+      "start": 180.154,
+      "end": 185.14,
+      "confidence": 0.6038,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I wanted tomorrow without changing today."
+    },
+    {
+      "index": 37,
+      "start": 185.941,
+      "end": 190.365,
+      "confidence": 0.7449,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I took pill after pill just to quiet my head,"
+    },
+    {
+      "index": 38,
+      "start": 190.585,
+      "end": 194.99,
+      "confidence": 0.6835,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "then smoked by the window and stayed in my bed."
+    },
+    {
+      "index": 39,
+      "start": 195.01,
+      "end": 199.394,
+      "confidence": 0.665,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "Dropped acid alone while the ceiling turned strange"
+    },
+    {
+      "index": 40,
+      "start": 199.814,
+      "end": 203.858,
+      "confidence": 0.7096,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "and waited for something inside me to change."
+    },
+    {
+      "index": 41,
+      "start": 204.6009,
+      "end": 209.763,
+      "confidence": 0.7555,
+      "anchor_coverage": 0.8,
+      "needs_review": false,
+      "text": "At sixteen, I thought I had years left to lose."
+    },
+    {
+      "index": 42,
+      "start": 209.92733333333334,
+      "end": 213.525,
+      "confidence": 0.55,
+      "anchor_coverage": 0.7143,
+      "needs_review": false,
+      "text": "At seventeen, I had habits to choose."
+    },
+    {
+      "index": 43,
+      "start": 213.686,
+      "end": 218.009,
+      "confidence": 0.721,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I don't miss the fear or the things I went through."
+    },
+    {
+      "index": 44,
+      "start": 218.149,
+      "end": 222.312,
+      "confidence": 0.617,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I miss being young enough not to know what they'd do."
+    },
+    {
+      "index": 45,
+      "start": 222.4565,
+      "end": 226.214,
+      "confidence": 0.7846,
+      "anchor_coverage": 0.8889,
+      "needs_review": false,
+      "text": "I kept the opioids hidden where nobody would see,"
+    },
+    {
+      "index": 46,
+      "start": 226.234,
+      "end": 230.577,
+      "confidence": 0.8443,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "took more than I intended and kept it all with me."
+    },
+    {
+      "index": 47,
+      "start": 230.597,
+      "end": 235.099,
+      "confidence": 0.7057,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I overdosed in silence with the bedroom door shut tight,"
+    },
+    {
+      "index": 48,
+      "start": 235.6,
+      "end": 239.422,
+      "confidence": 0.8929,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "then woke up hours later and said that I was alright."
+    },
+    {
+      "index": 49,
+      "start": 240.082,
+      "end": 244.084,
+      "confidence": 0.7366,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I didn't know what was wrong or why I hated my skin."
+    },
+    {
+      "index": 50,
+      "start": 244.484,
+      "end": 248.185,
+      "confidence": 0.6946,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I only knew the pills could cut the pressure down within."
+    },
+    {
+      "index": 51,
+      "start": 248.205,
+      "end": 252.527,
+      "confidence": 0.5901,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "Each close call stayed unspoken; I made it look routine."
+    },
+    {
+      "index": 52,
+      "start": 252.587,
+      "end": 256.8334,
+      "confidence": 0.7231,
+      "anchor_coverage": 0.9,
+      "needs_review": false,
+      "text": "I kept destroying parts of me before I turned eighteen."
+    },
+    {
+      "index": 53,
+      "start": 256.928,
+      "end": 260.81,
+      "confidence": 0.7655,
+      "anchor_coverage": 0.8182,
+      "needs_review": false,
+      "text": "I thought I was weak and rotten, too damaged to explain,"
+    },
+    {
+      "index": 54,
+      "start": 260.87,
+      "end": 264.991,
+      "confidence": 0.6616,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "so I punished what I couldn't fix and swallowed it again."
+    },
+    {
+      "index": 55,
+      "start": 265.111,
+      "end": 269.032,
+      "confidence": 0.7826,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I wanted out of my body, not a story I could tell."
+    },
+    {
+      "index": 56,
+      "start": 269.393,
+      "end": 274.334,
+      "confidence": 0.6583,
+      "anchor_coverage": 0.9091,
+      "needs_review": false,
+      "text": "I kept taking what could numb me and then hated myself."
+    },
+    {
+      "index": 57,
+      "start": 275.895,
+      "end": 282.997,
+      "confidence": 0.7099,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I never called it overdose; I called it getting through."
+    },
+    {
+      "index": 58,
+      "start": 284.429,
+      "end": 290.977,
+      "confidence": 0.64,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I didn't know what was wrong with me. I only knew what pills could do."
+    },
+    {
+      "index": 59,
+      "start": 291.462,
+      "end": 295.224,
+      "confidence": 0.7361,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I don't call it good, and I don't call it bad."
+    },
+    {
+      "index": 60,
+      "start": 295.364,
+      "end": 299.546,
+      "confidence": 0.8573,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "It held some of the worst and the best that I had."
+    },
+    {
+      "index": 61,
+      "start": 299.626,
+      "end": 303.829,
+      "confidence": 0.8319,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "Now when I remember, I can't make it clean."
+    },
+    {
+      "index": 62,
+      "start": 303.949,
+      "end": 308.071,
+      "confidence": 0.8442,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I hated those years, but I still miss sixteen."
+    },
+    {
+      "index": 63,
+      "start": 308.091,
+      "end": 312.133,
+      "confidence": 0.63,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "Newark is traffic I pass on the way,"
+    },
+    {
+      "index": 64,
+      "start": 312.533,
+      "end": 316.436,
+      "confidence": 0.7062,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "but part of me stays in that bedroom some days."
+    },
+    {
+      "index": 65,
+      "start": 316.956,
+      "end": 320.578,
+      "confidence": 0.7557,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I know what it cost me; I know what it meant."
+    },
+    {
+      "index": 66,
+      "start": 321.178,
+      "end": 325.82,
+      "confidence": 0.6122,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I grew without knowing which direction I went."
+    },
+    {
+      "index": 67,
+      "start": 326.16,
+      "end": 329.781,
+      "confidence": 0.6609,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I WASN'T CHASING A STORY TO TELL!"
+    },
+    {
+      "index": 68,
+      "start": 330.421,
+      "end": 334.022,
+      "confidence": 0.7284,
+      "anchor_coverage": 0.7143,
+      "needs_review": false,
+      "text": "I WAS SIXTEEN AND NOT DOING WELL!"
+    },
+    {
+      "index": 69,
+      "start": 334.682,
+      "end": 338.184,
+      "confidence": 0.6459,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I WASN'T BRAVE, AND I WASN'T FREE!"
+    },
+    {
+      "index": 70,
+      "start": 338.484,
+      "end": 342.50870000000003,
+      "confidence": 0.6001,
+      "anchor_coverage": 0.9,
+      "needs_review": false,
+      "text": "I TOOK WHAT I COULD TO GET AWAY FROM ME!"
+    },
+    {
+      "index": 71,
+      "start": 342.685,
+      "end": 346.927,
+      "confidence": 0.6182,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "THE CITY MOVED ON WHILE I STAYED IN THAT ROOM!"
+    },
+    {
+      "index": 72,
+      "start": 347.007,
+      "end": 351.2445,
+      "confidence": 0.6033,
+      "anchor_coverage": 0.875,
+      "needs_review": false,
+      "text": "I KEPT THE BLINDS CLOSED UNTIL AFTER NOON!"
+    },
+    {
+      "index": 73,
+      "start": 351.229,
+      "end": 354.99339999999995,
+      "confidence": 0.7324,
+      "anchor_coverage": 0.9,
+      "needs_review": false,
+      "text": "I THOUGHT I HAD TIME, SO I WASTED IT NUMB!"
+    },
+    {
+      "index": 74,
+      "start": 355.131,
+      "end": 359.1412,
+      "confidence": 0.6076,
+      "anchor_coverage": 0.8889,
+      "needs_review": false,
+      "text": "BY THE TIME I LOOKED UP, SEVENTEEN WAS DONE!"
+    },
+    {
+      "index": 75,
+      "start": 359.253,
+      "end": 363.416,
+      "confidence": 0.6685,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I took pill after pill just to quiet my head,"
+    },
+    {
+      "index": 76,
+      "start": 363.636,
+      "end": 367.638,
+      "confidence": 0.6144,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "then smoked by the window and stayed in my bed."
+    },
+    {
+      "index": 77,
+      "start": 367.858,
+      "end": 372,
+      "confidence": 0.5935,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "Dropped acid alone while the ceiling turned strange"
+    },
+    {
+      "index": 78,
+      "start": 372.44,
+      "end": 376.306,
+      "confidence": 0.6415,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "and waited for something inside me to change."
+    },
+    {
+      "index": 79,
+      "start": 376.75735,
+      "end": 381.414,
+      "confidence": 0.8769,
+      "anchor_coverage": 0.9,
+      "needs_review": false,
+      "text": "At sixteen, I thought I had years left to lose."
+    },
+    {
+      "index": 80,
+      "start": 381.494,
+      "end": 385.72,
+      "confidence": 0.8213,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "At seventeen, I had habits to choose."
+    },
+    {
+      "index": 81,
+      "start": 385.86,
+      "end": 389.866,
+      "confidence": 0.8075,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "I don't miss the fear or the things I went through,"
+    },
+    {
+      "index": 82,
+      "start": 390.086,
+      "end": 394.092,
+      "confidence": 0.8784,
+      "anchor_coverage": 1,
+      "needs_review": false,
+      "text": "but I miss that old room more than I want to."
+    },
+    {
+      "index": 83,
+      "start": 394.112,
+      "end": 398.8932045454546,
+      "confidence": 0.6828,
+      "anchor_coverage": 0.7143,
+      "needs_review": false,
+      "text": "I remember the feeling, warm but uneasy,"
+    },
+    {
+      "index": 84,
+      "start": 398.8454772727273,
+      "end": 398.91593181818183,
+      "confidence": 0,
+      "anchor_coverage": 0,
+      "needs_review": true,
+      "text": "a new home, a new city, a life in between."
+    },
+    {
+      "index": 85,
+      "start": 398.86820454545455,
+      "end": 398.93638636363636,
+      "confidence": 0,
+      "anchor_coverage": 0,
+      "needs_review": true,
+      "text": "I don't miss that bedroom, at least not completely,"
+    },
+    {
+      "index": 86,
+      "start": 398.88638636363635,
+      "end": 402.32000000000005,
+      "confidence": 0.558,
+      "anchor_coverage": 0.1,
+      "needs_review": true,
+      "text": "but sometimes I miss what it meant to be sixteen."
+    }
+  ]
+}
