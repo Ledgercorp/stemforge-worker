@@ -1,0 +1,175 @@
+name: StemForge Direct Balanced Master
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "direct_balanced_requests/**/*.json"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: stemforge-direct-balanced-master
+  cancel-in-progress: false
+
+jobs:
+  master-and-fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Publish started manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^direct_balanced_requests/.+\.json$' | head -n 1)"
+          NAME="$(basename "$REQUEST" .json)"
+          MANIFEST="$(jq -n --arg request "$NAME" --argjson run_id "$GITHUB_RUN_ID" --arg commit "$GITHUB_SHA" '{request:$request,artifact_name:"sweet-sixteen-runpod-v202-balanced-final",run_id:$run_id,commit:$commit,status:"started"}')"
+          ENCODED="$(printf '%s' "$MANIFEST" | base64 -w0)"
+          gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/v2_artifact_manifests/${NAME}-started.json" \
+            -f message="Start final RunPod balanced master [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
+
+      - name: Render and retrieve balanced master from one worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^direct_balanced_requests/.+\.json$' | head -n 1)"
+          mkdir -p fetched_output
+
+          submit_job() {
+            local payload_file="$1"
+            local submit_file="$2"
+            curl -sS --max-time 120 \
+              -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload_file}" > "$submit_file"
+            jq -e '.id' "$submit_file" >/dev/null
+          }
+
+          poll_job() {
+            local job_id="$1"
+            local response_file="$2"
+            for attempt in $(seq 1 900); do
+              curl -sS --max-time 120 \
+                "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${job_id}" \
+                -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$response_file"
+              state="$(jq -r '.status // empty' "$response_file")"
+              case "$state" in
+                COMPLETED)
+                  jq -e '.output.status == "completed"' "$response_file" >/dev/null
+                  return 0
+                  ;;
+                FAILED|TIMED_OUT|CANCELLED)
+                  cat "$response_file" >&2
+                  exit 1
+                  ;;
+              esac
+              sleep 1
+            done
+            exit 1
+          }
+
+          call_job() {
+            local payload_file="$1"
+            local response_file="$2"
+            local submit_file
+            submit_file="$(mktemp)"
+            submit_job "$payload_file" "$submit_file"
+            local job_id
+            job_id="$(jq -r '.id' "$submit_file")"
+            rm -f "$submit_file"
+            poll_job "$job_id" "$response_file"
+          }
+
+          MASTER_SUBMIT="$(mktemp)"
+          MASTER_RESULT="fetched_output/RunPod_Master_Result.json"
+          submit_job "$REQUEST" "$MASTER_SUBMIT"
+          MASTER_JOB_ID="$(jq -r '.id' "$MASTER_SUBMIT")"
+          rm -f "$MASTER_SUBMIT"
+          poll_job "$MASTER_JOB_ID" "$MASTER_RESULT"
+          test "$(jq -r '.output.stemforge_version' "$MASTER_RESULT")" = "2.0.2"
+          test "$(jq -r '.output.candidates[0].profile' "$MASTER_RESULT")" = "balanced"
+          MASTER_WORKER="$(jq -r '.workerId // empty' "$MASTER_RESULT")"
+          printf 'master_job_id=%s\nmaster_worker_id=%s\n' "$MASTER_JOB_ID" "$MASTER_WORKER" > fetched_output/RunPod_Execution.txt
+          : > fetched_output/SHA256SUMS.txt
+
+          fetch_volume_file() {
+            local remote_path="$1"
+            local filename="$2"
+            local target="fetched_output/$filename"
+            local info_payload info_response
+            info_payload="$(mktemp)"
+            info_response="$(mktemp)"
+            jq -n --arg path "$remote_path" '{input:{action:"volume_file_info",path:$path}}' > "$info_payload"
+            call_job "$info_payload" "$info_response"
+            local worker
+            worker="$(jq -r '.workerId // empty' "$info_response")"
+            test -z "$MASTER_WORKER" || test -z "$worker" || test "$worker" = "$MASTER_WORKER"
+            local size expected_sha
+            size="$(jq -r '.output.size_bytes' "$info_response")"
+            expected_sha="$(jq -r '.output.sha256' "$info_response")"
+            : > "$target"
+            local offset=0
+            while [ "$offset" -lt "$size" ]; do
+              local payload response read chunk_worker
+              payload="$(mktemp)"
+              response="$(mktemp)"
+              jq -n --arg path "$remote_path" --argjson offset "$offset" --argjson length 5000000 \
+                '{input:{action:"volume_file_chunk",path:$path,offset:$offset,length:$length}}' > "$payload"
+              call_job "$payload" "$response"
+              chunk_worker="$(jq -r '.workerId // empty' "$response")"
+              test -z "$MASTER_WORKER" || test -z "$chunk_worker" || test "$chunk_worker" = "$MASTER_WORKER"
+              jq -r '.output.data_base64' "$response" | base64 --decode >> "$target"
+              read="$(jq -r '.output.bytes_read' "$response")"
+              test "$read" -gt 0
+              offset=$((offset + read))
+              echo "$filename: $offset / $size bytes"
+              rm -f "$payload" "$response"
+            done
+            local actual_sha actual_size
+            actual_sha="$(sha256sum "$target" | awk '{print $1}')"
+            actual_size="$(stat -c '%s' "$target")"
+            test "$actual_sha" = "$expected_sha"
+            test "$actual_size" = "$size"
+            printf '%s  %s\n' "$actual_sha" "$filename" >> fetched_output/SHA256SUMS.txt
+            rm -f "$info_payload" "$info_response"
+          }
+
+          MASTER_REMOTE="$(jq -r '.output.candidates[0].output.volume_path' "$MASTER_RESULT")"
+          REPORT_REMOTE="$(jq -r '.output.report_output.volume_path' "$MASTER_RESULT")"
+          fetch_volume_file "$MASTER_REMOTE" "Sweet_Sixteen_RunPod_v2.0.2_Balanced.wav"
+          fetch_volume_file "$REPORT_REMOTE" "Sweet_Sixteen_RunPod_v2.0.2_Mastering_Report.json"
+
+      - name: Upload untouched RunPod balanced WAV
+        uses: actions/upload-artifact@v4
+        with:
+          name: sweet-sixteen-runpod-v202-balanced-final
+          path: fetched_output/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Publish completion manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^direct_balanced_requests/.+\.json$' | head -n 1)"
+          NAME="$(basename "$REQUEST" .json)"
+          MANIFEST="$(jq -n --arg request "$NAME" --argjson run_id "$GITHUB_RUN_ID" --arg commit "$GITHUB_SHA" '{request:$request,artifact_name:"sweet-sixteen-runpod-v202-balanced-final",run_id:$run_id,commit:$commit,status:"completed"}')"
+          ENCODED="$(printf '%s' "$MANIFEST" | base64 -w0)"
+          gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/v2_artifact_manifests/${NAME}-completed.json" \
+            -f message="Complete final RunPod balanced master [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
