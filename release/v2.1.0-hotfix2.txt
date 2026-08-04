@@ -1,0 +1,2 @@
+StemForge v2.1.0 Hotfix 2
+NumPy-safe JSON serialization with explicit live build marker.
