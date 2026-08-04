@@ -1,0 +1,1544 @@
+{
+  "delayTime": 27573,
+  "executionTime": 80574,
+  "id": "bf306ea5-032c-4780-ae0f-f8bfa8ed0524-u1",
+  "output": {
+    "action": "master_audio",
+    "approval_required": true,
+    "artist": "sounddecay",
+    "candidates": [
+      {
+        "chain": {
+          "attack_ms": 35,
+          "ceiling_dbfs": -1,
+          "gain_db": 0.438,
+          "limiter_reduction_db": 0,
+          "measured_lufs": -14.438,
+          "ratio": 1.35,
+          "release_ms": 240,
+          "target_lufs": -14,
+          "threshold_db": -10,
+          "width": 0.99
+        },
+        "local_path": "/tmp/stemforge_mastering_v2/Sweet_Sixteen_RunPod_v2.0.1_dynamic_master.wav",
+        "metrics": {
+          "channels": 2,
+          "clipped_sample_count": 0,
+          "crest_factor_db": 12.45,
+          "dc_offset": [
+            -3.5E-7,
+            -1.8E-7
+          ],
+          "duration_seconds": 399.24,
+          "integrated_lufs": -14,
+          "rms_dbfs": -16.403,
+          "sample_peak_dbfs": -3.953,
+          "sample_rate": 48000,
+          "silence_regions": [
+            {
+              "end_seconds": 1,
+              "start_seconds": 0.05
+            }
+          ],
+          "spectral_energy_distribution": {
+            "air": 0.0038509,
+            "bass": 0.3811698,
+            "high": 0.0248182,
+            "low_mid": 0.0916172,
+            "mid": 0.1368448,
+            "presence": 0.0483688,
+            "sub": 0.2949524
+          },
+          "stereo_correlation": 0.869951,
+          "timeline_10s": [
+            {
+              "crest_factor_db": 15.895,
+              "end_seconds": 10,
+              "peak_dbfs": -5.831,
+              "rms_dbfs": -21.726,
+              "start_seconds": 0,
+              "stereo_correlation": 0.83064
+            },
+            {
+              "crest_factor_db": 15.518,
+              "end_seconds": 20,
+              "peak_dbfs": -5.688,
+              "rms_dbfs": -21.206,
+              "start_seconds": 10,
+              "stereo_correlation": 0.92102
+            },
+            {
+              "crest_factor_db": 15.1,
+              "end_seconds": 30,
+              "peak_dbfs": -5.198,
+              "rms_dbfs": -20.298,
+              "start_seconds": 20,
+              "stereo_correlation": 0.7412
+            },
+            {
+              "crest_factor_db": 13.702,
+              "end_seconds": 40,
+              "peak_dbfs": -4.814,
+              "rms_dbfs": -18.517,
+              "start_seconds": 30,
+              "stereo_correlation": 0.72784
+            },
+            {
+              "crest_factor_db": 13.272,
+              "end_seconds": 50,
+              "peak_dbfs": -5.425,
+              "rms_dbfs": -18.698,
+              "start_seconds": 40,
+              "stereo_correlation": 0.85464
+            },
+            {
+              "crest_factor_db": 12.779,
+              "end_seconds": 60,
+              "peak_dbfs": -5.101,
+              "rms_dbfs": -17.88,
+              "start_seconds": 50,
+              "stereo_correlation": 0.85866
+            },
+            {
+              "crest_factor_db": 12.142,
+              "end_seconds": 70,
+              "peak_dbfs": -5.014,
+              "rms_dbfs": -17.156,
+              "start_seconds": 60,
+              "stereo_correlation": 0.8831
+            },
+            {
+              "crest_factor_db": 11.426,
+              "end_seconds": 80,
+              "peak_dbfs": -5.216,
+              "rms_dbfs": -16.642,
+              "start_seconds": 70,
+              "stereo_correlation": 0.80669
+            },
+            {
+              "crest_factor_db": 11.005,
+              "end_seconds": 90,
+              "peak_dbfs": -5.374,
+              "rms_dbfs": -16.379,
+              "start_seconds": 80,
+              "stereo_correlation": 0.85174
+            },
+            {
+              "crest_factor_db": 11.086,
+              "end_seconds": 100,
+              "peak_dbfs": -5.323,
+              "rms_dbfs": -16.409,
+              "start_seconds": 90,
+              "stereo_correlation": 0.88068
+            },
+            {
+              "crest_factor_db": 10.613,
+              "end_seconds": 110,
+              "peak_dbfs": -5.276,
+              "rms_dbfs": -15.889,
+              "start_seconds": 100,
+              "stereo_correlation": 0.8739
+            },
+            {
+              "crest_factor_db": 10.905,
+              "end_seconds": 120,
+              "peak_dbfs": -5.068,
+              "rms_dbfs": -15.973,
+              "start_seconds": 110,
+              "stereo_correlation": 0.80807
+            },
+            {
+              "crest_factor_db": 11.233,
+              "end_seconds": 130,
+              "peak_dbfs": -5.092,
+              "rms_dbfs": -16.325,
+              "start_seconds": 120,
+              "stereo_correlation": 0.87615
+            },
+            {
+              "crest_factor_db": 13.469,
+              "end_seconds": 140,
+              "peak_dbfs": -4.982,
+              "rms_dbfs": -18.452,
+              "start_seconds": 130,
+              "stereo_correlation": 0.91121
+            },
+            {
+              "crest_factor_db": 12.708,
+              "end_seconds": 150,
+              "peak_dbfs": -4.889,
+              "rms_dbfs": -17.597,
+              "start_seconds": 140,
+              "stereo_correlation": 0.92026
+            },
+            {
+              "crest_factor_db": 11.004,
+              "end_seconds": 160,
+              "peak_dbfs": -4.767,
+              "rms_dbfs": -15.771,
+              "start_seconds": 150,
+              "stereo_correlation": 0.87456
+            },
+            {
+              "crest_factor_db": 11.238,
+              "end_seconds": 170,
+              "peak_dbfs": -4.736,
+              "rms_dbfs": -15.975,
+              "start_seconds": 160,
+              "stereo_correlation": 0.85417
+            },
+            {
+              "crest_factor_db": 10.853,
+              "end_seconds": 180,
+              "peak_dbfs": -5.661,
+              "rms_dbfs": -16.514,
+              "start_seconds": 170,
+              "stereo_correlation": 0.79283
+            },
+            {
+              "crest_factor_db": 10.593,
+              "end_seconds": 190,
+              "peak_dbfs": -4.87,
+              "rms_dbfs": -15.463,
+              "start_seconds": 180,
+              "stereo_correlation": 0.90876
+            },
+            {
+              "crest_factor_db": 10.783,
+              "end_seconds": 200,
+              "peak_dbfs": -4.531,
+              "rms_dbfs": -15.315,
+              "start_seconds": 190,
+              "stereo_correlation": 0.8959
+            },
+            {
+              "crest_factor_db": 10.725,
+              "end_seconds": 210,
+              "peak_dbfs": -4.308,
+              "rms_dbfs": -15.033,
+              "start_seconds": 200,
+              "stereo_correlation": 0.8485
+            },
+            {
+              "crest_factor_db": 10.654,
+              "end_seconds": 220,
+              "peak_dbfs": -4.317,
+              "rms_dbfs": -14.971,
+              "start_seconds": 210,
+              "stereo_correlation": 0.86738
+            },
+            {
+              "crest_factor_db": 13.373,
+              "end_seconds": 230,
+              "peak_dbfs": -4.778,
+              "rms_dbfs": -18.151,
+              "start_seconds": 220,
+              "stereo_correlation": 0.73045
+            },
+            {
+              "crest_factor_db": 14.598,
+              "end_seconds": 240,
+              "peak_dbfs": -4.629,
+              "rms_dbfs": -19.228,
+              "start_seconds": 230,
+              "stereo_correlation": 0.75491
+            },
+            {
+              "crest_factor_db": 12.413,
+              "end_seconds": 250,
+              "peak_dbfs": -3.953,
+              "rms_dbfs": -16.366,
+              "start_seconds": 240,
+              "stereo_correlation": 0.91967
+            },
+            {
+              "crest_factor_db": 11.466,
+              "end_seconds": 260,
+              "peak_dbfs": -4.193,
+              "rms_dbfs": -15.659,
+              "start_seconds": 250,
+              "stereo_correlation": 0.92183
+            },
+            {
+              "crest_factor_db": 10.095,
+              "end_seconds": 270,
+              "peak_dbfs": -4.161,
+              "rms_dbfs": -14.256,
+              "start_seconds": 260,
+              "stereo_correlation": 0.89687
+            },
+            {
+              "crest_factor_db": 10.838,
+              "end_seconds": 280,
+              "peak_dbfs": -4.249,
+              "rms_dbfs": -15.087,
+              "start_seconds": 270,
+              "stereo_correlation": 0.92165
+            },
+            {
+              "crest_factor_db": 10.277,
+              "end_seconds": 290,
+              "peak_dbfs": -4.079,
+              "rms_dbfs": -14.356,
+              "start_seconds": 280,
+              "stereo_correlation": 0.93167
+            },
+            {
+              "crest_factor_db": 12.106,
+              "end_seconds": 300,
+              "peak_dbfs": -4.728,
+              "rms_dbfs": -16.835,
+              "start_seconds": 290,
+              "stereo_correlation": 0.50178
+            },
+            {
+              "crest_factor_db": 12.516,
+              "end_seconds": 310,
+              "peak_dbfs": -5.385,
+              "rms_dbfs": -17.901,
+              "start_seconds": 300,
+              "stereo_correlation": 0.62656
+            },
+            {
+              "crest_factor_db": 9.914,
+              "end_seconds": 320,
+              "peak_dbfs": -5.42,
+              "rms_dbfs": -15.334,
+              "start_seconds": 310,
+              "stereo_correlation": 0.95092
+            },
+            {
+              "crest_factor_db": 11.152,
+              "end_seconds": 330,
+              "peak_dbfs": -4.571,
+              "rms_dbfs": -15.723,
+              "start_seconds": 320,
+              "stereo_correlation": 0.94667
+            },
+            {
+              "crest_factor_db": 10.719,
+              "end_seconds": 340,
+              "peak_dbfs": -4.611,
+              "rms_dbfs": -15.33,
+              "start_seconds": 330,
+              "stereo_correlation": 0.95322
+            },
+            {
+              "crest_factor_db": 10.743,
+              "end_seconds": 350,
+              "peak_dbfs": -4.029,
+              "rms_dbfs": -14.772,
+              "start_seconds": 340,
+              "stereo_correlation": 0.93651
+            },
+            {
+              "crest_factor_db": 10.161,
+              "end_seconds": 360,
+              "peak_dbfs": -4.555,
+              "rms_dbfs": -14.716,
+              "start_seconds": 350,
+              "stereo_correlation": 0.94389
+            },
+            {
+              "crest_factor_db": 9.677,
+              "end_seconds": 370,
+              "peak_dbfs": -4.814,
+              "rms_dbfs": -14.491,
+              "start_seconds": 360,
+              "stereo_correlation": 0.942
+            },
+            {
+              "crest_factor_db": 10.758,
+              "end_seconds": 380,
+              "peak_dbfs": -4.814,
+              "rms_dbfs": -15.573,
+              "start_seconds": 370,
+              "stereo_correlation": 0.91496
+            },
+            {
+              "crest_factor_db": 12.587,
+              "end_seconds": 390,
+              "peak_dbfs": -6.863,
+              "rms_dbfs": -19.45,
+              "start_seconds": 380,
+              "stereo_correlation": 0.64647
+            },
+            {
+              "crest_factor_db": 13.299,
+              "end_seconds": 399.24,
+              "peak_dbfs": -5.661,
+              "rms_dbfs": -18.96,
+              "start_seconds": 390,
+              "stereo_correlation": 0.92387
+            }
+          ],
+          "transient_density_per_second": 15.20639,
+          "true_peak_dbtp": -3.944,
+          "waveform_discontinuity_count": 0
+        },
+        "output": {
+          "download_url": null,
+          "filename": "Sweet_Sixteen_RunPod_v2.0.1_dynamic_master.wav",
+          "local_path": "/tmp/stemforge_mastering_v2/Sweet_Sixteen_RunPod_v2.0.1_dynamic_master.wav",
+          "size_bytes": 114981164,
+          "storage_note": "S3-compatible output storage is not configured."
+        },
+        "profile": "dynamic",
+        "safety": {
+          "accepted": true,
+          "crest_change_db": 0.058,
+          "reasons": [],
+          "stereo_correlation_change": 0.00058
+        }
+      },
+      {
+        "chain": {
+          "attack_ms": 25,
+          "ceiling_dbfs": -1,
+          "gain_db": 2.804,
+          "limiter_reduction_db": 0,
+          "measured_lufs": -15.304,
+          "ratio": 1.8,
+          "release_ms": 190,
+          "target_lufs": -12.5,
+          "threshold_db": -14,
+          "width": 0.98
+        },
+        "local_path": "/tmp/stemforge_mastering_v2/Sweet_Sixteen_RunPod_v2.0.1_balanced_master.wav",
+        "metrics": {
+          "channels": 2,
+          "clipped_sample_count": 0,
+          "crest_factor_db": 13.043,
+          "dc_offset": [
+            -0.00000346,
+            -0.00000337
+          ],
+          "duration_seconds": 399.24,
+          "integrated_lufs": -12.5,
+          "rms_dbfs": -14.937,
+          "sample_peak_dbfs": -1.894,
+          "sample_rate": 48000,
+          "silence_regions": [
+            {
+              "end_seconds": 0.95,
+              "start_seconds": 0.05
+            }
+          ],
+          "spectral_energy_distribution": {
+            "air": 0.0040186,
+            "bass": 0.3847517,
+            "high": 0.0258381,
+            "low_mid": 0.0960627,
+            "mid": 0.1391558,
+            "presence": 0.0492246,
+            "sub": 0.2835334
+          },
+          "stereo_correlation": 0.868639,
+          "timeline_10s": [
+            {
+              "crest_factor_db": 15.838,
+              "end_seconds": 10,
+              "peak_dbfs": -3.67,
+              "rms_dbfs": -19.508,
+              "start_seconds": 0,
+              "stereo_correlation": 0.83303
+            },
+            {
+              "crest_factor_db": 15.424,
+              "end_seconds": 20,
+              "peak_dbfs": -3.548,
+              "rms_dbfs": -18.973,
+              "start_seconds": 10,
+              "stereo_correlation": 0.92293
+            },
+            {
+              "crest_factor_db": 15.302,
+              "end_seconds": 30,
+              "peak_dbfs": -3.026,
+              "rms_dbfs": -18.329,
+              "start_seconds": 20,
+              "stereo_correlation": 0.74512
+            },
+            {
+              "crest_factor_db": 13.579,
+              "end_seconds": 40,
+              "peak_dbfs": -3.025,
+              "rms_dbfs": -16.604,
+              "start_seconds": 30,
+              "stereo_correlation": 0.72708
+            },
+            {
+              "crest_factor_db": 13.158,
+              "end_seconds": 50,
+              "peak_dbfs": -3.591,
+              "rms_dbfs": -16.749,
+              "start_seconds": 40,
+              "stereo_correlation": 0.85626
+            },
+            {
+              "crest_factor_db": 12.925,
+              "end_seconds": 60,
+              "peak_dbfs": -3.111,
+              "rms_dbfs": -16.035,
+              "start_seconds": 50,
+              "stereo_correlation": 0.86008
+            },
+            {
+              "crest_factor_db": 12.292,
+              "end_seconds": 70,
+              "peak_dbfs": -3.139,
+              "rms_dbfs": -15.432,
+              "start_seconds": 60,
+              "stereo_correlation": 0.88474
+            },
+            {
+              "crest_factor_db": 11.466,
+              "end_seconds": 80,
+              "peak_dbfs": -3.551,
+              "rms_dbfs": -15.017,
+              "start_seconds": 70,
+              "stereo_correlation": 0.80896
+            },
+            {
+              "crest_factor_db": 11.092,
+              "end_seconds": 90,
+              "peak_dbfs": -3.701,
+              "rms_dbfs": -14.793,
+              "start_seconds": 80,
+              "stereo_correlation": 0.85288
+            },
+            {
+              "crest_factor_db": 11.187,
+              "end_seconds": 100,
+              "peak_dbfs": -3.658,
+              "rms_dbfs": -14.845,
+              "start_seconds": 90,
+              "stereo_correlation": 0.88267
+            },
+            {
+              "crest_factor_db": 10.619,
+              "end_seconds": 110,
+              "peak_dbfs": -3.792,
+              "rms_dbfs": -14.412,
+              "start_seconds": 100,
+              "stereo_correlation": 0.87535
+            },
+            {
+              "crest_factor_db": 10.959,
+              "end_seconds": 120,
+              "peak_dbfs": -3.532,
+              "rms_dbfs": -14.491,
+              "start_seconds": 110,
+              "stereo_correlation": 0.81113
+            },
+            {
+              "crest_factor_db": 11.336,
+              "end_seconds": 130,
+              "peak_dbfs": -3.501,
+              "rms_dbfs": -14.837,
+              "start_seconds": 120,
+              "stereo_correlation": 0.87822
+            },
+            {
+              "crest_factor_db": 13.89,
+              "end_seconds": 140,
+              "peak_dbfs": -2.817,
+              "rms_dbfs": -16.707,
+              "start_seconds": 130,
+              "stereo_correlation": 0.91423
+            },
+            {
+              "crest_factor_db": 13.117,
+              "end_seconds": 150,
+              "peak_dbfs": -2.828,
+              "rms_dbfs": -15.945,
+              "start_seconds": 140,
+              "stereo_correlation": 0.92168
+            },
+            {
+              "crest_factor_db": 11.104,
+              "end_seconds": 160,
+              "peak_dbfs": -3.242,
+              "rms_dbfs": -14.347,
+              "start_seconds": 150,
+              "stereo_correlation": 0.87577
+            },
+            {
+              "crest_factor_db": 11.285,
+              "end_seconds": 170,
+              "peak_dbfs": -3.23,
+              "rms_dbfs": -14.515,
+              "start_seconds": 160,
+              "stereo_correlation": 0.85435
+            },
+            {
+              "crest_factor_db": 10.779,
+              "end_seconds": 180,
+              "peak_dbfs": -4.142,
+              "rms_dbfs": -14.921,
+              "start_seconds": 170,
+              "stereo_correlation": 0.79456
+            },
+            {
+              "crest_factor_db": 10.805,
+              "end_seconds": 190,
+              "peak_dbfs": -3.303,
+              "rms_dbfs": -14.108,
+              "start_seconds": 180,
+              "stereo_correlation": 0.90974
+            },
+            {
+              "crest_factor_db": 10.936,
+              "end_seconds": 200,
+              "peak_dbfs": -3.031,
+              "rms_dbfs": -13.967,
+              "start_seconds": 190,
+              "stereo_correlation": 0.89667
+            },
+            {
+              "crest_factor_db": 11.046,
+              "end_seconds": 210,
+              "peak_dbfs": -2.714,
+              "rms_dbfs": -13.761,
+              "start_seconds": 200,
+              "stereo_correlation": 0.84999
+            },
+            {
+              "crest_factor_db": 10.862,
+              "end_seconds": 220,
+              "peak_dbfs": -2.848,
+              "rms_dbfs": -13.71,
+              "start_seconds": 210,
+              "stereo_correlation": 0.86834
+            },
+            {
+              "crest_factor_db": 13.879,
+              "end_seconds": 230,
+              "peak_dbfs": -2.737,
+              "rms_dbfs": -16.616,
+              "start_seconds": 220,
+              "stereo_correlation": 0.73451
+            },
+            {
+              "crest_factor_db": 14.935,
+              "end_seconds": 240,
+              "peak_dbfs": -2.514,
+              "rms_dbfs": -17.449,
+              "start_seconds": 230,
+              "stereo_correlation": 0.76521
+            },
+            {
+              "crest_factor_db": 13.029,
+              "end_seconds": 250,
+              "peak_dbfs": -1.894,
+              "rms_dbfs": -14.923,
+              "start_seconds": 240,
+              "stereo_correlation": 0.92259
+            },
+            {
+              "crest_factor_db": 11.9,
+              "end_seconds": 260,
+              "peak_dbfs": -2.414,
+              "rms_dbfs": -14.314,
+              "start_seconds": 250,
+              "stereo_correlation": 0.92418
+            },
+            {
+              "crest_factor_db": 10.121,
+              "end_seconds": 270,
+              "peak_dbfs": -3.03,
+              "rms_dbfs": -13.151,
+              "start_seconds": 260,
+              "stereo_correlation": 0.89748
+            },
+            {
+              "crest_factor_db": 11.537,
+              "end_seconds": 280,
+              "peak_dbfs": -2.307,
+              "rms_dbfs": -13.843,
+              "start_seconds": 270,
+              "stereo_correlation": 0.92441
+            },
+            {
+              "crest_factor_db": 11.3,
+              "end_seconds": 290,
+              "peak_dbfs": -1.955,
+              "rms_dbfs": -13.255,
+              "start_seconds": 280,
+              "stereo_correlation": 0.93319
+            },
+            {
+              "crest_factor_db": 11.623,
+              "end_seconds": 300,
+              "peak_dbfs": -3.678,
+              "rms_dbfs": -15.301,
+              "start_seconds": 290,
+              "stereo_correlation": 0.49117
+            },
+            {
+              "crest_factor_db": 12.67,
+              "end_seconds": 310,
+              "peak_dbfs": -3.431,
+              "rms_dbfs": -16.101,
+              "start_seconds": 300,
+              "stereo_correlation": 0.62125
+            },
+            {
+              "crest_factor_db": 9.983,
+              "end_seconds": 320,
+              "peak_dbfs": -3.965,
+              "rms_dbfs": -13.948,
+              "start_seconds": 310,
+              "stereo_correlation": 0.95125
+            },
+            {
+              "crest_factor_db": 11.572,
+              "end_seconds": 330,
+              "peak_dbfs": -2.724,
+              "rms_dbfs": -14.296,
+              "start_seconds": 320,
+              "stereo_correlation": 0.94775
+            },
+            {
+              "crest_factor_db": 10.796,
+              "end_seconds": 340,
+              "peak_dbfs": -3.169,
+              "rms_dbfs": -13.966,
+              "start_seconds": 330,
+              "stereo_correlation": 0.9542
+            },
+            {
+              "crest_factor_db": 10.814,
+              "end_seconds": 350,
+              "peak_dbfs": -2.69,
+              "rms_dbfs": -13.504,
+              "start_seconds": 340,
+              "stereo_correlation": 0.93764
+            },
+            {
+              "crest_factor_db": 10.148,
+              "end_seconds": 360,
+              "peak_dbfs": -3.298,
+              "rms_dbfs": -13.447,
+              "start_seconds": 350,
+              "stereo_correlation": 0.94489
+            },
+            {
+              "crest_factor_db": 9.652,
+              "end_seconds": 370,
+              "peak_dbfs": -3.61,
+              "rms_dbfs": -13.261,
+              "start_seconds": 360,
+              "stereo_correlation": 0.94285
+            },
+            {
+              "crest_factor_db": 10.675,
+              "end_seconds": 380,
+              "peak_dbfs": -3.564,
+              "rms_dbfs": -14.239,
+              "start_seconds": 370,
+              "stereo_correlation": 0.91239
+            },
+            {
+              "crest_factor_db": 12.809,
+              "end_seconds": 390,
+              "peak_dbfs": -4.569,
+              "rms_dbfs": -17.378,
+              "start_seconds": 380,
+              "stereo_correlation": 0.65039
+            },
+            {
+              "crest_factor_db": 13.652,
+              "end_seconds": 399.24,
+              "peak_dbfs": -3.356,
+              "rms_dbfs": -17.008,
+              "start_seconds": 390,
+              "stereo_correlation": 0.92288
+            }
+          ],
+          "transient_density_per_second": 15.19888,
+          "true_peak_dbtp": -1.884,
+          "waveform_discontinuity_count": 0
+        },
+        "output": {
+          "download_url": null,
+          "filename": "Sweet_Sixteen_RunPod_v2.0.1_balanced_master.wav",
+          "local_path": "/tmp/stemforge_mastering_v2/Sweet_Sixteen_RunPod_v2.0.1_balanced_master.wav",
+          "size_bytes": 114981164,
+          "storage_note": "S3-compatible output storage is not configured."
+        },
+        "profile": "balanced",
+        "safety": {
+          "accepted": true,
+          "crest_change_db": 0.651,
+          "reasons": [],
+          "stereo_correlation_change": -0.00073
+        }
+      },
+      {
+        "chain": {
+          "attack_ms": 18,
+          "ceiling_dbfs": -0.9,
+          "gain_db": 6.074,
+          "limiter_reduction_db": -1.559,
+          "measured_lufs": -16.874,
+          "ratio": 2.5,
+          "release_ms": 150,
+          "target_lufs": -10.8,
+          "threshold_db": -17,
+          "width": 0.96
+        },
+        "local_path": "/tmp/stemforge_mastering_v2/Sweet_Sixteen_RunPod_v2.0.1_dense_master.wav",
+        "metrics": {
+          "channels": 2,
+          "clipped_sample_count": 0,
+          "crest_factor_db": 13.95,
+          "dc_offset": [
+            -0.00000919,
+            -0.00000924
+          ],
+          "duration_seconds": 399.24,
+          "integrated_lufs": -12.359,
+          "rms_dbfs": -14.85,
+          "sample_peak_dbfs": -0.9,
+          "sample_rate": 48000,
+          "silence_regions": [
+            {
+              "end_seconds": 0.9,
+              "start_seconds": 0.05
+            }
+          ],
+          "spectral_energy_distribution": {
+            "air": 0.0042842,
+            "bass": 0.3878138,
+            "high": 0.0275396,
+            "low_mid": 0.1019858,
+            "mid": 0.1428461,
+            "presence": 0.0506563,
+            "sub": 0.2688717
+          },
+          "stereo_correlation": 0.869578,
+          "timeline_10s": [
+            {
+              "crest_factor_db": 15.914,
+              "end_seconds": 10,
+              "peak_dbfs": -2.577,
+              "rms_dbfs": -18.491,
+              "start_seconds": 0,
+              "stereo_correlation": 0.83751
+            },
+            {
+              "crest_factor_db": 15.249,
+              "end_seconds": 20,
+              "peak_dbfs": -2.61,
+              "rms_dbfs": -17.859,
+              "start_seconds": 10,
+              "stereo_correlation": 0.92703
+            },
+            {
+              "crest_factor_db": 15.626,
+              "end_seconds": 30,
+              "peak_dbfs": -1.943,
+              "rms_dbfs": -17.568,
+              "start_seconds": 20,
+              "stereo_correlation": 0.75289
+            },
+            {
+              "crest_factor_db": 13.62,
+              "end_seconds": 40,
+              "peak_dbfs": -2.463,
+              "rms_dbfs": -16.083,
+              "start_seconds": 30,
+              "stereo_correlation": 0.72718
+            },
+            {
+              "crest_factor_db": 13.249,
+              "end_seconds": 50,
+              "peak_dbfs": -2.912,
+              "rms_dbfs": -16.161,
+              "start_seconds": 40,
+              "stereo_correlation": 0.85896
+            },
+            {
+              "crest_factor_db": 13.179,
+              "end_seconds": 60,
+              "peak_dbfs": -2.426,
+              "rms_dbfs": -15.605,
+              "start_seconds": 50,
+              "stereo_correlation": 0.8631
+            },
+            {
+              "crest_factor_db": 12.435,
+              "end_seconds": 70,
+              "peak_dbfs": -2.705,
+              "rms_dbfs": -15.14,
+              "start_seconds": 60,
+              "stereo_correlation": 0.8878
+            },
+            {
+              "crest_factor_db": 11.628,
+              "end_seconds": 80,
+              "peak_dbfs": -3.242,
+              "rms_dbfs": -14.869,
+              "start_seconds": 70,
+              "stereo_correlation": 0.81365
+            },
+            {
+              "crest_factor_db": 11.338,
+              "end_seconds": 90,
+              "peak_dbfs": -3.339,
+              "rms_dbfs": -14.676,
+              "start_seconds": 80,
+              "stereo_correlation": 0.85562
+            },
+            {
+              "crest_factor_db": 12.167,
+              "end_seconds": 100,
+              "peak_dbfs": -2.552,
+              "rms_dbfs": -14.719,
+              "start_seconds": 90,
+              "stereo_correlation": 0.88658
+            },
+            {
+              "crest_factor_db": 10.819,
+              "end_seconds": 110,
+              "peak_dbfs": -3.567,
+              "rms_dbfs": -14.387,
+              "start_seconds": 100,
+              "stereo_correlation": 0.87829
+            },
+            {
+              "crest_factor_db": 11.035,
+              "end_seconds": 120,
+              "peak_dbfs": -3.437,
+              "rms_dbfs": -14.471,
+              "start_seconds": 110,
+              "stereo_correlation": 0.81711
+            },
+            {
+              "crest_factor_db": 11.4,
+              "end_seconds": 130,
+              "peak_dbfs": -3.352,
+              "rms_dbfs": -14.752,
+              "start_seconds": 120,
+              "stereo_correlation": 0.88289
+            },
+            {
+              "crest_factor_db": 14.66,
+              "end_seconds": 140,
+              "peak_dbfs": -1.571,
+              "rms_dbfs": -16.231,
+              "start_seconds": 130,
+              "stereo_correlation": 0.91882
+            },
+            {
+              "crest_factor_db": 13.959,
+              "end_seconds": 150,
+              "peak_dbfs": -1.65,
+              "rms_dbfs": -15.609,
+              "start_seconds": 140,
+              "stereo_correlation": 0.92347
+            },
+            {
+              "crest_factor_db": 11.11,
+              "end_seconds": 160,
+              "peak_dbfs": -3.239,
+              "rms_dbfs": -14.349,
+              "start_seconds": 150,
+              "stereo_correlation": 0.87872
+            },
+            {
+              "crest_factor_db": 11.473,
+              "end_seconds": 170,
+              "peak_dbfs": -3.013,
+              "rms_dbfs": -14.485,
+              "start_seconds": 160,
+              "stereo_correlation": 0.85624
+            },
+            {
+              "crest_factor_db": 10.787,
+              "end_seconds": 180,
+              "peak_dbfs": -4.025,
+              "rms_dbfs": -14.813,
+              "start_seconds": 170,
+              "stereo_correlation": 0.79995
+            },
+            {
+              "crest_factor_db": 11.165,
+              "end_seconds": 190,
+              "peak_dbfs": -2.993,
+              "rms_dbfs": -14.157,
+              "start_seconds": 180,
+              "stereo_correlation": 0.91152
+            },
+            {
+              "crest_factor_db": 11.093,
+              "end_seconds": 200,
+              "peak_dbfs": -2.949,
+              "rms_dbfs": -14.042,
+              "start_seconds": 190,
+              "stereo_correlation": 0.89843
+            },
+            {
+              "crest_factor_db": 11.444,
+              "end_seconds": 210,
+              "peak_dbfs": -2.464,
+              "rms_dbfs": -13.908,
+              "start_seconds": 200,
+              "stereo_correlation": 0.85382
+            },
+            {
+              "crest_factor_db": 11.137,
+              "end_seconds": 220,
+              "peak_dbfs": -2.735,
+              "rms_dbfs": -13.872,
+              "start_seconds": 210,
+              "stereo_correlation": 0.87047
+            },
+            {
+              "crest_factor_db": 14.967,
+              "end_seconds": 230,
+              "peak_dbfs": -1.356,
+              "rms_dbfs": -16.322,
+              "start_seconds": 220,
+              "stereo_correlation": 0.75505
+            },
+            {
+              "crest_factor_db": 15.352,
+              "end_seconds": 240,
+              "peak_dbfs": -1.571,
+              "rms_dbfs": -16.923,
+              "start_seconds": 230,
+              "stereo_correlation": 0.79006
+            },
+            {
+              "crest_factor_db": 13.858,
+              "end_seconds": 250,
+              "peak_dbfs": -0.962,
+              "rms_dbfs": -14.82,
+              "start_seconds": 240,
+              "stereo_correlation": 0.92601
+            },
+            {
+              "crest_factor_db": 12.904,
+              "end_seconds": 260,
+              "peak_dbfs": -1.41,
+              "rms_dbfs": -14.314,
+              "start_seconds": 250,
+              "stereo_correlation": 0.92747
+            },
+            {
+              "crest_factor_db": 10.155,
+              "end_seconds": 270,
+              "peak_dbfs": -3.283,
+              "rms_dbfs": -13.438,
+              "start_seconds": 260,
+              "stereo_correlation": 0.89955
+            },
+            {
+              "crest_factor_db": 12.482,
+              "end_seconds": 280,
+              "peak_dbfs": -1.477,
+              "rms_dbfs": -13.959,
+              "start_seconds": 270,
+              "stereo_correlation": 0.92778
+            },
+            {
+              "crest_factor_db": 12.611,
+              "end_seconds": 290,
+              "peak_dbfs": -0.9,
+              "rms_dbfs": -13.511,
+              "start_seconds": 280,
+              "stereo_correlation": 0.93509
+            },
+            {
+              "crest_factor_db": 11.383,
+              "end_seconds": 300,
+              "peak_dbfs": -3.805,
+              "rms_dbfs": -15.188,
+              "start_seconds": 290,
+              "stereo_correlation": 0.49478
+            },
+            {
+              "crest_factor_db": 12.785,
+              "end_seconds": 310,
+              "peak_dbfs": -2.954,
+              "rms_dbfs": -15.739,
+              "start_seconds": 300,
+              "stereo_correlation": 0.62203
+            },
+            {
+              "crest_factor_db": 10.149,
+              "end_seconds": 320,
+              "peak_dbfs": -3.833,
+              "rms_dbfs": -13.982,
+              "start_seconds": 310,
+              "stereo_correlation": 0.95186
+            },
+            {
+              "crest_factor_db": 12.705,
+              "end_seconds": 330,
+              "peak_dbfs": -1.563,
+              "rms_dbfs": -14.268,
+              "start_seconds": 320,
+              "stereo_correlation": 0.94947
+            },
+            {
+              "crest_factor_db": 11.794,
+              "end_seconds": 340,
+              "peak_dbfs": -2.211,
+              "rms_dbfs": -14.006,
+              "start_seconds": 330,
+              "stereo_correlation": 0.95587
+            },
+            {
+              "crest_factor_db": 11.443,
+              "end_seconds": 350,
+              "peak_dbfs": -2.213,
+              "rms_dbfs": -13.656,
+              "start_seconds": 340,
+              "stereo_correlation": 0.93964
+            },
+            {
+              "crest_factor_db": 10.804,
+              "end_seconds": 360,
+              "peak_dbfs": -2.8,
+              "rms_dbfs": -13.603,
+              "start_seconds": 350,
+              "stereo_correlation": 0.94658
+            },
+            {
+              "crest_factor_db": 9.722,
+              "end_seconds": 370,
+              "peak_dbfs": -3.74,
+              "rms_dbfs": -13.462,
+              "start_seconds": 360,
+              "stereo_correlation": 0.94453
+            },
+            {
+              "crest_factor_db": 10.58,
+              "end_seconds": 380,
+              "peak_dbfs": -3.706,
+              "rms_dbfs": -14.286,
+              "start_seconds": 370,
+              "stereo_correlation": 0.90995
+            },
+            {
+              "crest_factor_db": 13.413,
+              "end_seconds": 390,
+              "peak_dbfs": -3.252,
+              "rms_dbfs": -16.665,
+              "start_seconds": 380,
+              "stereo_correlation": 0.65797
+            },
+            {
+              "crest_factor_db": 14.517,
+              "end_seconds": 399.24,
+              "peak_dbfs": -1.856,
+              "rms_dbfs": -16.373,
+              "start_seconds": 390,
+              "stereo_correlation": 0.92359
+            }
+          ],
+          "transient_density_per_second": 15.20138,
+          "true_peak_dbtp": -0.837,
+          "waveform_discontinuity_count": 0
+        },
+        "output": {
+          "download_url": null,
+          "filename": "Sweet_Sixteen_RunPod_v2.0.1_dense_master.wav",
+          "local_path": "/tmp/stemforge_mastering_v2/Sweet_Sixteen_RunPod_v2.0.1_dense_master.wav",
+          "size_bytes": 114981164,
+          "storage_note": "S3-compatible output storage is not configured."
+        },
+        "profile": "dense",
+        "safety": {
+          "accepted": true,
+          "crest_change_db": 1.558,
+          "reasons": [],
+          "stereo_correlation_change": 0.00021
+        }
+      }
+    ],
+    "engine": "StemForge deterministic mastering candidate engine v2",
+    "honesty_note": "These are conservative DSP candidates, not a claim of human mastering judgment. Choose by level-matched listening after reviewing the safety checks.",
+    "memory_used": {
+      "approved_lyric_timings": {},
+      "artist": "sounddecay",
+      "feedback": [],
+      "preferences": {
+        "avoid_vocal_time_warping": true,
+        "metadata_policy": "clean audio export plus JSON sidecar",
+        "prefer_stereo_mix_as_coherence_anchor": true
+      },
+      "version": 1
+    },
+    "report_output": {
+      "download_url": null,
+      "filename": "mastering_report.json",
+      "local_path": "/tmp/stemforge_mastering_v2/mastering_report.json",
+      "size_bytes": 43481,
+      "storage_note": "S3-compatible output storage is not configured."
+    },
+    "song": "Sweet Sixteen RunPod v2.0.1",
+    "source_metrics": {
+      "channels": 2,
+      "clipped_sample_count": 0,
+      "crest_factor_db": 12.392,
+      "dc_offset": [
+        0.00021962,
+        0.0005331
+      ],
+      "duration_seconds": 399.24,
+      "integrated_lufs": -14.285,
+      "rms_dbfs": -16.662,
+      "sample_peak_dbfs": -4.27,
+      "sample_rate": 48000,
+      "silence_regions": [
+        {
+          "end_seconds": 1,
+          "start_seconds": 0.05
+        }
+      ],
+      "spectral_energy_distribution": {
+        "air": 0.0037837,
+        "bass": 0.3774203,
+        "high": 0.0244044,
+        "low_mid": 0.0898545,
+        "mid": 0.1351834,
+        "presence": 0.0477715,
+        "sub": 0.3029932
+      },
+      "stereo_correlation": 0.869368,
+      "timeline_10s": [
+        {
+          "crest_factor_db": 15.886,
+          "end_seconds": 10,
+          "peak_dbfs": -6.264,
+          "rms_dbfs": -22.15,
+          "start_seconds": 0,
+          "stereo_correlation": 0.82747
+        },
+        {
+          "crest_factor_db": 15.526,
+          "end_seconds": 20,
+          "peak_dbfs": -6.108,
+          "rms_dbfs": -21.634,
+          "start_seconds": 10,
+          "stereo_correlation": 0.91942
+        },
+        {
+          "crest_factor_db": 15.061,
+          "end_seconds": 30,
+          "peak_dbfs": -5.61,
+          "rms_dbfs": -20.671,
+          "start_seconds": 20,
+          "stereo_correlation": 0.73733
+        },
+        {
+          "crest_factor_db": 13.65,
+          "end_seconds": 40,
+          "peak_dbfs": -5.244,
+          "rms_dbfs": -18.894,
+          "start_seconds": 30,
+          "stereo_correlation": 0.72428
+        },
+        {
+          "crest_factor_db": 13.267,
+          "end_seconds": 50,
+          "peak_dbfs": -5.813,
+          "rms_dbfs": -19.08,
+          "start_seconds": 40,
+          "stereo_correlation": 0.85223
+        },
+        {
+          "crest_factor_db": 12.735,
+          "end_seconds": 60,
+          "peak_dbfs": -5.519,
+          "rms_dbfs": -18.254,
+          "start_seconds": 50,
+          "stereo_correlation": 0.85649
+        },
+        {
+          "crest_factor_db": 12.073,
+          "end_seconds": 70,
+          "peak_dbfs": -5.437,
+          "rms_dbfs": -17.51,
+          "start_seconds": 60,
+          "stereo_correlation": 0.88124
+        },
+        {
+          "crest_factor_db": 11.371,
+          "end_seconds": 80,
+          "peak_dbfs": -5.61,
+          "rms_dbfs": -16.981,
+          "start_seconds": 70,
+          "stereo_correlation": 0.80387
+        },
+        {
+          "crest_factor_db": 11.002,
+          "end_seconds": 90,
+          "peak_dbfs": -5.707,
+          "rms_dbfs": -16.709,
+          "start_seconds": 80,
+          "stereo_correlation": 0.84977
+        },
+        {
+          "crest_factor_db": 11.084,
+          "end_seconds": 100,
+          "peak_dbfs": -5.641,
+          "rms_dbfs": -16.725,
+          "start_seconds": 90,
+          "stereo_correlation": 0.87913
+        },
+        {
+          "crest_factor_db": 10.629,
+          "end_seconds": 110,
+          "peak_dbfs": -5.559,
+          "rms_dbfs": -16.188,
+          "start_seconds": 100,
+          "stereo_correlation": 0.87237
+        },
+        {
+          "crest_factor_db": 10.828,
+          "end_seconds": 120,
+          "peak_dbfs": -5.442,
+          "rms_dbfs": -16.27,
+          "start_seconds": 110,
+          "stereo_correlation": 0.80598
+        },
+        {
+          "crest_factor_db": 11.17,
+          "end_seconds": 130,
+          "peak_dbfs": -5.447,
+          "rms_dbfs": -16.617,
+          "start_seconds": 120,
+          "stereo_correlation": 0.87467
+        },
+        {
+          "crest_factor_db": 13.355,
+          "end_seconds": 140,
+          "peak_dbfs": -5.434,
+          "rms_dbfs": -18.79,
+          "start_seconds": 130,
+          "stereo_correlation": 0.90957
+        },
+        {
+          "crest_factor_db": 12.724,
+          "end_seconds": 150,
+          "peak_dbfs": -5.182,
+          "rms_dbfs": -17.906,
+          "start_seconds": 140,
+          "stereo_correlation": 0.91919
+        },
+        {
+          "crest_factor_db": 10.953,
+          "end_seconds": 160,
+          "peak_dbfs": -5.088,
+          "rms_dbfs": -16.041,
+          "start_seconds": 150,
+          "stereo_correlation": 0.87335
+        },
+        {
+          "crest_factor_db": 11.235,
+          "end_seconds": 170,
+          "peak_dbfs": -5.022,
+          "rms_dbfs": -16.256,
+          "start_seconds": 160,
+          "stereo_correlation": 0.85272
+        },
+        {
+          "crest_factor_db": 10.957,
+          "end_seconds": 180,
+          "peak_dbfs": -5.896,
+          "rms_dbfs": -16.853,
+          "start_seconds": 170,
+          "stereo_correlation": 0.78981
+        },
+        {
+          "crest_factor_db": 10.546,
+          "end_seconds": 190,
+          "peak_dbfs": -5.144,
+          "rms_dbfs": -15.69,
+          "start_seconds": 180,
+          "stereo_correlation": 0.90791
+        },
+        {
+          "crest_factor_db": 10.712,
+          "end_seconds": 200,
+          "peak_dbfs": -4.837,
+          "rms_dbfs": -15.548,
+          "start_seconds": 190,
+          "stereo_correlation": 0.89494
+        },
+        {
+          "crest_factor_db": 10.626,
+          "end_seconds": 210,
+          "peak_dbfs": -4.615,
+          "rms_dbfs": -15.241,
+          "start_seconds": 200,
+          "stereo_correlation": 0.84747
+        },
+        {
+          "crest_factor_db": 10.555,
+          "end_seconds": 220,
+          "peak_dbfs": -4.617,
+          "rms_dbfs": -15.172,
+          "start_seconds": 210,
+          "stereo_correlation": 0.8664
+        },
+        {
+          "crest_factor_db": 13.432,
+          "end_seconds": 230,
+          "peak_dbfs": -4.987,
+          "rms_dbfs": -18.419,
+          "start_seconds": 220,
+          "stereo_correlation": 0.72906
+        },
+        {
+          "crest_factor_db": 14.78,
+          "end_seconds": 240,
+          "peak_dbfs": -4.771,
+          "rms_dbfs": -19.551,
+          "start_seconds": 230,
+          "stereo_correlation": 0.75214
+        },
+        {
+          "crest_factor_db": 12.206,
+          "end_seconds": 250,
+          "peak_dbfs": -4.386,
+          "rms_dbfs": -16.591,
+          "start_seconds": 240,
+          "stereo_correlation": 0.91815
+        },
+        {
+          "crest_factor_db": 11.369,
+          "end_seconds": 260,
+          "peak_dbfs": -4.483,
+          "rms_dbfs": -15.853,
+          "start_seconds": 250,
+          "stereo_correlation": 0.92077
+        },
+        {
+          "crest_factor_db": 10.01,
+          "end_seconds": 270,
+          "peak_dbfs": -4.369,
+          "rms_dbfs": -14.379,
+          "start_seconds": 260,
+          "stereo_correlation": 0.89642
+        },
+        {
+          "crest_factor_db": 10.957,
+          "end_seconds": 280,
+          "peak_dbfs": -4.277,
+          "rms_dbfs": -15.234,
+          "start_seconds": 270,
+          "stereo_correlation": 0.92049
+        },
+        {
+          "crest_factor_db": 10.068,
+          "end_seconds": 290,
+          "peak_dbfs": -4.379,
+          "rms_dbfs": -14.447,
+          "start_seconds": 280,
+          "stereo_correlation": 0.93111
+        },
+        {
+          "crest_factor_db": 12.295,
+          "end_seconds": 300,
+          "peak_dbfs": -4.799,
+          "rms_dbfs": -17.094,
+          "start_seconds": 290,
+          "stereo_correlation": 0.50393
+        },
+        {
+          "crest_factor_db": 12.451,
+          "end_seconds": 310,
+          "peak_dbfs": -5.807,
+          "rms_dbfs": -18.258,
+          "start_seconds": 300,
+          "stereo_correlation": 0.6232
+        },
+        {
+          "crest_factor_db": 9.872,
+          "end_seconds": 320,
+          "peak_dbfs": -5.711,
+          "rms_dbfs": -15.583,
+          "start_seconds": 310,
+          "stereo_correlation": 0.95055
+        },
+        {
+          "crest_factor_db": 11.105,
+          "end_seconds": 330,
+          "peak_dbfs": -4.878,
+          "rms_dbfs": -15.983,
+          "start_seconds": 320,
+          "stereo_correlation": 0.94609
+        },
+        {
+          "crest_factor_db": 10.697,
+          "end_seconds": 340,
+          "peak_dbfs": -4.873,
+          "rms_dbfs": -15.571,
+          "start_seconds": 330,
+          "stereo_correlation": 0.95283
+        },
+        {
+          "crest_factor_db": 10.715,
+          "end_seconds": 350,
+          "peak_dbfs": -4.27,
+          "rms_dbfs": -14.984,
+          "start_seconds": 340,
+          "stereo_correlation": 0.93601
+        },
+        {
+          "crest_factor_db": 10.125,
+          "end_seconds": 360,
+          "peak_dbfs": -4.814,
+          "rms_dbfs": -14.938,
+          "start_seconds": 350,
+          "stereo_correlation": 0.94338
+        },
+        {
+          "crest_factor_db": 9.63,
+          "end_seconds": 370,
+          "peak_dbfs": -5.071,
+          "rms_dbfs": -14.702,
+          "start_seconds": 360,
+          "stereo_correlation": 0.94163
+        },
+        {
+          "crest_factor_db": 10.77,
+          "end_seconds": 380,
+          "peak_dbfs": -5.032,
+          "rms_dbfs": -15.803,
+          "start_seconds": 370,
+          "stereo_correlation": 0.91481
+        },
+        {
+          "crest_factor_db": 12.567,
+          "end_seconds": 390,
+          "peak_dbfs": -7.293,
+          "rms_dbfs": -19.86,
+          "start_seconds": 380,
+          "stereo_correlation": 0.64044
+        },
+        {
+          "crest_factor_db": 13.263,
+          "end_seconds": 399.24,
+          "peak_dbfs": -6.104,
+          "rms_dbfs": -19.367,
+          "start_seconds": 390,
+          "stereo_correlation": 0.92256
+        }
+      ],
+      "transient_density_per_second": 15.20639,
+      "true_peak_dbtp": -4.23,
+      "waveform_discontinuity_count": 0
+    },
+    "status": "completed",
+    "stemforge_version": "2.0.1"
+  },
+  "status": "COMPLETED",
+  "workerId": "m2zw9oaq7r8jkf"
+}
