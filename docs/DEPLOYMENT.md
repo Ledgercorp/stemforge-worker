@@ -5,7 +5,7 @@ this repository's **GitHub source on `main`**. There is no external container
 registry, which is why the repository has a `Dockerfile` but no registry
 configuration, no image reference and no build workflow: RunPod builds it.
 
-Automatic deploy-on-push is **off**. Merging to `main` and tagging a release
+Builds run automatically on every push to `main`; the Builds tab shows one entry per commit. Merging to `main` and tagging a release
 therefore change nothing on the endpoint by themselves — a build has to be
 started in the RunPod console. A release is only real once the live worker
 reports the expected identity through `system_info`.
@@ -64,18 +64,23 @@ deploy or verify a GitHub-source endpoint.
 
 | Field | v2.4.0 |
 | --- | --- |
-| Status | **Not deployed** — build not yet triggered |
+| Status | **Deployed and verified live** |
 | Source commit | `806daa6` (tag `v2.4.0`), contained in `main` |
-| Local validation | compile OK; 31 tests pass; local `system_info` matches 2.4.0 / v2.4.0-naturalize-balanced-vocoder; local naturalize smoke test accepted with gates unmodified |
-| Build method | RunPod GitHub source, branch `main`, auto-deploy off |
-| Last successful build | predates the v2.4.0 merge |
+| Build method | RunPod GitHub source, branch `main`, automatic build on push |
+| Active build | commit `4e8408f` ("Refresh live probe status"), completed 2026-08-04 17:40 local, 18/18 layers, 6.27 GB pushed |
 | Endpoint id | `dyup1dztjr4u15` |
-| Deployment timestamp | — |
-| Verification job id | — |
-| Live version / build | `2.3.0` / `v2.3.0-naturalize-quality` |
-| Backend availability | — not observed live |
-| Rollback target | the commit behind the last successful build (v2.3.0) |
+| Verification date | 2026-08-04 |
+| Verification job id | `9f0e8aa1-29b4-43f7-b6b9-00011419adc1-u1` |
+| Worker id | `f54z1ziuuzqiry` |
+| Live version / build | `2.4.0` / `v2.4.0-naturalize-balanced-vocoder` |
+| Contract assertions | all pass: default_intensity 1.0, preset Naturalize Balanced, maximum_full_passes 2, second_pass scale 0.70, denoise post_cocktail_only, automatic_intensity_reduction, vocoder_fallback_to_dsp, lazy_optional_vocoder_imports |
+| Backend availability | Vocos **available** (`charactr/vocos-mel-24khz`); BigVGAN unavailable (modules absent); DisCoder unavailable (env not configured) |
+| Cold start | 12.5 s delay, 194 ms execution, no startup failure |
+| Rollback target | the preceding entry in the RunPod Builds history |
 
-Fill this in from the verify workflow's artifact after each release. Never
-record a deployment as complete unless live `system_info` verified the exact
-identity.
+Note: `storage.bucket_configured` is `false`, so outputs persist to the RunPod
+volume rather than signed S3 links. That is pre-existing configuration, not a
+v2.4.0 regression.
+
+Fill this in from live `system_info` after each release. Never record a
+deployment as complete unless live verification confirmed the exact identity.
