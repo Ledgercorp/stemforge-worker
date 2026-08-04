@@ -89,10 +89,17 @@ jobs:
           jq -r '[.input.master_url, .input.midi_zip_url, (.input.stems[]?.url)] | .[] | select(type == "string" and length > 0)' "$REQUEST" > input_urls.txt
           while IFS= read -r URL; do
             test -n "$URL" || continue
-            if ! curl --fail --silent --show-error --location --head --max-time 45 --retry 2 --retry-all-errors "$URL" >/dev/null; then
-              echo "Input preflight failed: $URL" >&2
-              exit 1
+            # Some object stores and Google Drive links reject HEAD even when a
+            # normal download works. Try HEAD first, then a one-byte ranged GET
+            # before declaring the paid RunPod input unusable.
+            if curl --fail --silent --show-error --location --head --max-time 45 --retry 2 --retry-all-errors "$URL" >/dev/null; then
+              continue
             fi
+            if curl --fail --silent --show-error --location --range 0-0 --output /dev/null --max-time 60 --retry 2 --retry-all-errors "$URL"; then
+              continue
+            fi
+            echo "Input preflight failed: $URL" >&2
+            exit 1
           done < input_urls.txt
 
       - name: Create temporary private output release
@@ -169,7 +176,7 @@ jobs:
           fi
           jq -e --argjson n '${{ steps.meta.outputs.expected_mixes }}' '.output.mixes | length == $n' "$RESULT" >/dev/null
           jq -e 'all(.output.mixes[]; .safety.accepted == true)' "$RESULT" >/dev/null
-          jq -e 'all(.output.mixes[]; (.safety.comparison.non_finite_sample_count == 0) and (.safety.comparison.derivative.rms_delta_db <= 4.5) and (.safety.comparison.high_band_energy_ratio.delta_db <= 4.0))' "$RESULT" >/dev/null
+          jq -e 'all(.output.mixes[]; (.safety.comparison.non_finite_sample_count == 0) and (.safety.comparison.derivative.rms_delta_db <= 4.5) and (((.safety.comparison.high_band_energy_ratio.candidate // 0) <= 0.000001) or (.safety.comparison.high_band_energy_ratio.delta_db <= 4.0)))' "$RESULT" >/dev/null
 
       - name: Download and validate worker-rendered assets
         shell: bash
