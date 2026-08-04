@@ -264,18 +264,30 @@ def _compact_naturalize_report(report: dict) -> dict:
     return {
         "applied": report.get("status") == "completed",
         "engine": report.get("engine"),
+        "preset": report.get("preset"),
         "label": report.get("label"),
         "requested_mode": report.get("requested_mode"),
         "resolved_mode": report.get("resolved_mode"),
+        "requested_intensity": report.get("requested_intensity"),
         "intensity": report.get("intensity"),
+        "intensity_was_reduced": report.get("intensity_was_reduced"),
         "processing_order": report.get("processing_order"),
         "nominal_cocktail": report.get("nominal_cocktail"),
+        "parameters": report.get("parameters"),
+        "passes": report.get("passes"),
+        "attempts": report.get("attempts"),
+        "stem_routing": report.get("stem_routing"),
+        "vocoder": report.get("vocoder"),
         "naturalness_characteristics": report.get(
             "naturalness_characteristics"
         ),
         "reconstruction_gate": report.get("reconstruction_gate"),
         "anchor_decision": report.get("anchor_decision"),
         "safety": report.get("safety"),
+        "original_reference_path": report.get("original_reference_path"),
+        "pre_denoise_reference_path": report.get(
+            "pre_denoise_reference_path"
+        ),
         "agent_log": report.get("agent_log"),
         "honesty_note": report.get("honesty_note"),
     }
@@ -362,6 +374,7 @@ def full_pass_job(payload: dict) -> dict:
     mastering_input_path = master_path
     if naturalize_config is not None:
         naturalize_payload = {
+            **naturalize_config,
             "action": "naturalize",
             "artist": artist,
             "song": song,
@@ -369,9 +382,13 @@ def full_pass_job(payload: dict) -> dict:
             "mode": naturalize_config.get("mode", "auto"),
             "intensity": naturalize_config.get(
                 "intensity",
-                naturalize_config.get("depth", 0.35),
+                naturalize_config.get("depth", 1.0),
             ),
             "retain_original": naturalize_config.get("retain_original", True),
+            "retain_pre_denoise": naturalize_config.get(
+                "retain_pre_denoise",
+                True,
+            ),
             "publish_outputs": False,
             "separate_if_needed": naturalize_config.get(
                 "separate_if_needed",
@@ -430,7 +447,7 @@ def full_pass_job(payload: dict) -> dict:
 
     report = {
         "status": "completed",
-        "engine": "StemForge full-pass engine v2.1",
+        "engine": "StemForge full-pass engine v2.2",
         "artist": artist,
         "song": song,
         "input_summary": {
@@ -452,6 +469,11 @@ def full_pass_job(payload: dict) -> dict:
         "mastering_source": {
             "path": str(mastering_input_path),
             "naturalized_before_mastering": naturalize_report is not None,
+            "naturalize_preset": (
+                naturalize_report.get("preset")
+                if naturalize_report is not None
+                else None
+            ),
         },
         "source_metrics": mastering.get("source_metrics"),
         "candidates": compact_candidates,
@@ -460,9 +482,12 @@ def full_pass_job(payload: dict) -> dict:
         "honesty_note": (
             "The stems and MIDI informed integrity checks, tempo-linked compressor "
             "release timing, and the coherence-anchor decision. When Naturalize "
-            "was requested, its non-destructive safety-approved render became the "
-            "mastering source. Naturalize is an authenticity enhancement, not an "
-            "audio-origin detection or concealment tool."
+            "was requested, the complete v2.4 configuration was forwarded and only "
+            "its non-destructive safety-approved render became the mastering source. "
+            "Optional neural resynthesis occurs only after the modulation and constrained "
+            "denoise stages and falls back to DSP when unsafe. Naturalize is a fidelity "
+            "and authenticity enhancement, not an audio-origin detector, concealment "
+            "system, or detection-evasion tool."
         ),
     }
 

@@ -66,8 +66,8 @@ jobs:
           EXPECTED_MIDI="$(jq -r '.input.expected_midi_count // empty' "$REQUEST")"
           EXPECTED_MIXES="$(jq -r 'if (.input.mix_profiles | type) == "string" then 1 else ((.input.mix_profiles // ["balanced","heavy"]) | length) end' "$REQUEST")"
           EXPECTED_WAVS="$((EXPECTED_MIXES + 1))"
-          MINIMUM_VERSION="$(jq -r '.input.minimum_worker_version // "2.3.0"' "$REQUEST")"
-          REQUIRED_BUILD="$(jq -r '.input.required_build // "v2.3.0-naturalize-quality"' "$REQUEST")"
+          MINIMUM_VERSION="$(jq -r '.input.minimum_worker_version // "2.4.0"' "$REQUEST")"
+          REQUIRED_BUILD="$(jq -r '.input.required_build // "v2.4.0-naturalize-balanced-vocoder"' "$REQUEST")"
 
           {
             echo "request=$REQUEST"
@@ -89,9 +89,6 @@ jobs:
           jq -r '[.input.master_url, .input.midi_zip_url, (.input.stems[]?.url)] | .[] | select(type == "string" and length > 0)' "$REQUEST" > input_urls.txt
           while IFS= read -r URL; do
             test -n "$URL" || continue
-            # Some object stores and Google Drive links reject HEAD even when a
-            # normal download works. Try HEAD first, then a one-byte ranged GET
-            # before declaring the paid RunPod input unusable.
             if curl --fail --silent --show-error --location --head --max-time 45 --retry 2 --retry-all-errors "$URL" >/dev/null; then
               continue
             fi
