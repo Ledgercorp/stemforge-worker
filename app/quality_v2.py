@@ -114,7 +114,16 @@ def compare_audio_quality(reference: np.ndarray, candidate: np.ndarray, sample_r
     can_total = _band_energy(matched, sample_rate, 20.0, 20000.0)
     ref_high_ratio = ref_high / max(ref_total, 1e-20)
     can_high_ratio = can_high / max(can_total, 1e-20)
-    high_band_ratio_delta_db = _db(can_high_ratio / max(ref_high_ratio, 1e-20))
+    raw_high_band_ratio_delta_db = _db(
+        can_high_ratio / max(ref_high_ratio, 1e-20)
+    )
+    # A relative ratio is meaningless when both signals are effectively silent
+    # above 8 kHz. Keep the raw value for diagnostics, but expose a gated delta
+    # to every safety consumer so microscopic interpolation residue cannot be
+    # mistaken for audible static.
+    high_band_ratio_delta_db = (
+        raw_high_band_ratio_delta_db if can_high_ratio > 1e-6 else 0.0
+    )
 
     return {
         "waveform_correlation": round(_waveform_correlation(reference, matched), 7),
@@ -137,6 +146,8 @@ def compare_audio_quality(reference: np.ndarray, candidate: np.ndarray, sample_r
             "reference": round(ref_high_ratio, 12),
             "candidate": round(can_high_ratio, 12),
             "delta_db": round(high_band_ratio_delta_db, 4),
+            "raw_delta_db": round(raw_high_band_ratio_delta_db, 4),
+            "meaningful_energy_floor": 1e-6,
         },
     }
 
@@ -172,13 +183,8 @@ def quality_gate(
     if int(derivative["candidate_outlier_count"]) > allowed_outliers:
         reasons.append("new_waveform_discontinuities")
 
-    # Ratios close to numerical silence are unstable and must not turn a clean
-    # low-band signal or a simple gain change into a false noise alarm. The
-    # relative growth gate activates only when the candidate has a meaningful
-    # amount of energy above 8 kHz.
     high_band = comparison["high_band_energy_ratio"]
-    candidate_high_ratio = float(high_band["candidate"])
-    if candidate_high_ratio > 1e-6 and float(high_band["delta_db"]) > 4.0:
+    if float(high_band["delta_db"]) > 4.0:
         reasons.append("high_frequency_noise_growth")
 
     return {
