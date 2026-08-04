@@ -1,0 +1,9 @@
+{
+  "input": {
+    "action": "system_info"
+  },
+  "policy": {
+    "ttl": 600000,
+    "executionTimeout": 300000
+  }
+}
