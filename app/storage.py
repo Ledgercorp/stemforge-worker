@@ -166,23 +166,46 @@ def materialize_input(payload: dict, field: str, destination: Path, *, required:
 
 
 def publish_file(path: Path, *, artist: str = "default", category: str = "outputs", ttl_seconds: int = 86400) -> dict:
-    path = Path(path)
-    record = {"filename": path.name, "local_path": str(path), "size_bytes": path.stat().st_size}
+    path = Path(path).resolve()
+    prefix = _slug(artist)
+    category_slug = _slug(category)
+    nonce = hashlib.sha256(f"{path}-{path.stat().st_mtime_ns}".encode()).hexdigest()[:16]
+    filename = _slug(path.name)
+
     if not os.environ.get("STEMFORGE_S3_BUCKET"):
-        record["download_url"] = None
-        record["storage_note"] = "S3-compatible output storage is not configured."
-        return record
+        destination_dir = OUTPUT_DIR / category_slug / prefix / nonce
+        destination_dir.mkdir(parents=True, exist_ok=True)
+        destination = destination_dir / filename
+        if path != destination:
+            shutil.copy2(path, destination)
+        return {
+            "filename": destination.name,
+            "local_path": str(destination),
+            "volume_path": str(destination),
+            "size_bytes": destination.stat().st_size,
+            "download_url": None,
+            "storage_mode": "runpod_volume",
+            "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
+        }
 
     client, bucket = _s3_client()
-    prefix = _slug(artist)
-    category = _slug(category)
-    nonce = hashlib.sha256(f"{path}-{path.stat().st_mtime_ns}".encode()).hexdigest()[:16]
-    key = f"{category}/{prefix}/{nonce}/{_slug(path.name)}"
+    key = f"{category_slug}/{prefix}/{nonce}/{filename}"
     content_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
     client.upload_file(str(path), bucket, key, ExtraArgs={"ContentType": content_type})
-    url = client.generate_presigned_url("get_object", Params={"Bucket": bucket, "Key": key}, ExpiresIn=max(60, min(int(ttl_seconds), 604800)))
-    record.update({"storage_key": key, "download_url": url, "expires_in_seconds": max(60, min(int(ttl_seconds), 604800))})
-    return record
+    url = client.generate_presigned_url(
+        "get_object",
+        Params={"Bucket": bucket, "Key": key},
+        ExpiresIn=max(60, min(int(ttl_seconds), 604800)),
+    )
+    return {
+        "filename": path.name,
+        "local_path": str(path),
+        "size_bytes": path.stat().st_size,
+        "storage_key": key,
+        "download_url": url,
+        "expires_in_seconds": max(60, min(int(ttl_seconds), 604800)),
+        "storage_mode": "s3_signed_urls",
+    }
 
 
 def publish_files(paths: Iterable[Path], *, artist: str = "default", category: str = "outputs", ttl_seconds: int = 86400) -> list[dict]:
