@@ -26,7 +26,7 @@ jobs:
           gh run list \
             --repo "$GITHUB_REPOSITORY" \
             --limit 25 \
-            --json databaseId,workflowName,status,conclusion,headSha,event,displayTitle,createdAt,updatedAt,url \
+            --json databaseId,status,conclusion,headSha,event,displayTitle,createdAt,updatedAt,url \
             > system_probe_status_results/recent.json
           ENCODED="$(base64 -w0 system_probe_status_results/recent.json)"
           gh api --method PUT \
