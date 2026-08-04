@@ -6,14 +6,14 @@ import shutil
 from app import numpy_json_patch as _numpy_json_patch
 from app.storage import storage_status
 
-VERSION = "2.1.0"
-BUILD = "v2.1.0-hotfix2"
+VERSION = "2.2.0"
+BUILD = "v2.2.0-stem-remix"
 
 
 def system_info_job(payload: dict | None = None) -> dict:
     packages = {
         name: importlib.util.find_spec(name) is not None
-        for name in ["whisperx", "torch", "demucs", "pyloudnorm", "boto3", "mido"]
+        for name in ["whisperx", "torch", "demucs", "pyloudnorm", "boto3", "mido", "scipy"]
     }
     executables = {
         name: shutil.which(name) is not None
@@ -29,8 +29,8 @@ def system_info_job(payload: dict | None = None) -> dict:
         "feature_groups": {
             "lyrics": ["align_lyrics", "align_lyrics_smart"],
             "analysis": ["analyze_audio", "analyze_audio_v2", "compare_audio", "compare_audio_v2"],
-            "stems": ["inspect_stems", "inspect_stems_v2", "separate_stems"],
-            "processing": ["master_audio", "master_audio_github_delivery", "full_pass", "repair_audio", "humanize_audio"],
+            "stems": ["inspect_stems", "inspect_stems_v2", "separate_stems", "stem_remix"],
+            "processing": ["master_audio", "master_audio_github_delivery", "full_pass", "stem_remix", "repair_audio", "humanize_audio"],
             "visual": ["render_lyric_video"],
             "interchange": ["export_daw"],
             "transfer": [
