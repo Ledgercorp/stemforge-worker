@@ -1,0 +1,1 @@
+Publish StemForge Lyric Alignment v1.0.2 from the current main branch.
