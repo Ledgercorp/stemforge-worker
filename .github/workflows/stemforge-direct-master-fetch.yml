@@ -164,12 +164,7 @@ jobs:
           REPORT_REMOTE="$(jq -r '.output.report_output.volume_path' "$MASTER_RESULT")"
           fetch_volume_file "$REPORT_REMOTE" "Sweet_Sixteen_RunPod_v2.0.2_Mastering_Report.json"
 
-          ffmpeg -v error -y -i fetched_output/Sweet_Sixteen_RunPod_v2.0.2_Dynamic.wav -map_metadata -1 -c:a flac -compression_level 8 fetched_output/Sweet_Sixteen_RunPod_v2.0.2_Dynamic.flac
-          ffmpeg -v error -y -i fetched_output/Sweet_Sixteen_RunPod_v2.0.2_Balanced.wav -map_metadata -1 -c:a flac -compression_level 8 fetched_output/Sweet_Sixteen_RunPod_v2.0.2_Balanced.flac
-          ffmpeg -v error -y -i fetched_output/Sweet_Sixteen_RunPod_v2.0.2_Dense.wav -map_metadata -1 -c:a flac -compression_level 8 fetched_output/Sweet_Sixteen_RunPod_v2.0.2_Dense.flac
-          rm fetched_output/Sweet_Sixteen_RunPod_v2.0.2_Dynamic.wav fetched_output/Sweet_Sixteen_RunPod_v2.0.2_Dense.wav
-
-      - name: Upload RunPod-rendered package
+      - name: Upload untouched RunPod WAV package
         uses: actions/upload-artifact@v4
         with:
           name: sweet-sixteen-runpod-v202-direct
