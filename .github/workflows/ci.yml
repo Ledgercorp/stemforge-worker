@@ -5,10 +5,32 @@ on:
     paths:
       - "app/**"
       - "tests/**"
+      - "tools/**"
       - "handler.py"
       - "requirements*.txt"
       - "Dockerfile"
       - ".github/workflows/**"
+      - "cancel_requests/**/*.json"
+      - "direct_balanced_requests/**/*.json"
+      - "direct_master_requests/**/*.json"
+      - "download_requests/**/*.json"
+      - "export_requests/**/*.json"
+      - "full_pass_direct_requests/**/*.json"
+      - "full_pass_jobs/**/*.json"
+      - "full_pass_retry_jobs/**/*.json"
+      - "jobs/**/*.json"
+      - "maintenance/**/*.json"
+      - "status_probe_jobs/**/*.json"
+      - "stem_remix_jobs/**/*.json"
+      - "stem_remix_retry_jobs/**/*.json"
+      - "system_probe_requests/**/*.json"
+      - "v2_balanced_fetch/**/*.json"
+      - "v2_bridge_requests/**/*.json"
+      - "v2_export_jobs/**/*.json"
+      - "v2_jobs/**/*.json"
+      - "v2_output_requests/**/*.json"
+      - "v201_quick_checks/**/*.json"
+      - "v201_quick_jobs/**/*.json"
   push:
     branches:
       - main
@@ -16,15 +38,48 @@ on:
     paths:
       - "app/**"
       - "tests/**"
+      - "tools/**"
       - "handler.py"
       - "requirements*.txt"
       - "Dockerfile"
       - ".github/workflows/**"
+      - "cancel_requests/**/*.json"
+      - "direct_balanced_requests/**/*.json"
+      - "direct_master_requests/**/*.json"
+      - "download_requests/**/*.json"
+      - "export_requests/**/*.json"
+      - "full_pass_direct_requests/**/*.json"
+      - "full_pass_jobs/**/*.json"
+      - "full_pass_retry_jobs/**/*.json"
+      - "jobs/**/*.json"
+      - "maintenance/**/*.json"
+      - "status_probe_jobs/**/*.json"
+      - "stem_remix_jobs/**/*.json"
+      - "stem_remix_retry_jobs/**/*.json"
+      - "system_probe_requests/**/*.json"
+      - "v2_balanced_fetch/**/*.json"
+      - "v2_bridge_requests/**/*.json"
+      - "v2_export_jobs/**/*.json"
+      - "v2_jobs/**/*.json"
+      - "v2_output_requests/**/*.json"
+      - "v201_quick_checks/**/*.json"
+      - "v201_quick_jobs/**/*.json"
 
 permissions:
   contents: read
 
 jobs:
+  job-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate relay request files
+        run: python tools/validate_jobs.py
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15

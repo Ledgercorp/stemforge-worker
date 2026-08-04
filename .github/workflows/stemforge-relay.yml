@@ -77,14 +77,21 @@ jobs:
 
             echo "Processing $JOB_FILE"
 
-            if ! jq -e '.input.action and (.input.action | type == "string")' "$JOB_FILE" >/dev/null; then
+            # Contract check before any GPU time is spent. Invalid files are
+            # recorded as REJECTED and skipped; valid ones continue.
+            VALIDATION="$(mktemp)"
+            if ! python3 tools/validate_jobs.py "$JOB_FILE" --format json > "$VALIDATION"; then
               jq -n \
                 --arg status "REJECTED" \
-                --arg reason "Job file must contain input.action as a string." \
+                --arg reason "Job file failed tools/validate_jobs.py; see docs/RELAY_CONTRACT.md." \
                 --arg source "$JOB_FILE" \
-                '{status:$status, reason:$reason, source:$source}' > "$RESULT_FILE"
+                --slurpfile validation "$VALIDATION" \
+                '{status:$status, reason:$reason, source:$source, validation:$validation[0]}' > "$RESULT_FILE"
+              cat "$VALIDATION"
+              rm -f "$VALIDATION"
               continue
             fi
+            rm -f "$VALIDATION"
 
             HTTP_BODY="$(mktemp)"
             HTTP_CODE="$(
