@@ -1,0 +1,121 @@
+name: Probe Live StemForge
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_path:
+        description: Repository path to one system-info probe request
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - "system_probe_requests/**/*.json"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: stemforge-live-probe-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve probe request
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            REQUEST='${{ inputs.request_path }}'
+          else
+            CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+            mapfile -t REQUESTS < <(printf '%s\n' "$CHANGED" | grep -E '^system_probe_requests/.+\.json$' || true)
+            test "${#REQUESTS[@]}" -eq 1
+            REQUEST="${REQUESTS[0]}"
+          fi
+          test -f "$REQUEST"
+          jq -e '.input.action == "system_info"' "$REQUEST" >/dev/null
+          NAME="$(basename "$REQUEST" .json)"
+          echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Query live RunPod worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST='${{ steps.meta.outputs.request }}'
+          mkdir -p probe_output diagnostics
+          SUBMIT="diagnostics/submit.json"
+          RESULT="probe_output/live-system-info.json"
+
+          curl --fail --silent --show-error --max-time 120 -X POST \
+            "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${REQUEST}" > "$SUBMIT"
+
+          JOB_ID="$(jq -r '.id // empty' "$SUBMIT")"
+          test -n "$JOB_ID"
+
+          TERMINAL=0
+          for attempt in $(seq 1 180); do
+            curl --fail --silent --show-error --max-time 120 \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT"
+            STATE="$(jq -r '.status // empty' "$RESULT")"
+            case "$STATE" in
+              COMPLETED) TERMINAL=1; break ;;
+              FAILED|TIMED_OUT|CANCELLED)
+                cat "$RESULT" >&2
+                exit 1
+                ;;
+            esac
+            sleep 5
+          done
+          test "$TERMINAL" -eq 1
+          jq -e '.output.status == "completed"' "$RESULT" >/dev/null
+          jq -e '.output.action == "system_info"' "$RESULT" >/dev/null
+
+      - name: Publish probe result
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME='${{ steps.meta.outputs.name }}'
+          RESULT="probe_output/live-system-info.json"
+          DOCUMENT="$(jq \
+            --arg request "$NAME" \
+            --arg endpoint "$RUNPOD_ENDPOINT_ID" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            --arg commit "$GITHUB_SHA" \
+            '{request:$request,endpoint_id:$endpoint,workflow_run_id:($run_id|tonumber),request_commit:$commit,observed_at:(now|todateiso8601),runpod_status:.status,worker_output:.output}' \
+            "$RESULT")"
+          ENCODED="$(printf '%s' "$DOCUMENT" | base64 -w0)"
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/system_probe_results/${NAME}.json" \
+            -f message="Record live StemForge system probe [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
+
+      - name: Upload probe diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stemforge-live-probe-${{ github.run_id }}
+          path: |
+            diagnostics/
+            probe_output/
+          if-no-files-found: ignore
+          retention-days: 3
