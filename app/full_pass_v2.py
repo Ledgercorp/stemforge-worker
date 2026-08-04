@@ -9,6 +9,7 @@ from pathlib import Path
 
 from app.github_delivery import _upload_release_asset
 from app.mastering_v2 import master_audio_job
+from app.naturalize_v2 import naturalize_audio_job
 from app.stems_v2 import inspect_stems_v2_job
 from app.storage import WORKSPACE, materialize_input, publish_file
 
@@ -247,6 +248,39 @@ def _github_config(payload: dict) -> tuple[str, int, str] | None:
     return repository, release_id, token
 
 
+def _naturalize_config(value: object) -> dict | None:
+    if value in (None, False):
+        return None
+    if value is True:
+        return {}
+    if isinstance(value, str):
+        return {"mode": value}
+    if isinstance(value, dict):
+        return dict(value)
+    raise ValueError("naturalize must be true, false, a mode string, or an object.")
+
+
+def _compact_naturalize_report(report: dict) -> dict:
+    return {
+        "applied": report.get("status") == "completed",
+        "engine": report.get("engine"),
+        "label": report.get("label"),
+        "requested_mode": report.get("requested_mode"),
+        "resolved_mode": report.get("resolved_mode"),
+        "intensity": report.get("intensity"),
+        "processing_order": report.get("processing_order"),
+        "nominal_cocktail": report.get("nominal_cocktail"),
+        "naturalness_characteristics": report.get(
+            "naturalness_characteristics"
+        ),
+        "reconstruction_gate": report.get("reconstruction_gate"),
+        "anchor_decision": report.get("anchor_decision"),
+        "safety": report.get("safety"),
+        "agent_log": report.get("agent_log"),
+        "honesty_note": report.get("honesty_note"),
+    }
+
+
 def full_pass_job(payload: dict) -> dict:
     artist = str(payload.get("artist") or "sounddecay")
     song = str(payload.get("song") or "untitled")
@@ -260,6 +294,11 @@ def full_pass_job(payload: dict) -> dict:
             "status": "rejected",
             "reason": "stems must contain at least one stem.",
         }
+
+    try:
+        naturalize_config = _naturalize_config(payload.get("naturalize"))
+    except ValueError as exc:
+        return {"status": "rejected", "reason": str(exc)}
 
     job_id = uuid.uuid4().hex[:16]
     job_root = (WORKSPACE / "jobs" / "full_pass" / job_id).resolve()
@@ -319,10 +358,50 @@ def full_pass_job(payload: dict) -> dict:
         ),
     }
 
+    naturalize_report = None
+    mastering_input_path = master_path
+    if naturalize_config is not None:
+        naturalize_payload = {
+            "action": "naturalize",
+            "artist": artist,
+            "song": song,
+            "audio_path": str(master_path),
+            "mode": naturalize_config.get("mode", "auto"),
+            "intensity": naturalize_config.get(
+                "intensity",
+                naturalize_config.get("depth", 0.35),
+            ),
+            "retain_original": naturalize_config.get("retain_original", True),
+            "publish_outputs": False,
+            "separate_if_needed": naturalize_config.get(
+                "separate_if_needed",
+                False,
+            ),
+            "separation_model": naturalize_config.get(
+                "separation_model",
+                "htdemucs",
+            ),
+            "job_dir": str(job_root / "naturalize"),
+            "stems": [
+                {"name": name, "path": str(path)}
+                for name, path in stems
+            ],
+        }
+        naturalize_report = naturalize_audio_job(naturalize_payload)
+        if naturalize_report.get("status") != "completed":
+            return {
+                "status": "rejected",
+                "reason": "The requested Naturalize stage failed its safety gate.",
+                "naturalize": naturalize_report,
+            }
+        mastering_input_path = Path(
+            str(naturalize_report["processed_path"])
+        )
+
     mastering_payload = {
         "artist": artist,
         "song": song,
-        "audio_path": str(master_path),
+        "audio_path": str(mastering_input_path),
         "profiles": profiles,
         "profile_overrides": tempo_overrides,
         "output_ttl_seconds": int(
@@ -365,14 +444,25 @@ def full_pass_job(payload: dict) -> dict:
         "tempo_linked_mastering_overrides": tempo_overrides,
         "stem_integrity": _compact_stem_report(stem_report),
         "anchor_decision": anchor_decision,
+        "naturalize": (
+            _compact_naturalize_report(naturalize_report)
+            if naturalize_report is not None
+            else {"applied": False}
+        ),
+        "mastering_source": {
+            "path": str(mastering_input_path),
+            "naturalized_before_mastering": naturalize_report is not None,
+        },
         "source_metrics": mastering.get("source_metrics"),
         "candidates": compact_candidates,
         "mastering_candidates": compact_candidates,
         "mastering_report_output": mastering.get("report_output"),
         "honesty_note": (
             "The stems and MIDI informed integrity checks, tempo-linked compressor "
-            "release timing, and the coherence-anchor decision. This pass did not "
-            "perform an autonomous stem remix."
+            "release timing, and the coherence-anchor decision. When Naturalize "
+            "was requested, its non-destructive safety-approved render became the "
+            "mastering source. Naturalize is an authenticity enhancement, not an "
+            "audio-origin detection or concealment tool."
         ),
     }
 
