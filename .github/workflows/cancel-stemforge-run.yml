@@ -1,0 +1,30 @@
+name: Cancel StemForge Run
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "cancel_requests/**/*.json"
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Cancel requested workflow run
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^cancel_requests/.+\.json$' | head -n 1)"
+          RUN_ID="$(jq -r '.run_id' "$REQUEST")"
+          test -n "$RUN_ID"
+          gh run cancel "$RUN_ID" --repo "$GITHUB_REPOSITORY"
