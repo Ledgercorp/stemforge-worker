@@ -7,6 +7,7 @@ from app import numpy_json_patch as _numpy_json_patch
 from app.storage import storage_status
 
 VERSION = "2.1.0"
+BUILD = "v2.1.0-hotfix2"
 
 
 def system_info_job(payload: dict | None = None) -> dict:
@@ -21,6 +22,7 @@ def system_info_job(payload: dict | None = None) -> dict:
     return {
         "status": "completed",
         "stemforge_version": VERSION,
+        "build": BUILD,
         "packages": packages,
         "executables": executables,
         "storage": storage_status(),
