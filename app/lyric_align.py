@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import difflib
+import base64
+import binascii
 import os
 import re
 from pathlib import Path
@@ -14,8 +15,11 @@ from app.memory import save_approved_timing
 from app.utils import download_file, normalize_word, temporary_job_dir
 
 
+ALIGNER_VERSION = "monotonic_dynamic_programming_v3"
+
+
 def _flatten_words(segments: list[dict]) -> list[dict]:
-    words = []
+    words: list[dict] = []
     for segment in segments:
         for word in segment.get("words") or []:
             text = str(word.get("word", "")).strip()
@@ -42,7 +46,7 @@ def _flatten_words(segments: list[dict]) -> list[dict]:
 
 
 def _expected_tokens(lyrics: str) -> list[dict]:
-    tokens = []
+    tokens: list[dict] = []
     line_index = 0
 
     for raw_line in lyrics.splitlines():
@@ -60,60 +64,149 @@ def _expected_tokens(lyrics: str) -> list[dict]:
                         "line_index": line_index,
                     }
                 )
-
         line_index += 1
 
     return tokens
 
 
+def _word_similarity(expected_word: str, observed_word: str) -> float:
+    if expected_word == observed_word:
+        return 1.0
+    return fuzz.ratio(expected_word, observed_word) / 100.0
+
+
+def _anchor_threshold(token: str) -> float:
+    if len(token) <= 2:
+        return 0.999
+    if len(token) == 3:
+        return 0.82
+    return 0.68
+
+
 def _reconcile(expected: list[dict], observed: list[dict]) -> tuple[list[dict], dict]:
+    """Align supplied lyric words to WhisperX words while preserving order.
+
+    The earlier SequenceMatcher implementation could attach repeated fragments
+    to later verses and could map several expected words to the same observed
+    word. This global dynamic-programming alignment is strictly monotonic and
+    one-to-one, with a mild positional penalty to disambiguate repeated lines.
+    """
     expected_words = [item["normalized"] for item in expected]
     observed_words = [item["normalized"] for item in observed]
+    n = len(expected_words)
+    m = len(observed_words)
 
-    matcher = difflib.SequenceMatcher(
-        a=expected_words,
-        b=observed_words,
-        autojunk=False,
-    )
+    if n == 0:
+        return [], {
+            "expected_word_count": 0,
+            "detected_word_count": m,
+            "recognized_or_fuzzy_anchor_count": 0,
+            "anchor_coverage": 0.0,
+            "sequence_similarity": 0.0,
+            "alignment_method": ALIGNER_VERSION,
+        }
 
-    mapped: list[dict | None] = [None] * len(expected)
-
-    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
-        if tag == "equal":
-            for offset in range(i2 - i1):
-                source = observed[j1 + offset]
-                mapped[i1 + offset] = {
-                    **expected[i1 + offset],
-                    "start": source["start"],
-                    "end": source["end"],
-                    "score": source["score"],
-                    "source": "recognized_anchor",
+    if m == 0:
+        mapped = []
+        for index, item in enumerate(expected):
+            start = index * 0.4
+            mapped.append(
+                {
+                    **item,
+                    "start": start,
+                    "end": start + 0.3,
+                    "score": 0.0,
+                    "source": "interpolated",
                 }
+            )
+        return mapped, {
+            "expected_word_count": n,
+            "detected_word_count": 0,
+            "recognized_or_fuzzy_anchor_count": 0,
+            "anchor_coverage": 0.0,
+            "sequence_similarity": 0.0,
+            "alignment_method": ALIGNER_VERSION,
+        }
+
+    expected_gap_cost = 0.72
+    observed_gap_cost = 0.48
+    position_weight = 0.42
+
+    dp = [[0.0] * (m + 1) for _ in range(n + 1)]
+    back = [[""] * (m + 1) for _ in range(n + 1)]
+
+    for i in range(1, n + 1):
+        dp[i][0] = dp[i - 1][0] + expected_gap_cost
+        back[i][0] = "E"
+    for j in range(1, m + 1):
+        dp[0][j] = dp[0][j - 1] + observed_gap_cost
+        back[0][j] = "O"
+
+    for i in range(1, n + 1):
+        expected_fraction = (i - 1) / max(n - 1, 1)
+        for j in range(1, m + 1):
+            observed_fraction = (j - 1) / max(m - 1, 1)
+            similarity = _word_similarity(
+                expected_words[i - 1],
+                observed_words[j - 1],
+            )
+            substitution_cost = (
+                1.0
+                - similarity
+                + position_weight * abs(expected_fraction - observed_fraction)
+            )
+
+            options = (
+                (dp[i - 1][j - 1] + substitution_cost, "M"),
+                (dp[i - 1][j] + expected_gap_cost, "E"),
+                (dp[i][j - 1] + observed_gap_cost, "O"),
+            )
+            best_cost, best_action = min(options, key=lambda item: item[0])
+            dp[i][j] = best_cost
+            back[i][j] = best_action
+
+    pairs: list[tuple[int, int, float]] = []
+    i, j = n, m
+    while i > 0 or j > 0:
+        action = back[i][j]
+        if action == "M":
+            similarity = _word_similarity(
+                expected_words[i - 1],
+                observed_words[j - 1],
+            )
+            pairs.append((i - 1, j - 1, similarity))
+            i -= 1
+            j -= 1
+        elif action == "E":
+            i -= 1
+        elif action == "O":
+            j -= 1
+        else:
+            break
+
+    pairs.reverse()
+    mapped: list[dict | None] = [None] * n
+    similarity_sum = 0.0
+    similarity_count = 0
+
+    for expected_index, observed_index, similarity in pairs:
+        similarity_sum += similarity
+        similarity_count += 1
+
+        token = expected_words[expected_index]
+        if similarity < _anchor_threshold(token):
             continue
 
-        if tag == "replace":
-            expected_span = expected[i1:i2]
-            observed_span = observed[j1:j2]
-            for index, expected_item in enumerate(expected_span):
-                best = None
-                best_score = 0.0
-                for observed_item in observed_span:
-                    similarity = fuzz.ratio(
-                        expected_item["normalized"],
-                        observed_item["normalized"],
-                    )
-                    if similarity > best_score:
-                        best = observed_item
-                        best_score = similarity
-
-                if best is not None and best_score >= 72:
-                    mapped[i1 + index] = {
-                        **expected_item,
-                        "start": best["start"],
-                        "end": best["end"],
-                        "score": min(best["score"], best_score / 100),
-                        "source": "fuzzy_anchor",
-                    }
+        source = observed[observed_index]
+        mapped[expected_index] = {
+            **expected[expected_index],
+            "start": source["start"],
+            "end": source["end"],
+            "score": min(float(source["score"]), similarity),
+            "source": (
+                "recognized_anchor" if similarity >= 0.999 else "fuzzy_anchor"
+            ),
+        }
 
     anchor_indices = [index for index, item in enumerate(mapped) if item is not None]
 
@@ -121,58 +214,73 @@ def _reconcile(expected: list[dict], observed: list[dict]) -> tuple[list[dict], 
         if mapped[index] is not None:
             continue
 
-        previous = max((value for value in anchor_indices if value < index), default=None)
-        following = min((value for value in anchor_indices if value > index), default=None)
+        previous = max(
+            (value for value in anchor_indices if value < index),
+            default=None,
+        )
+        following = min(
+            (value for value in anchor_indices if value > index),
+            default=None,
+        )
 
         if previous is not None and following is not None:
             left = mapped[previous]
             right = mapped[following]
-            fraction = (index - previous) / (following - previous)
-            start = left["end"] + (right["start"] - left["end"]) * fraction
-            duration = max(
-                0.12,
-                (right["start"] - left["end"])
-                / max(following - previous, 1)
-                * 0.8,
-            )
-            end = min(right["start"], start + duration)
+            available = max(0.05, float(right["start"]) - float(left["end"]))
+            step = available / max(following - previous, 1)
+            start = float(left["end"]) + step * (index - previous - 0.15)
+            duration = max(0.10, min(0.45, step * 0.72))
+            end = min(float(right["start"]), start + duration)
         elif previous is not None:
             left = mapped[previous]
-            start = left["end"] + 0.06
-            end = start + 0.35
+            start = float(left["end"]) + 0.06 + 0.34 * (index - previous - 1)
+            end = start + 0.30
         elif following is not None:
             right = mapped[following]
-            end = max(0.0, right["start"] - 0.06)
-            start = max(0.0, end - 0.35)
+            distance = following - index
+            end = max(0.0, float(right["start"]) - 0.06 - 0.34 * (distance - 1))
+            start = max(0.0, end - 0.30)
         else:
             start = index * 0.4
             end = start + 0.3
 
         mapped[index] = {
             **expected_item,
-            "start": float(start),
+            "start": float(max(0.0, start)),
             "end": float(max(end, start + 0.05)),
             "score": 0.0,
             "source": "interpolated",
         }
 
+    last_start = 0.0
+    for item in mapped:
+        item["start"] = max(float(item["start"]), last_start)
+        item["end"] = max(float(item["end"]), item["start"] + 0.05)
+        last_start = item["start"]
+
     recognized_count = sum(
-        1 for item in mapped if item["source"] in {"recognized_anchor", "fuzzy_anchor"}
+        1
+        for item in mapped
+        if item["source"] in {"recognized_anchor", "fuzzy_anchor"}
     )
-    coverage = recognized_count / max(len(expected), 1)
+    coverage = recognized_count / max(n, 1)
 
     return mapped, {
-        "expected_word_count": len(expected),
-        "detected_word_count": len(observed),
+        "expected_word_count": n,
+        "detected_word_count": m,
         "recognized_or_fuzzy_anchor_count": recognized_count,
         "anchor_coverage": round(coverage, 4),
-        "sequence_similarity": round(matcher.ratio(), 4),
+        "sequence_similarity": round(
+            similarity_sum / max(similarity_count, 1),
+            4,
+        ),
+        "alignment_method": ALIGNER_VERSION,
     }
 
 
 def _build_lines(lyrics: str, mapped_words: list[dict]) -> list[dict]:
     text_lines = [line.strip() for line in lyrics.splitlines() if line.strip()]
-    line_map = []
+    line_map: list[dict] = []
 
     for line_index, line_text in enumerate(text_lines):
         words = [item for item in mapped_words if item["line_index"] == line_index]
@@ -185,16 +293,25 @@ def _build_lines(lyrics: str, mapped_words: list[dict]) -> list[dict]:
             if anchored
             else 0.0
         )
+        start = float(min(item["start"] for item in words))
+        end = float(max(item["end"] for item in words))
+        span = end - start
+        span_limit = max(6.0, len(words) * 1.8)
+        suspicious_span = span > span_limit
 
         line_map.append(
             {
                 "index": line_index + 1,
                 "text": line_text,
-                "start": float(min(item["start"] for item in words)),
-                "end": float(max(item["end"] for item in words)),
+                "start": start,
+                "end": end,
                 "confidence": round(float(confidence), 4),
                 "anchor_coverage": round(len(anchored) / len(words), 4),
-                "needs_review": len(anchored) / len(words) < 0.5 or confidence < 0.45,
+                "needs_review": (
+                    len(anchored) / len(words) < 0.5
+                    or confidence < 0.45
+                    or suspicious_span
+                ),
                 "words": words,
             }
         )
@@ -202,8 +319,40 @@ def _build_lines(lyrics: str, mapped_words: list[dict]) -> list[dict]:
     return line_map
 
 
+def _write_embedded_audio(payload: dict, temp_path: Path) -> Path | None:
+    encoded = payload.get("audio_base64")
+    if not encoded:
+        return None
+
+    if not isinstance(encoded, str):
+        raise ValueError("audio_base64 must be a base64 string.")
+
+    if encoded.startswith("data:") and "," in encoded:
+        encoded = encoded.split(",", 1)[1]
+
+    encoded = "".join(encoded.split())
+    if len(encoded) > 9_000_000:
+        raise ValueError("Embedded audio exceeds the safe request-size limit.")
+
+    try:
+        audio_bytes = base64.b64decode(encoded, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise ValueError("audio_base64 is not valid base64.") from exc
+
+    if not audio_bytes:
+        raise ValueError("Embedded audio decoded to an empty file.")
+
+    suffix = Path(str(payload.get("audio_filename") or "input_audio.opus")).suffix
+    if suffix not in {".wav", ".flac", ".mp3", ".m4a", ".ogg", ".opus"}:
+        suffix = ".bin"
+    audio_path = temp_path / f"input_audio{suffix}"
+    audio_path.write_bytes(audio_bytes)
+    return audio_path
+
+
 def align_lyrics_job(payload: dict) -> dict:
     audio_url = payload.get("vocal_url") or payload.get("audio_url")
+    audio_base64 = payload.get("audio_base64")
     lyrics = str(payload.get("lyrics") or "").strip()
     model_name = payload.get("model", "large-v3")
     language = payload.get("language", "en")
@@ -211,10 +360,10 @@ def align_lyrics_job(payload: dict) -> dict:
     song = payload.get("song", "untitled")
     approve = bool(payload.get("approve", False))
 
-    if not audio_url:
+    if not audio_url and not audio_base64:
         return {
             "status": "rejected",
-            "reason": "audio_url or vocal_url is required.",
+            "reason": "audio_url, vocal_url, or audio_base64 is required.",
         }
 
     if not lyrics:
@@ -229,8 +378,11 @@ def align_lyrics_job(payload: dict) -> dict:
 
     with temporary_job_dir("lyrics") as temp_dir:
         temp_path = Path(temp_dir)
-        audio_path = temp_path / "input_audio"
-        download_file(audio_url, audio_path)
+        audio_path = _write_embedded_audio(payload, temp_path)
+
+        if audio_path is None:
+            audio_path = temp_path / "input_audio"
+            download_file(audio_url, audio_path)
 
         model = whisperx.load_model(
             model_name,
@@ -270,6 +422,7 @@ def align_lyrics_job(payload: dict) -> dict:
                 ),
                 "device": device,
                 "model": model_name,
+                "aligner_version": ALIGNER_VERSION,
                 "metrics": metrics,
                 "transcription_text": " ".join(word["word"] for word in observed),
             }
@@ -279,10 +432,10 @@ def align_lyrics_job(payload: dict) -> dict:
             artist=artist,
             song=song,
             lines=lines,
-            output_dir=Path(
-                os.environ.get("STEMFORGE_WORKSPACE", "/tmp/stemforge")
-            )
-            / "output",
+            output_dir=(
+                Path(os.environ.get("STEMFORGE_WORKSPACE", "/tmp/stemforge"))
+                / "output"
+            ),
         )
 
         if approve:
@@ -301,6 +454,7 @@ def align_lyrics_job(payload: dict) -> dict:
             "device": device,
             "model": model_name,
             "language": language,
+            "aligner_version": ALIGNER_VERSION,
             "metrics": metrics,
             "review_required": any(line["needs_review"] for line in lines),
             "review_line_indices": [
