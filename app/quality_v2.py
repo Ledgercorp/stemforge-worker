@@ -84,7 +84,7 @@ def _band_energy(audio: np.ndarray, sample_rate: int, low_hz: float, high_hz: fl
     mask = (frequencies >= float(low_hz)) & (frequencies < upper)
     if not np.any(mask):
         return 0.0
-    return float(np.trapezoid(psd[mask], frequencies[mask]) + 1e-20)
+    return max(0.0, float(np.trapezoid(psd[mask], frequencies[mask])))
 
 
 def compare_audio_quality(reference: np.ndarray, candidate: np.ndarray, sample_rate: int) -> dict:
@@ -96,8 +96,11 @@ def compare_audio_quality(reference: np.ndarray, candidate: np.ndarray, sample_r
     residual = matched - reference
     residual_relative_db = _db(_rms(residual) / max(_rms(reference), 1e-12))
 
+    # Derivative comparisons must be level-invariant. A clean gain-only change
+    # must not look like transient suppression or growth, while static, clicks,
+    # and zipper noise remain after level matching and are still detected.
     ref_derivative = _derivative_metrics(reference)
-    can_derivative = _derivative_metrics(candidate)
+    can_derivative = _derivative_metrics(matched)
     derivative_rms_delta_db = _db(
         can_derivative["rms"] / max(ref_derivative["rms"], 1e-12)
     )
@@ -106,15 +109,15 @@ def compare_audio_quality(reference: np.ndarray, candidate: np.ndarray, sample_r
     )
 
     ref_high = _band_energy(reference, sample_rate, 8000.0, 20000.0)
-    can_high = _band_energy(candidate, sample_rate, 8000.0, 20000.0)
+    can_high = _band_energy(matched, sample_rate, 8000.0, 20000.0)
     ref_total = _band_energy(reference, sample_rate, 20.0, 20000.0)
-    can_total = _band_energy(candidate, sample_rate, 20.0, 20000.0)
+    can_total = _band_energy(matched, sample_rate, 20.0, 20000.0)
     ref_high_ratio = ref_high / max(ref_total, 1e-20)
     can_high_ratio = can_high / max(can_total, 1e-20)
     high_band_ratio_delta_db = _db(can_high_ratio / max(ref_high_ratio, 1e-20))
 
     return {
-        "waveform_correlation": round(_waveform_correlation(reference, candidate), 7),
+        "waveform_correlation": round(_waveform_correlation(reference, matched), 7),
         "level_match_gain_db": round(_db(match_gain), 4),
         "level_matched_residual_relative_db": round(residual_relative_db, 4),
         "non_finite_sample_count": _finite_count(candidate),
@@ -131,8 +134,8 @@ def compare_audio_quality(reference: np.ndarray, candidate: np.ndarray, sample_r
             "candidate_outlier_count": can_derivative["robust_outlier_count"],
         },
         "high_band_energy_ratio": {
-            "reference": round(ref_high_ratio, 9),
-            "candidate": round(can_high_ratio, 9),
+            "reference": round(ref_high_ratio, 12),
+            "candidate": round(can_high_ratio, 12),
             "delta_db": round(high_band_ratio_delta_db, 4),
         },
     }
@@ -169,7 +172,13 @@ def quality_gate(
     if int(derivative["candidate_outlier_count"]) > allowed_outliers:
         reasons.append("new_waveform_discontinuities")
 
-    if float(comparison["high_band_energy_ratio"]["delta_db"]) > 4.0:
+    # Ratios close to numerical silence are unstable and must not turn a clean
+    # low-band signal or a simple gain change into a false noise alarm. The
+    # relative growth gate activates only when the candidate has a meaningful
+    # amount of energy above 8 kHz.
+    high_band = comparison["high_band_energy_ratio"]
+    candidate_high_ratio = float(high_band["candidate"])
+    if candidate_high_ratio > 1e-6 and float(high_band["delta_db"]) > 4.0:
         reasons.append("high_frequency_noise_growth")
 
     return {
