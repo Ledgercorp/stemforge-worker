@@ -7,6 +7,7 @@ import mimetypes
 import os
 import re
 import shutil
+import time
 from pathlib import Path
 from typing import Iterable
 
@@ -19,8 +20,20 @@ OUTPUT_DIR = WORKSPACE / "output"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
+class InputTransferError(RuntimeError):
+    """Raised when an input cannot be fetched or fails integrity validation."""
+
+
 def _slug(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "_", value).strip("._-") or "file"
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _s3_client():
@@ -45,7 +58,7 @@ def _s3_client():
             or os.environ.get("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.environ.get("STEMFORGE_S3_SECRET_ACCESS_KEY")
             or os.environ.get("AWS_SECRET_ACCESS_KEY"),
-            config=Config(signature_version="s3v4", retries={"max_attempts": 3}),
+            config=Config(signature_version="s3v4", retries={"max_attempts": 4}),
         ),
         bucket,
     )
@@ -68,7 +81,11 @@ def storage_status() -> dict:
 
 def create_upload_job(payload: dict) -> dict:
     filename = _slug(str(payload.get("filename") or "upload.bin"))
-    content_type = str(payload.get("content_type") or mimetypes.guess_type(filename)[0] or "application/octet-stream")
+    content_type = str(
+        payload.get("content_type")
+        or mimetypes.guess_type(filename)[0]
+        or "application/octet-stream"
+    )
     ttl_seconds = max(60, min(int(payload.get("ttl_seconds", 3600)), 86400))
     prefix = _slug(str(payload.get("artist") or "default"))
     nonce = hashlib.sha256(os.urandom(32)).hexdigest()[:20]
@@ -79,7 +96,14 @@ def create_upload_job(payload: dict) -> dict:
         Params={"Bucket": bucket, "Key": key, "ContentType": content_type},
         ExpiresIn=ttl_seconds,
     )
-    return {"status": "completed", "storage_key": key, "upload_url": url, "method": "PUT", "headers": {"Content-Type": content_type}, "expires_in_seconds": ttl_seconds}
+    return {
+        "status": "completed",
+        "storage_key": key,
+        "upload_url": url,
+        "method": "PUT",
+        "headers": {"Content-Type": content_type},
+        "expires_in_seconds": ttl_seconds,
+    }
 
 
 def create_download_job(payload: dict) -> dict:
@@ -88,8 +112,17 @@ def create_download_job(payload: dict) -> dict:
         return {"status": "rejected", "reason": "storage_key is required."}
     ttl_seconds = max(60, min(int(payload.get("ttl_seconds", 3600)), 86400))
     client, bucket = _s3_client()
-    url = client.generate_presigned_url("get_object", Params={"Bucket": bucket, "Key": key}, ExpiresIn=ttl_seconds)
-    return {"status": "completed", "storage_key": key, "download_url": url, "expires_in_seconds": ttl_seconds}
+    url = client.generate_presigned_url(
+        "get_object",
+        Params={"Bucket": bucket, "Key": key},
+        ExpiresIn=ttl_seconds,
+    )
+    return {
+        "status": "completed",
+        "storage_key": key,
+        "download_url": url,
+        "expires_in_seconds": ttl_seconds,
+    }
 
 
 def delete_storage_objects(payload: dict) -> dict:
@@ -100,72 +133,203 @@ def delete_storage_objects(payload: dict) -> dict:
     if not keys:
         return {"status": "rejected", "reason": "storage_keys is required."}
     client, bucket = _s3_client()
-    client.delete_objects(Bucket=bucket, Delete={"Objects": [{"Key": key} for key in keys], "Quiet": True})
+    client.delete_objects(
+        Bucket=bucket,
+        Delete={"Objects": [{"Key": key} for key in keys], "Quiet": True},
+    )
     return {"status": "completed", "deleted": keys}
 
 
-def _download_url(url: str, destination: Path) -> Path:
+def _validate_download(
+    path: Path,
+    *,
+    content_type: str | None,
+    expected_size_bytes: int | None,
+    expected_sha256: str | None,
+) -> None:
+    size = path.stat().st_size
+    if size <= 0:
+        raise InputTransferError("Downloaded input is empty.")
+
+    first_bytes = path.read_bytes()[:512].lstrip().lower()
+    if (
+        (content_type or "").lower().startswith("text/html")
+        or first_bytes.startswith(b"<!doctype html")
+        or first_bytes.startswith(b"<html")
+    ):
+        raise InputTransferError(
+            "The input URL returned an HTML page instead of the requested file. "
+            "The link may be private, expired, or require browser confirmation."
+        )
+
+    if expected_size_bytes is not None and size != int(expected_size_bytes):
+        raise InputTransferError(
+            f"Input size mismatch: expected {int(expected_size_bytes)} bytes, received {size}."
+        )
+
+    if expected_sha256:
+        actual = _sha256(path)
+        if actual.lower() != str(expected_sha256).lower():
+            raise InputTransferError(
+                f"Input SHA-256 mismatch: expected {expected_sha256}, received {actual}."
+            )
+
+
+def _download_url(
+    url: str,
+    destination: Path,
+    *,
+    expected_size_bytes: int | None = None,
+    expected_sha256: str | None = None,
+) -> Path:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    with requests.get(url, timeout=(20, 3600), stream=True, allow_redirects=True) as response:
-        response.raise_for_status()
-        with destination.open("wb") as output:
-            for chunk in response.iter_content(chunk_size=1024 * 1024):
-                if chunk:
-                    output.write(chunk)
-    return destination
+    temporary = destination.with_name(f".{destination.name}.part")
+    temporary.unlink(missing_ok=True)
+
+    last_error: Exception | None = None
+    for attempt in range(1, 4):
+        try:
+            with requests.get(
+                url,
+                timeout=(20, 3600),
+                stream=True,
+                allow_redirects=True,
+                headers={"User-Agent": "StemForge/2.2.1"},
+            ) as response:
+                if response.status_code == 404:
+                    raise InputTransferError(
+                        "Input URL returned HTTP 404. The temporary file may have been deleted or the link is stale."
+                    )
+                response.raise_for_status()
+                with temporary.open("wb") as output:
+                    for chunk in response.iter_content(chunk_size=1024 * 1024):
+                        if chunk:
+                            output.write(chunk)
+                _validate_download(
+                    temporary,
+                    content_type=response.headers.get("Content-Type"),
+                    expected_size_bytes=expected_size_bytes,
+                    expected_sha256=expected_sha256,
+                )
+                temporary.replace(destination)
+                return destination
+        except InputTransferError:
+            temporary.unlink(missing_ok=True)
+            raise
+        except (requests.RequestException, OSError) as exc:
+            last_error = exc
+            temporary.unlink(missing_ok=True)
+            if attempt < 3:
+                time.sleep(float(2 ** (attempt - 1)))
+
+    raise InputTransferError(
+        f"Input download failed after 3 attempts: {type(last_error).__name__}: {last_error}"
+    )
 
 
 def _download_storage_key(key: str, destination: Path) -> Path:
     client, bucket = _s3_client()
     destination.parent.mkdir(parents=True, exist_ok=True)
-    client.download_file(bucket, key, str(destination))
+    temporary = destination.with_name(f".{destination.name}.part")
+    temporary.unlink(missing_ok=True)
+    try:
+        client.download_file(bucket, key, str(temporary))
+        _validate_download(
+            temporary,
+            content_type=None,
+            expected_size_bytes=None,
+            expected_sha256=None,
+        )
+        temporary.replace(destination)
+    finally:
+        temporary.unlink(missing_ok=True)
     return destination
 
 
-def materialize_input(payload: dict, field: str, destination: Path, *, required: bool = True) -> Path | None:
+def materialize_input(
+    payload: dict,
+    field: str,
+    destination: Path,
+    *,
+    required: bool = True,
+) -> Path | None:
     spec = payload.get(field)
     storage_key = payload.get(f"{field}_storage_key")
     url = payload.get(f"{field}_url")
     encoded = payload.get(f"{field}_base64")
     existing_path = payload.get(f"{field}_path")
+    expected_size_bytes = payload.get(f"{field}_size_bytes")
+    expected_sha256 = payload.get(f"{field}_sha256")
 
     if isinstance(spec, dict):
         storage_key = storage_key or spec.get("storage_key")
         url = url or spec.get("url")
         encoded = encoded or spec.get("base64")
         existing_path = existing_path or spec.get("path")
+        expected_size_bytes = expected_size_bytes or spec.get("size_bytes")
+        expected_sha256 = expected_sha256 or spec.get("sha256")
     elif isinstance(spec, str) and spec.startswith(("https://", "http://")):
         url = url or spec
 
-    if storage_key:
-        return _download_storage_key(str(storage_key), destination)
-    if url:
-        return _download_url(str(url), destination)
-    if encoded:
-        try:
-            raw = base64.b64decode(str(encoded), validate=True)
-        except (binascii.Error, ValueError) as exc:
-            raise ValueError(f"Invalid base64 supplied for {field}.") from exc
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes(raw)
-        return destination
-    if existing_path:
-        source = Path(str(existing_path)).resolve()
-        root = WORKSPACE.resolve()
-        if root != source and root not in source.parents:
-            raise ValueError(f"{field}_path must be inside {root}.")
-        if not source.exists():
-            raise FileNotFoundError(str(source))
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
-        return destination
+    try:
+        if storage_key:
+            path = _download_storage_key(str(storage_key), destination)
+        elif url:
+            path = _download_url(
+                str(url),
+                destination,
+                expected_size_bytes=(
+                    int(expected_size_bytes) if expected_size_bytes is not None else None
+                ),
+                expected_sha256=(str(expected_sha256) if expected_sha256 else None),
+            )
+        elif encoded:
+            try:
+                raw = base64.b64decode(str(encoded), validate=True)
+            except (binascii.Error, ValueError) as exc:
+                raise ValueError(f"Invalid base64 supplied for {field}.") from exc
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(raw)
+            _validate_download(
+                destination,
+                content_type=None,
+                expected_size_bytes=(
+                    int(expected_size_bytes) if expected_size_bytes is not None else None
+                ),
+                expected_sha256=(str(expected_sha256) if expected_sha256 else None),
+            )
+            path = destination
+        elif existing_path:
+            source = Path(str(existing_path)).resolve()
+            root = WORKSPACE.resolve()
+            if root != source and root not in source.parents:
+                raise ValueError(f"{field}_path must be inside {root}.")
+            if not source.exists():
+                raise FileNotFoundError(str(source))
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+            path = destination
+        else:
+            if required:
+                raise ValueError(
+                    f"{field}_url, {field}_storage_key, {field}_base64, or {field}_path is required."
+                )
+            return None
+    except Exception as exc:
+        if isinstance(exc, (InputTransferError, ValueError, FileNotFoundError)):
+            raise type(exc)(f"Input '{field}' failed: {exc}") from exc
+        raise InputTransferError(f"Input '{field}' failed: {exc}") from exc
 
-    if required:
-        raise ValueError(f"{field}_url, {field}_storage_key, {field}_base64, or {field}_path is required.")
-    return None
+    return path
 
 
-def publish_file(path: Path, *, artist: str = "default", category: str = "outputs", ttl_seconds: int = 86400) -> dict:
+def publish_file(
+    path: Path,
+    *,
+    artist: str = "default",
+    category: str = "outputs",
+    ttl_seconds: int = 86400,
+) -> dict:
     path = Path(path).resolve()
     prefix = _slug(artist)
     category_slug = _slug(category)
@@ -183,6 +347,7 @@ def publish_file(path: Path, *, artist: str = "default", category: str = "output
             "local_path": str(destination),
             "volume_path": str(destination),
             "size_bytes": destination.stat().st_size,
+            "sha256": _sha256(destination),
             "download_url": None,
             "storage_mode": "runpod_volume",
             "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
@@ -201,6 +366,7 @@ def publish_file(path: Path, *, artist: str = "default", category: str = "output
         "filename": path.name,
         "local_path": str(path),
         "size_bytes": path.stat().st_size,
+        "sha256": _sha256(path),
         "storage_key": key,
         "download_url": url,
         "expires_in_seconds": max(60, min(int(ttl_seconds), 604800)),
@@ -208,5 +374,19 @@ def publish_file(path: Path, *, artist: str = "default", category: str = "output
     }
 
 
-def publish_files(paths: Iterable[Path], *, artist: str = "default", category: str = "outputs", ttl_seconds: int = 86400) -> list[dict]:
-    return [publish_file(Path(path), artist=artist, category=category, ttl_seconds=ttl_seconds) for path in paths]
+def publish_files(
+    paths: Iterable[Path],
+    *,
+    artist: str = "default",
+    category: str = "outputs",
+    ttl_seconds: int = 86400,
+) -> list[dict]:
+    return [
+        publish_file(
+            Path(path),
+            artist=artist,
+            category=category,
+            ttl_seconds=ttl_seconds,
+        )
+        for path in paths
+    ]
