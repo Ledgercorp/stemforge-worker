@@ -1,0 +1,152 @@
+{
+  "request": "stemforge-v2.4.0",
+  "endpoint_id": "dyup1dztjr4u15",
+  "workflow_run_id": 30951677150,
+  "request_commit": "07c41991856db2a54f25259fd6344c8d729f9700",
+  "observed_at": "2026-08-04T21:17:26Z",
+  "runpod_status": "COMPLETED",
+  "worker_output": {
+    "action": "system_info",
+    "build": "v2.3.0-naturalize-quality",
+    "executables": {
+      "ffmpeg": true,
+      "ffprobe": true
+    },
+    "feature_groups": {
+      "analysis": [
+        "analyze_audio",
+        "analyze_audio_v2",
+        "compare_audio",
+        "compare_audio_v2"
+      ],
+      "interchange": [
+        "export_daw"
+      ],
+      "lyrics": [
+        "align_lyrics",
+        "align_lyrics_smart"
+      ],
+      "memory": [
+        "get_memory",
+        "record_feedback",
+        "record_rule",
+        "get_production_profile"
+      ],
+      "processing": [
+        "master_audio",
+        "master_audio_github_delivery",
+        "full_pass",
+        "stem_remix",
+        "repair_audio",
+        "humanize_audio",
+        "naturalize"
+      ],
+      "stems": [
+        "inspect_stems",
+        "inspect_stems_v2",
+        "separate_stems",
+        "stem_remix"
+      ],
+      "transfer": [
+        "create_upload",
+        "create_download",
+        "delete_storage_objects",
+        "volume_upload_init",
+        "volume_upload_chunk",
+        "volume_upload_finalize",
+        "volume_file_info",
+        "volume_file_chunk",
+        "volume_delete",
+        "master_audio_github_delivery",
+        "private_github_release_export"
+      ],
+      "visual": [
+        "render_lyric_video"
+      ]
+    },
+    "naturalize": {
+      "ab_reference_default": true,
+      "agent_policy": {
+        "classification": "fidelity_authenticity_enhancement",
+        "denoise_must_follow_all_modulation": true,
+        "fall_back_to_quick_without_vocal_stems": true,
+        "not_a_detection_tool": true,
+        "prefer_surgical_when_vocal_stems_are_available": true,
+        "surgical_can_run_demucs_when_explicitly_requested": true
+      },
+      "callable_action": "naturalize",
+      "default_intensity": 0.35,
+      "default_mode": "auto",
+      "label": "Naturalness / Authenticity enhancement",
+      "modes": [
+        "auto",
+        "quick",
+        "surgical"
+      ],
+      "nominal_processing_order": [
+        {
+          "depth": 10,
+          "operation": "vibrato",
+          "rate_hz": 15
+        },
+        {
+          "depth": 10,
+          "operation": "tremolo",
+          "rate_hz": 15
+        },
+        {
+          "depth": 10,
+          "operation": "vibrato",
+          "rate_hz": 10
+        },
+        {
+          "delay_ms": 1,
+          "depth": 9,
+          "modulation": 0.9,
+          "operation": "flanger"
+        },
+        {
+          "operation": "light_denoise",
+          "position": "after_modulation"
+        }
+      ],
+      "non_destructive_default": true
+    },
+    "packages": {
+      "boto3": true,
+      "demucs": true,
+      "mido": true,
+      "pyloudnorm": true,
+      "scipy": true,
+      "torch": true,
+      "whisperx": true
+    },
+    "quality_gates": {
+      "artifact_discontinuity_detection": true,
+      "high_frequency_noise_growth_detection": true,
+      "level_matched_residual_comparison": true,
+      "master_anchored_delta_fallback": true,
+      "non_finite_sample_rejection": true,
+      "strict_output_write_available": true,
+      "strict_stem_reconstruction_gate": true
+    },
+    "reliability_guards": {
+      "atomic_input_downloads": true,
+      "drive_head_to_range_get_preflight_fallback": true,
+      "dynamic_workflow_asset_counts": true,
+      "failure_diagnostic_artifacts": true,
+      "input_retry_and_stale_link_detection": true,
+      "optional_size_and_sha256_validation": true,
+      "single_canonical_stem_remix_workflow": true
+    },
+    "status": "completed",
+    "stemforge_version": "2.3.0",
+    "storage": {
+      "bucket_configured": false,
+      "mode": "runpod_volume",
+      "note": "Set STEMFORGE_S3_BUCKET and S3-compatible credentials to activate private expiring upload and download links.",
+      "output_root": "/runpod-volume/stemforge/output",
+      "signed_transfer_ready": false
+    }
+  }
+}
