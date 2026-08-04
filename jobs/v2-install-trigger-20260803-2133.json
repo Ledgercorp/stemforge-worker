@@ -1,0 +1,8 @@
+{
+  "input": {
+    "action": "aligner_info"
+  },
+  "policy": {
+    "ttl": 3600000
+  }
+}
