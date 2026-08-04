@@ -1,0 +1,37 @@
+name: Report Live Probe Status
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "system_probe_status_requests/**/*.txt"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Report recent live probe runs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p system_probe_status_results
+          gh run list \
+            --repo "$GITHUB_REPOSITORY" \
+            --workflow "Probe Live StemForge" \
+            --limit 10 \
+            --json databaseId,status,conclusion,headSha,event,displayTitle,createdAt,updatedAt,url \
+            > system_probe_status_results/recent.json
+          ENCODED="$(base64 -w0 system_probe_status_results/recent.json)"
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/system_probe_status_results/recent.json" \
+            -f message="Record live probe workflow status [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
