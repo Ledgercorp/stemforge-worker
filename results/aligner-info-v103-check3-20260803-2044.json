@@ -1,0 +1,11 @@
+{
+  "delayTime": 10080,
+  "executionTime": 191,
+  "id": "a91c4f29-d61b-43cd-bd56-f5ee88580126-u2",
+  "output": {
+    "aligner_version": "monotonic_dynamic_programming_v3",
+    "status": "completed"
+  },
+  "status": "COMPLETED",
+  "workerId": "z9r26j3wgo1s0o"
+}
