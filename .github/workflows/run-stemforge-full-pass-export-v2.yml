@@ -1,0 +1,202 @@
+name: Run StemForge Full Pass Export v2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "full_pass_retry_jobs/**/*.json"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: stemforge-full-pass-export-v2
+  cancel-in-progress: false
+
+jobs:
+  full-pass-and-export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve request metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^full_pass_retry_jobs/.+\.json$' | head -n 1)"
+          test -n "$REQUEST"
+          NAME="$(basename "$REQUEST" .json)"
+          ARTIFACT_NAME="$(jq -r '.artifact_name // "stemforge-full-pass"' "$REQUEST")"
+          TAG="stemforge-full-pass-v2-${GITHUB_RUN_ID}"
+          echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
+          echo "request_name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+          echo "output_tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Verify live StemForge v2.1.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          PAYLOAD="$(mktemp)"
+          SUBMIT="$(mktemp)"
+          RESULT="$(mktemp)"
+          printf '%s\n' '{"input":{"action":"system_info"}}' > "$PAYLOAD"
+          curl -sS --max-time 120 \
+            -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${PAYLOAD}" > "$SUBMIT"
+          JOB_ID="$(jq -r '.id // empty' "$SUBMIT")"
+          test -n "$JOB_ID"
+          TERMINAL=0
+          for attempt in $(seq 1 180); do
+            curl -sS --max-time 120 \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT"
+            STATE="$(jq -r '.status // empty' "$RESULT")"
+            case "$STATE" in
+              COMPLETED) TERMINAL=1; break ;;
+              FAILED|TIMED_OUT|CANCELLED) cat "$RESULT" >&2; exit 1 ;;
+            esac
+            sleep 2
+          done
+          test "$TERMINAL" -eq 1
+          jq -e '.output.stemforge_version == "2.1.0"' "$RESULT" >/dev/null
+          jq -e '((.output.feature_groups.processing // []) | index("full_pass")) != null' "$RESULT" >/dev/null
+          jq -e '.output.packages.mido == true' "$RESULT" >/dev/null
+          rm -f "$PAYLOAD" "$SUBMIT" "$RESULT"
+
+      - name: Create temporary private release
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.meta.outputs.output_tag }}"
+          TITLE="Temporary StemForge Full Pass ${GITHUB_RUN_ID}"
+          RELEASE_ID="$(gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/releases" \
+            -f tag_name="$TAG" \
+            -f target_commitish="$GITHUB_SHA" \
+            -f name="$TITLE" \
+            -f body="Temporary private output container for one StemForge v2.1 full pass." \
+            -F draft=true \
+            --jq '.id')"
+          test -n "$RELEASE_ID"
+          echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Run live full-pass worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="${{ steps.meta.outputs.request }}"
+          RELEASE_ID="${{ steps.release.outputs.release_id }}"
+          mkdir -p fetched_output
+          RUNTIME_PAYLOAD="$(mktemp)"
+          RESULT_FILE="fetched_output/runpod_result.json"
+          jq \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --argjson release_id "$RELEASE_ID" \
+            --arg token "$GH_TOKEN" \
+            '.input.github_release_export = {repository:$repository, release_id:$release_id, token:$token}' \
+            "$REQUEST" > "$RUNTIME_PAYLOAD"
+          SUBMIT_FILE="$(mktemp)"
+          curl -sS --max-time 120 \
+            -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${RUNTIME_PAYLOAD}" > "$SUBMIT_FILE"
+          JOB_ID="$(jq -r '.id // empty' "$SUBMIT_FILE")"
+          test -n "$JOB_ID"
+          printf 'runpod_job_id=%s\n' "$JOB_ID" > fetched_output/RunPod_Execution.txt
+          rm -f "$SUBMIT_FILE" "$RUNTIME_PAYLOAD"
+          TERMINAL=0
+          for attempt in $(seq 1 900); do
+            curl -sS --max-time 120 \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT_FILE"
+            STATE="$(jq -r '.status // empty' "$RESULT_FILE")"
+            case "$STATE" in
+              COMPLETED) TERMINAL=1; break ;;
+              FAILED|TIMED_OUT|CANCELLED) cat "$RESULT_FILE" >&2; exit 1 ;;
+            esac
+            sleep 5
+          done
+          test "$TERMINAL" -eq 1
+          jq -e '.output.status == "completed" and .output.stemforge_version == "2.1.0" and .output.action == "full_pass"' "$RESULT_FILE" >/dev/null
+          jq -e '.output.input_summary.stem_count == 8 and .output.input_summary.midi_file_count == 7' "$RESULT_FILE" >/dev/null
+          jq -e '.output.candidates | length == 3' "$RESULT_FILE" >/dev/null
+
+      - name: Download release assets by ID
+        shell: bash
+        run: |
+          set -euo pipefail
+          RELEASE_ID="${{ steps.release.outputs.release_id }}"
+          ASSETS_FILE="$(mktemp)"
+          gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?per_page=100" > "$ASSETS_FILE"
+          ASSET_COUNT="$(jq 'length' "$ASSETS_FILE")"
+          test "$ASSET_COUNT" -ge 5
+          while IFS=$'\t' read -r ASSET_ID ASSET_NAME; do
+            test -n "$ASSET_ID"
+            test -n "$ASSET_NAME"
+            gh api \
+              -H "Accept: application/octet-stream" \
+              "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" \
+              > "fetched_output/${ASSET_NAME}"
+          done < <(jq -r '.[] | [.id, .name] | @tsv' "$ASSETS_FILE")
+          rm -f "$ASSETS_FILE"
+          WAV_COUNT="$(find fetched_output -maxdepth 1 -type f -iname '*.wav' | wc -l)"
+          test "$WAV_COUNT" -eq 3
+          test -n "$(find fetched_output -maxdepth 1 -type f -name '*FullPass_Report.json' -print -quit)"
+          test -n "$(find fetched_output -maxdepth 1 -type f -name 'mastering_report.json' -print -quit)"
+          cp "${{ steps.meta.outputs.request }}" fetched_output/request.json
+          sha256sum fetched_output/* > fetched_output/checksums.sha256
+          find fetched_output -maxdepth 1 -type f -printf '%f\n' | sort
+
+      - name: Upload verified full-pass artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact_name }}
+          path: fetched_output/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+      - name: Publish completion manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME="${{ steps.meta.outputs.request_name }}"
+          ARTIFACT_NAME="${{ steps.meta.outputs.artifact_name }}"
+          MANIFEST="$(jq -n \
+            --arg request "$NAME" \
+            --arg artifact_name "$ARTIFACT_NAME" \
+            --argjson run_id "$GITHUB_RUN_ID" \
+            --arg commit "$GITHUB_SHA" \
+            '{request:$request,artifact_name:$artifact_name,run_id:$run_id,commit:$commit,status:"completed"}')"
+          ENCODED="$(printf '%s' "$MANIFEST" | base64 -w0)"
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/full_pass_manifests/${NAME}.json" \
+            -f message="Complete StemForge full-pass export [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
+
+      - name: Remove temporary release
+        if: always()
+        shell: bash
+        run: |
+          RELEASE_ID="${{ steps.release.outputs.release_id }}"
+          TAG="${{ steps.meta.outputs.output_tag }}"
+          if [ -n "$RELEASE_ID" ]; then
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" || true
+          fi
+          git push origin --delete "refs/tags/${TAG}" || true
