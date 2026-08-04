@@ -1,0 +1,50 @@
+name: Patch StemForge v2.1.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "maintenance/patch-v2.1.1.json"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply serialization fix and version bump
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          stems = Path('app/stems_v2.py')
+          text = stems.read_text(encoding='utf-8')
+          old = '"safe_for_stem_remix":residual_ratio_db<=-12'
+          new = '"safe_for_stem_remix":bool(residual_ratio_db<=-12)'
+          if old not in text and new not in text:
+              raise SystemExit('Expected stem safety expression was not found.')
+          text = text.replace(old, new)
+          stems.write_text(text, encoding='utf-8')
+
+          system = Path('app/system_v2.py')
+          text = system.read_text(encoding='utf-8')
+          if 'VERSION = "2.1.0"' not in text and 'VERSION = "2.1.1"' not in text:
+              raise SystemExit('Expected version declaration was not found.')
+          text = text.replace('VERSION = "2.1.0"', 'VERSION = "2.1.1"')
+          system.write_text(text, encoding='utf-8')
+
+          workflow = Path('.github/workflows/stemforge-full-pass-direct-fetch.yml')
+          text = workflow.read_text(encoding='utf-8')
+          text = text.replace('2.1.0', '2.1.1')
+          workflow.write_text(text, encoding='utf-8')
+          PY
+          python -m py_compile app/stems_v2.py app/system_v2.py app/full_pass_v2.py app/api.py
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/stems_v2.py app/system_v2.py .github/workflows/stemforge-full-pass-direct-fetch.yml
+          git commit -m "Fix stem safety serialization and bump v2.1.1"
+          git push
