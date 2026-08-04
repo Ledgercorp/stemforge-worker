@@ -1,4 +1,4 @@
-name: StemForge v2.0.1 Quick Check
+name: StemForge Quick Check
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - name: Query live worker synchronously
         shell: bash
         run: |
@@ -33,12 +33,13 @@ jobs:
             -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
             -H "Content-Type: application/json" \
             --data-binary "@${FILE}" | jq . > "v201_quick_results/${NAME}.json"
-      - name: Commit result
+      - name: Commit result safely
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "stemforge-v201-check"
-          git config user.email "stemforge-v201-check@users.noreply.github.com"
+          git config user.name "stemforge-quick-check"
+          git config user.email "stemforge-quick-check@users.noreply.github.com"
           git add v201_quick_results
-          git commit -m "Add StemForge v2.0.1 quick check result [skip ci]"
+          git commit -m "Add StemForge quick check result [skip ci]"
+          git pull --rebase origin main
           git push
