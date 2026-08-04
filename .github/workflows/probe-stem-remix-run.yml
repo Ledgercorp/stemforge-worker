@@ -1,0 +1,34 @@
+name: Probe Stem Remix Run
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "probes/stem-remix-run/*.txt"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Record latest remix run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep '^probes/stem-remix-run/' | head -n 1)"
+          NAME="$(basename "$FILE" .txt)"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/run-stemforge-stem-remix.yml/runs?per_page=5" > runs.json
+          jq '{runs:[.workflow_runs[] | {id,status,conclusion,created_at,updated_at,head_sha,display_title,run_attempt}]}' runs.json > result.json
+          ENCODED="$(base64 -w0 result.json)"
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/probe_results/${NAME}.json" \
+            -f message="Record stem remix workflow state [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
