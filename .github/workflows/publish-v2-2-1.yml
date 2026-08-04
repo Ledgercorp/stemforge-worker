@@ -1,0 +1,33 @@
+name: Publish StemForge v2.2.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "release/v2.2.1.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish immutable v2.2.1 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view v2.2.1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit v2.2.1 \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "StemForge v2.2.1 Quality and Reliability Hotfix" \
+              --notes-file release/v2.2.1.txt
+          else
+            gh release create v2.2.1 \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "StemForge v2.2.1 Quality and Reliability Hotfix" \
+              --notes-file release/v2.2.1.txt
+          fi
