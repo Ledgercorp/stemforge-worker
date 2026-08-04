@@ -5,7 +5,7 @@ import shutil
 
 from app.storage import storage_status
 
-VERSION = "2.0.2"
+VERSION = "2.0.3"
 
 
 def system_info_job(payload: dict | None = None) -> dict:
@@ -34,6 +34,7 @@ def system_info_job(payload: dict | None = None) -> dict:
                 "create_upload", "create_download", "delete_storage_objects",
                 "volume_upload_init", "volume_upload_chunk", "volume_upload_finalize",
                 "volume_file_info", "volume_file_chunk", "volume_delete",
+                "private_github_release_export",
             ],
             "memory": ["get_memory", "record_feedback", "record_rule", "get_production_profile"],
         },
