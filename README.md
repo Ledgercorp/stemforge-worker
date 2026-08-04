@@ -1,101 +1,110 @@
-# StemForge RunPod Worker
+# StemForge v2
 
-A private, GitHub-ready RunPod Serverless worker for StemForge.
+StemForge is a private RunPod Serverless audio-production worker operated through the GitHub relay.
 
-This starter build includes:
+## Live capabilities
 
-- WhisperX lyric transcription and word alignment
-- reconciliation against exact supplied lyrics
-- line-level confidence and review flags
-- SRT, ASS karaoke, LRC, CSV, and JSON export
-- audio analysis
-- basic objective A/B comparison
-- persistent artist memory on a RunPod network volume
-- API actions for future mixing and mastering tools
+### Lyrics
 
-## Repository structure
+- WhisperX `large-v3` transcription and word alignment
+- monotonic reconciliation against exact supplied lyrics
+- section-label removal and repeated-chorus preservation
+- intro-skip and first-visible-line rules
+- final-master duration clamping and gap-aware caption endings
+- SRT, word-timed ASS, LRC, CSV and JSON exports
 
-```text
-stemforge-runpod/
-├── Dockerfile
-├── requirements.txt
-├── handler.py
-├── .gitignore
-├── README.md
-├── app/
-│   ├── __init__.py
-│   ├── api.py
-│   ├── audio_analysis.py
-│   ├── export.py
-│   ├── lyric_align.py
-│   ├── mastering.py
-│   ├── memory.py
-│   ├── perceptual_listener.py
-│   ├── stem_processing.py
-│   └── utils.py
-├── models/
-├── output/
-├── reports/
-└── workspace/
-```
+### Audio analysis and comparison
 
-## Upload to GitHub
+- full-song integrated loudness, true peak, RMS and crest factor
+- clipping, discontinuity, DC offset and silence-region detection
+- stereo correlation, transient density and spectral distribution
+- ten-second metric timeline
+- waveform and spectrogram rendering
+- level-matched objective A/B residual and safety comparison
 
-1. Create a private GitHub repository.
-2. Upload the **contents of this folder**, not the outer ZIP.
-3. Confirm `Dockerfile` is in the repository root.
-4. Commit the files.
+Objective comparison is a DSP proxy, not human hearing.
 
-## Deploy on RunPod
+### Stems and separation
 
-1. Create or connect a RunPod account.
-2. Connect the private GitHub repository.
-3. Create a Serverless endpoint from the repository.
-4. Use the root `Dockerfile`.
-5. Attach a network volume mounted at `/runpod-volume`.
-6. Choose a GPU worker with at least 16 GB VRAM.
-7. Set minimum workers to `0` and maximum workers to `1`.
-8. Increase execution timeout for full-song alignment.
+- per-stem technical inspection
+- timeline-offset estimates
+- duplicate-stem fingerprinting
+- master reconstruction and null-residual testing
+- remix-safety flagging
+- Demucs source separation, clearly labeled as estimated stems
 
-The first job downloads Whisper and alignment models into the persistent volume. Later jobs reuse them.
+### Processing
 
-## Request format
+- dynamic, balanced and dense 24-bit mastering candidates
+- post-render safety rejection for clipping, phase risk and excessive crest loss
+- conservative click repair, hum notching and restrained harshness control
+- deterministic phrase microdynamics and transient variation
+- no vocal time warping or pitch correction
 
-The default action is `align_lyrics`.
+### Transfer and delivery
 
-```json
-{
-  "input": {
-    "action": "align_lyrics",
-    "audio_url": "https://example.com/final-master.wav",
-    "vocal_url": "https://example.com/lead-vocal.wav",
-    "lyrics": "First lyric line\nSecond lyric line",
-    "artist": "sounddecay",
-    "song": "Sweet Sixteen",
-    "model": "large-v3",
-    "language": "en",
-    "approve": false
-  }
-}
-```
+- URL, base64, S3 storage key and restricted RunPod-volume inputs
+- optional private expiring S3-compatible upload and download links
+- automatic output publishing when storage credentials are configured
 
-When `vocal_url` is supplied, StemForge aligns against it. Otherwise it uses `audio_url`.
-
-## Other actions
+Signed transfer requires:
 
 ```text
-analyze_audio
-compare_audio
+STEMFORGE_S3_BUCKET
+STEMFORGE_S3_ENDPOINT_URL
+STEMFORGE_S3_REGION
+STEMFORGE_S3_ACCESS_KEY_ID
+STEMFORGE_S3_SECRET_ACCESS_KEY
+```
+
+Without those variables, files remain on the attached RunPod volume.
+
+### Video and DAW
+
+- deterministic horizontal, vertical and square lyric-video rendering through FFmpeg
+- supplied real background media, subtitles, logo, grain and slow motion
+- no generative narrative footage
+- Reaper RPP, marker CSV, MIDI marker track, chapter text and ZIP export
+
+### Persistent memory
+
+- raw feedback and approved lyric timings
+- structured production rules with global or song scope
+- confidence, provenance and confirmation counts
+- applicable production-profile retrieval for later jobs
+
+## Main actions
+
+```text
+system_info
+storage_info
+create_upload
+create_download
+delete_storage_objects
+align_lyrics
+align_lyrics_smart
+analyze_audio_v2
+compare_audio_v2
+inspect_stems_v2
+separate_stems
+mastering_plan
+master_audio
+repair_audio
+humanize_audio
+render_lyric_video
+export_daw
 get_memory
 record_feedback
-mastering_plan
-inspect_stems
+record_rule
+get_production_profile
 ```
 
-## Important limitation
+Legacy v1 analysis and alignment actions remain available for compatibility.
 
-WhisperX is much better on isolated vocals than on a dense shoegaze master. Heavy distortion, screaming, reverb, layered vocals, or altered pronunciation can reduce recognition accuracy. The engine marks weakly anchored lines for review rather than pretending they are exact.
+## Boundaries
 
-## Secrets
-
-Do not commit API keys to this repository. Keep RunPod and storage credentials in private environment variables or secret storage.
+- Demucs outputs are not original multitracks.
+- Mastering candidates require level-matched listening before approval.
+- Offset estimates may be weak on ambient or sparse stems.
+- Direct live control of Logic is not included. DAW integration is currently file-based.
+- Removing metadata does not prove or conceal how audio was created.
