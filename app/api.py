@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from app.audio_analysis import analyze_audio_url
-from app.lyric_align import align_lyrics_job
+from app.lyric_align import ALIGNER_VERSION, align_lyrics_job
 from app.memory import get_memory, record_feedback
 from app.mastering import mastering_plan
 from app.perceptual_listener import compare_audio_urls
@@ -10,6 +10,7 @@ from app.stem_processing import inspect_stems_job
 
 SUPPORTED_ACTIONS = {
     "align_lyrics",
+    "aligner_info",
     "analyze_audio",
     "compare_audio",
     "get_memory",
@@ -31,6 +32,12 @@ def handle_job(payload: dict) -> dict:
 
     if action == "align_lyrics":
         return align_lyrics_job(payload)
+
+    if action == "aligner_info":
+        return {
+            "status": "completed",
+            "aligner_version": ALIGNER_VERSION,
+        }
 
     if action == "analyze_audio":
         return analyze_audio_url(payload)
