@@ -1,0 +1,17 @@
+{
+  "input": {
+    "action": "align_lyrics",
+    "vocal_url": "https://drive.google.com/uc?export=download&id=1gezCxh-8nBKn3DdTBp3jHazPQlfzwd9W",
+    "lyrics": "I remember the feeling,\nwarm but uneasy,\nnew home, new city,\nlow self-esteem.\nI took pill after pill\njust to quiet my head,\nthen smoked by the window\nand stayed in my bed.\nDropped acid alone while\nthe ceiling turned strange\nand waited for something\ninside me to change.\nMy dealer knew\nwhen I needed a spark,\nand I called that friendship\nbecause it was enough.\nAt sixteen, I thought\nI had years left to lose.\nAt seventeen,\nI had habits to choose.\nI don't miss the fear\nor the things I went through.\nI miss being young enough\nnot to know what they'd do.\nMy first love came\nthrough that apartment door.\nI had never let anyone\nthat close before.\nI kept the opioids\nhidden where nobody would see,\ntook more than I intended\nand kept it all with me.\nI overdosed in silence\nwith the bedroom door shut tight,\nthen woke up hours later\nand said that I was alright.\nI didn't know what was wrong\nor why I hated my skin.\nI only knew the pills could cut\nthe pressure down within.\nI don't call it good,\nand I don't call it bad.\nIt held some of the worst\nand the best that I had.\nNow when I remember,\nI can't make it clean.\nI hated those years,\nbut I still miss sixteen.\nNewark is traffic\nI pass on the way,\nbut part of me stays\nin that bedroom some days.\nI wasn't chasing\na story to tell.\nI don't miss that bedroom,\nat least not completely,\nbut sometimes I miss\nwhat it meant to be sixteen.\nI remember the feeling,\nwarm but uneasy,\na new home, a new city,\na life in between.",
+    "artist": "sounddecay",
+    "song": "Sweet Sixteen",
+    "model": "large-v3",
+    "language": "en",
+    "approve": false,
+    "batch_size": 8,
+    "minimum_anchor_coverage": 0.25
+  },
+  "policy": {
+    "ttl": 3600000
+  }
+}
