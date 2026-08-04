@@ -1,0 +1,2 @@
+StemForge v2.1.0 Hotfix 1
+NumPy-safe JSON serialization for full-pass reports.
