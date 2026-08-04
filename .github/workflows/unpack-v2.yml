@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "source_bundle/stemforge_v2_source.tar.gz.b64"
+      - ".github/workflows/unpack-v2.yml"
 
 permissions:
   contents: write
