@@ -1,0 +1,44 @@
+name: Probe Live v2.3.0 Verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "probes/live-v2-3-0/*.txt"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Record latest live verification runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep '^probes/live-v2-3-0/' | head -n 1)"
+          NAME="$(basename "$FILE" .txt)"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/verify-live-v2-3-0.yml/runs?per_page=10" \
+            --jq '{runs:[.workflow_runs[] | {id,event,status,conclusion,head_sha,created_at,updated_at,run_attempt,display_title}]}' \
+            > result.json
+          ENCODED="$(base64 -w0 result.json)"
+          DESTINATION="probe_results/${NAME}.json"
+          CURRENT_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${DESTINATION}?ref=main" --jq '.sha' 2>/dev/null || true)"
+          if [ -n "$CURRENT_SHA" ]; then
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${DESTINATION}" \
+              -f message="Record live verification workflow state [skip ci]" \
+              -f content="$ENCODED" \
+              -f sha="$CURRENT_SHA" \
+              -f branch=main >/dev/null
+          else
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${DESTINATION}" \
+              -f message="Record live verification workflow state [skip ci]" \
+              -f content="$ENCODED" \
+              -f branch=main >/dev/null
+          fi
