@@ -28,6 +28,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      PYTHONPATH: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -42,4 +44,4 @@ jobs:
       - name: Compile worker
         run: python -m compileall -q app handler.py
       - name: Run regression tests
-        run: pytest -q
+        run: python -m pytest -q
