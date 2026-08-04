@@ -15,6 +15,7 @@ from app.perceptual_listener import compare_audio_urls
 from app.repair_v2 import humanize_audio_job, repair_audio_job
 from app.separation_v2 import separate_stems_job
 from app.stem_processing import inspect_stems_job
+from app.stem_remix_v2 import stem_remix_job
 from app.stems_v2 import inspect_stems_v2_job
 from app.storage import create_download_job, create_upload_job, delete_storage_objects, storage_status
 from app.system_v2 import VERSION, system_info_job
@@ -34,7 +35,7 @@ SUPPORTED_ACTIONS = {
     "volume_file_info", "volume_file_chunk", "volume_delete",
     "align_lyrics", "align_lyrics_smart", "aligner_info",
     "analyze_audio", "analyze_audio_v2", "compare_audio", "compare_audio_v2",
-    "inspect_stems", "inspect_stems_v2", "separate_stems",
+    "inspect_stems", "inspect_stems_v2", "separate_stems", "stem_remix",
     "mastering_plan", "legacy_mastering_plan", "master_audio", "master_audio_github_delivery",
     "full_pass",
     "repair_audio", "humanize_audio", "render_lyric_video", "export_daw",
@@ -78,6 +79,7 @@ def handle_job(payload: dict) -> dict:
         "inspect_stems": lambda: inspect_stems_job(payload),
         "inspect_stems_v2": lambda: inspect_stems_v2_job(payload),
         "separate_stems": lambda: separate_stems_job(payload),
+        "stem_remix": lambda: stem_remix_job(payload),
         "mastering_plan": lambda: mastering_plan(payload),
         "legacy_mastering_plan": lambda: legacy_mastering_plan(payload),
         "master_audio": lambda: master_audio_job(payload),
