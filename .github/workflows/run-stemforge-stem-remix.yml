@@ -1,6 +1,12 @@
 name: Run StemForge Stem Remix
 
 on:
+  workflow_dispatch:
+    inputs:
+      request_path:
+        description: Repository path to one stem-remix request JSON
+        required: true
+        type: string
   push:
     branches: [main]
     paths:
@@ -13,8 +19,8 @@ permissions:
   actions: write
 
 concurrency:
-  group: stemforge-stem-remix
-  cancel-in-progress: true
+  group: stemforge-stem-remix-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   remix-and-export:
@@ -29,27 +35,65 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Resolve request
+      - name: Resolve and validate request
         id: meta
         shell: bash
         run: |
           set -euo pipefail
-          CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
-          REQUEST="$(printf '%s\n' "$CHANGED" | grep -E '^stem_remix_(retry_)?jobs/.+\.json$' | head -n 1 || true)"
-          if [ -z "$REQUEST" ]; then
-            TRIGGER="$(printf '%s\n' "$CHANGED" | grep -E '^stem_remix_retry_triggers/.+\.txt$' | head -n 1)"
-            REQUEST="$(tr -d '\r\n' < "$TRIGGER")"
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            REQUEST='${{ inputs.request_path }}'
+          else
+            CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+            mapfile -t REQUESTS < <(printf '%s\n' "$CHANGED" | grep -E '^stem_remix_(retry_)?jobs/.+\.json$' || true)
+            if [ "${#REQUESTS[@]}" -eq 0 ]; then
+              mapfile -t TRIGGERS < <(printf '%s\n' "$CHANGED" | grep -E '^stem_remix_retry_triggers/.+\.txt$' || true)
+              test "${#TRIGGERS[@]}" -eq 1
+              REQUEST="$(tr -d '\r\n' < "${TRIGGERS[0]}")"
+            else
+              test "${#REQUESTS[@]}" -eq 1
+              REQUEST="${REQUESTS[0]}"
+            fi
           fi
+
           test -f "$REQUEST"
+          jq -e '.input.action == "stem_remix"' "$REQUEST" >/dev/null
+          jq -e '(.input.stems | type) == "array" and (.input.stems | length) >= 1' "$REQUEST" >/dev/null
+          jq -e '.input.master_url or .input.master_storage_key or .input.master_base64 or .input.master_path' "$REQUEST" >/dev/null
+
           NAME="$(basename "$REQUEST" .json)"
           ARTIFACT_NAME="$(jq -r '.artifact_name // "stemforge-stem-remix"' "$REQUEST")"
           EXPECTED_STEMS="$(jq -r '.input.stems | length' "$REQUEST")"
-          EXPECTED_MIDI="$(jq -r 'if .input.midi_zip_base64 or .input.midi_zip_url then 7 else 0 end' "$REQUEST")"
-          echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
-          echo "request_name=$NAME" >> "$GITHUB_OUTPUT"
-          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
-          echo "expected_stems=$EXPECTED_STEMS" >> "$GITHUB_OUTPUT"
-          echo "expected_midi=$EXPECTED_MIDI" >> "$GITHUB_OUTPUT"
+          EXPECTED_MIDI="$(jq -r '.input.expected_midi_count // empty' "$REQUEST")"
+          EXPECTED_MIXES="$(jq -r 'if (.input.mix_profiles | type) == "string" then 1 else ((.input.mix_profiles // ["balanced","heavy"]) | length) end' "$REQUEST")"
+          EXPECTED_WAVS="$((EXPECTED_MIXES + 1))"
+          MINIMUM_VERSION="$(jq -r '.input.minimum_worker_version // "2.2.1"' "$REQUEST")"
+          REQUIRED_BUILD="$(jq -r '.input.required_build // "v2.2.1-quality-hotfix"' "$REQUEST")"
+
+          {
+            echo "request=$REQUEST"
+            echo "request_name=$NAME"
+            echo "artifact_name=$ARTIFACT_NAME"
+            echo "expected_stems=$EXPECTED_STEMS"
+            echo "expected_midi=$EXPECTED_MIDI"
+            echo "expected_mixes=$EXPECTED_MIXES"
+            echo "expected_wavs=$EXPECTED_WAVS"
+            echo "minimum_version=$MINIMUM_VERSION"
+            echo "required_build=$REQUIRED_BUILD"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Preflight remote inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST='${{ steps.meta.outputs.request }}'
+          jq -r '[.input.master_url, .input.midi_zip_url, (.input.stems[]?.url)] | .[] | select(type == "string" and length > 0)' "$REQUEST" > input_urls.txt
+          while IFS= read -r URL; do
+            test -n "$URL" || continue
+            if ! curl --fail --silent --show-error --location --head --max-time 45 --retry 2 --retry-all-errors "$URL" >/dev/null; then
+              echo "Input preflight failed: $URL" >&2
+              exit 1
+            fi
+          done < input_urls.txt
 
       - name: Create temporary private output release
         id: release
@@ -58,7 +102,14 @@ jobs:
           set -euo pipefail
           TAG="stemforge-stem-remix-${GITHUB_RUN_ID}"
           TITLE="Temporary StemForge Stem Remix ${GITHUB_RUN_ID}"
-          RELEASE_ID="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/releases" -f tag_name="$TAG" -f target_commitish="$GITHUB_SHA" -f name="$TITLE" -f body='Temporary private output container for one RunPod stem remix.' -F draft=true -F prerelease=false --jq '.id')"
+          RELEASE_ID="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/releases" \
+            -f tag_name="$TAG" \
+            -f target_commitish="$GITHUB_SHA" \
+            -f name="$TITLE" \
+            -f body='Temporary private output container for one RunPod stem remix.' \
+            -F draft=true \
+            -F prerelease=false \
+            --jq '.id')"
           test -n "$RELEASE_ID"
           echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
 
@@ -66,47 +117,106 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          REQUEST="${{ steps.meta.outputs.request }}"
-          RELEASE_ID="${{ steps.release.outputs.release_id }}"
-          mkdir -p fetched_output
+          REQUEST='${{ steps.meta.outputs.request }}'
+          RELEASE_ID='${{ steps.release.outputs.release_id }}'
+          mkdir -p fetched_output diagnostics
           RUNTIME="$(mktemp)"
           RESULT="fetched_output/RunPod_Stem_Remix_Result.json"
-          jq --arg repository "$GITHUB_REPOSITORY" --argjson release_id "$RELEASE_ID" --arg token "$GH_TOKEN" '.input.github_release_export={repository:$repository,release_id:$release_id,token:$token}' "$REQUEST" > "$RUNTIME"
+          jq \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --argjson release_id "$RELEASE_ID" \
+            --arg token "$GH_TOKEN" \
+            '.input.github_release_export={repository:$repository,release_id:$release_id,token:$token}' \
+            "$REQUEST" > "$RUNTIME"
+
           SUBMIT="$(mktemp)"
-          curl -sS --max-time 120 -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" -H "Authorization: Bearer ${RUNPOD_API_KEY}" -H "Content-Type: application/json" --data-binary "@${RUNTIME}" > "$SUBMIT"
+          curl --fail --silent --show-error --max-time 120 -X POST \
+            "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${RUNTIME}" > "$SUBMIT"
+          cp "$SUBMIT" diagnostics/RunPod_Submit.json
           JOB_ID="$(jq -r '.id // empty' "$SUBMIT")"
           test -n "$JOB_ID"
           printf 'runpod_job_id=%s\n' "$JOB_ID" > fetched_output/RunPod_Execution.txt
           rm -f "$SUBMIT" "$RUNTIME"
+
           TERMINAL=0
           for attempt in $(seq 1 1000); do
-            curl -sS --max-time 120 "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT"
+            curl --fail --silent --show-error --max-time 120 \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT"
             STATE="$(jq -r '.status // empty' "$RESULT")"
-            case "$STATE" in COMPLETED) TERMINAL=1; break ;; FAILED|TIMED_OUT|CANCELLED) cat "$RESULT" >&2; exit 1 ;; esac
+            case "$STATE" in
+              COMPLETED) TERMINAL=1; break ;;
+              FAILED|TIMED_OUT|CANCELLED)
+                cp "$RESULT" diagnostics/RunPod_Terminal_Result.json
+                cat "$RESULT" >&2
+                exit 1
+                ;;
+            esac
             sleep 5
           done
           test "$TERMINAL" -eq 1
-          jq -e '.output.status == "completed"' "$RESULT" >/dev/null
-          jq -e '.output.stemforge_version == "2.2.0" and .output.action == "stem_remix"' "$RESULT" >/dev/null
-          jq -e --argjson n '${{ steps.meta.outputs.expected_stems }}' '.output.input_summary.stem_count == $n' "$RESULT" >/dev/null
-          jq -e --argjson n '${{ steps.meta.outputs.expected_midi }}' '.output.input_summary.midi_file_count == $n' "$RESULT" >/dev/null
-          jq -e '.output.mixes | length == 2' "$RESULT" >/dev/null
-          jq -e 'all(.output.mixes[]; .safety.accepted == true)' "$RESULT" >/dev/null
 
-      - name: Download worker-rendered assets
+          jq -e '.output.status == "completed"' "$RESULT" >/dev/null
+          jq -e --arg version '${{ steps.meta.outputs.minimum_version }}' '.output.stemforge_version == $version' "$RESULT" >/dev/null
+          jq -e --arg build '${{ steps.meta.outputs.required_build }}' '.output.build == $build' "$RESULT" >/dev/null
+          jq -e '.output.action == "stem_remix"' "$RESULT" >/dev/null
+          jq -e --argjson n '${{ steps.meta.outputs.expected_stems }}' '.output.input_summary.stem_count == $n' "$RESULT" >/dev/null
+          if [ -n '${{ steps.meta.outputs.expected_midi }}' ]; then
+            jq -e --argjson n '${{ steps.meta.outputs.expected_midi }}' '.output.input_summary.midi_file_count == $n' "$RESULT" >/dev/null
+          fi
+          jq -e --argjson n '${{ steps.meta.outputs.expected_mixes }}' '.output.mixes | length == $n' "$RESULT" >/dev/null
+          jq -e 'all(.output.mixes[]; .safety.accepted == true)' "$RESULT" >/dev/null
+          jq -e 'all(.output.mixes[]; (.safety.comparison.non_finite_sample_count == 0) and (.safety.comparison.derivative.rms_delta_db <= 4.5) and (.safety.comparison.high_band_energy_ratio.delta_db <= 4.0))' "$RESULT" >/dev/null
+
+      - name: Download and validate worker-rendered assets
         shell: bash
         run: |
           set -euo pipefail
-          RELEASE_ID="${{ steps.release.outputs.release_id }}"
-          gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" --jq '.[].name' > assets.txt
-          while IFS= read -r NAME; do
-            test -n "$NAME" || continue
-            ASSET_ID="$(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" --jq ".[] | select(.name == \"$NAME\") | .id")"
-            gh api -H 'Accept: application/octet-stream' "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" > "fetched_output/${NAME}"
-          done < assets.txt
-          test "$(find fetched_output -maxdepth 1 -type f -iname '*.wav' | wc -l)" -eq 3
-          test -n "$(find fetched_output -maxdepth 1 -type f -name '*Stem_Remix_Report.json' -print -quit)"
-          cp "${{ steps.meta.outputs.request }}" fetched_output/request.json
+          RELEASE_ID='${{ steps.release.outputs.release_id }}'
+          gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" > assets.json
+          ASSET_COUNT="$(jq 'length' assets.json)"
+          EXPECTED_ASSETS="$(( ${{ steps.meta.outputs.expected_wavs }} + 1 ))"
+          test "$ASSET_COUNT" -eq "$EXPECTED_ASSETS"
+
+          jq -r '.[] | [.id,.name] | @tsv' assets.json | while IFS=$'\t' read -r ASSET_ID NAME; do
+            test -n "$ASSET_ID"
+            test -n "$NAME"
+            gh api -H 'Accept: application/octet-stream' \
+              "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" > "fetched_output/${NAME}"
+          done
+
+          test "$(find fetched_output -maxdepth 1 -type f -iname '*.wav' | wc -l)" -eq '${{ steps.meta.outputs.expected_wavs }}'
+          REPORT="$(find fetched_output -maxdepth 1 -type f -name '*Stem_Remix_Report.json' -print -quit)"
+          test -n "$REPORT"
+          jq -e '.status == "completed"' "$REPORT" >/dev/null
+          jq -e '.engine | contains("v2.2.1")' "$REPORT" >/dev/null
+          jq -e 'all(.mixes[]; .safety.accepted == true)' "$REPORT" >/dev/null
+          jq -e 'all(.mixes[]; .safety.comparison.waveform_correlation != null)' "$REPORT" >/dev/null
+
+          python - <<'PY'
+          from pathlib import Path
+          import wave
+
+          wavs = sorted(Path("fetched_output").glob("*.wav"))
+          if not wavs:
+              raise SystemExit("No WAV files were downloaded")
+          for path in wavs:
+              with wave.open(str(path), "rb") as handle:
+                  if handle.getnchannels() != 2:
+                      raise SystemExit(f"{path.name}: expected stereo")
+                  if handle.getframerate() != 48000:
+                      raise SystemExit(f"{path.name}: expected 48 kHz")
+                  if handle.getnframes() < 48000:
+                      raise SystemExit(f"{path.name}: output is unexpectedly short")
+                  first = handle.readframes(min(handle.getnframes(), 48000))
+                  if not any(first):
+                      raise SystemExit(f"{path.name}: first second is entirely zero")
+          PY
+
+          cp '${{ steps.meta.outputs.request }}' fetched_output/request.json
           sha256sum fetched_output/* > fetched_output/SHA256SUMS.txt
 
       - name: Upload verified remix artifact
@@ -118,18 +228,43 @@ jobs:
           retention-days: 7
           compression-level: 0
 
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stemforge-remix-failure-${{ github.run_id }}
+          path: |
+            diagnostics/
+            fetched_output/RunPod_Stem_Remix_Result.json
+            input_urls.txt
+          if-no-files-found: ignore
+          retention-days: 3
+
       - name: Publish completion manifest
         shell: bash
         run: |
           set -euo pipefail
-          NAME="${{ steps.meta.outputs.request_name }}"
-          MANIFEST="$(jq -n --arg request "$NAME" --arg artifact_name '${{ steps.meta.outputs.artifact_name }}' --argjson run_id "$GITHUB_RUN_ID" --arg commit "$GITHUB_SHA" '{request:$request,artifact_name:$artifact_name,run_id:$run_id,commit:$commit,status:"completed"}')"
+          NAME='${{ steps.meta.outputs.request_name }}'
+          MANIFEST="$(jq -n \
+            --arg request "$NAME" \
+            --arg artifact_name '${{ steps.meta.outputs.artifact_name }}' \
+            --argjson run_id "$GITHUB_RUN_ID" \
+            --arg commit "$GITHUB_SHA" \
+            --arg worker_version '${{ steps.meta.outputs.minimum_version }}' \
+            --arg build '${{ steps.meta.outputs.required_build }}' \
+            '{request:$request,artifact_name:$artifact_name,run_id:$run_id,commit:$commit,worker_version:$worker_version,build:$build,status:"completed"}')"
           ENCODED="$(printf '%s' "$MANIFEST" | base64 -w0)"
-          gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/stem_remix_manifests/${NAME}.json" -f message="Complete StemForge stem remix [skip ci]" -f content="$ENCODED" -f branch="main" >/dev/null
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/stem_remix_manifests/${NAME}.json" \
+            -f message="Complete StemForge stem remix [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
 
       - name: Remove temporary release
         if: always()
         shell: bash
         run: |
-          RELEASE_ID="${{ steps.release.outputs.release_id }}"
-          if [ -n "$RELEASE_ID" ]; then gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" || true; fi
+          RELEASE_ID='${{ steps.release.outputs.release_id }}'
+          if [ -n "$RELEASE_ID" ]; then
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" || true
+          fi
