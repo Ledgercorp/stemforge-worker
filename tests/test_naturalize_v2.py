@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
+from app.api import SUPPORTED_ACTIONS
 from app.full_pass_v2 import _naturalize_config
 from app.naturalize_v2 import (
     _resolve_intensity,
@@ -12,6 +13,7 @@ from app.naturalize_v2 import (
     naturalize_audio_job,
 )
 from app.storage import WORKSPACE
+from app.system_v2 import BUILD, VERSION, system_info_job
 
 
 def _parts(sample_rate: int = 48000, seconds: float = 1.25) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -25,6 +27,19 @@ def _parts(sample_rate: int = 48000, seconds: float = 1.25) -> tuple[np.ndarray,
     vocal = np.column_stack((vocal_mono, vocal_mono)).astype(np.float32)
     instrumental = np.column_stack((music_left, music_right)).astype(np.float32)
     return (vocal + instrumental).astype(np.float32), vocal, instrumental
+
+
+def test_naturalize_api_and_v230_capability_contract() -> None:
+    info = system_info_job({})
+    assert "naturalize" in SUPPORTED_ACTIONS
+    assert VERSION == "2.3.0"
+    assert BUILD == "v2.3.0-naturalize-quality"
+    assert info["stemforge_version"] == VERSION
+    assert info["build"] == BUILD
+    assert "naturalize" in info["feature_groups"]["processing"]
+    assert info["naturalize"]["callable_action"] == "naturalize"
+    assert info["naturalize"]["agent_policy"]["denoise_must_follow_all_modulation"] is True
+    assert info["naturalize"]["agent_policy"]["not_a_detection_tool"] is True
 
 
 def test_intensity_accepts_fraction_or_percent() -> None:
