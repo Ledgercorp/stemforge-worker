@@ -1,0 +1,21 @@
+{
+  "artifact_name": "Sweet_Sixteen_RunPod_v2.0.2_FullPass",
+  "files": [
+    {
+      "path": "/runpod-volume/stemforge/output/masters/sounddecay/bfa5e0ee2d7e2c7c/Sweet_Sixteen_RunPod_v2.0.2_dynamic_master.wav",
+      "filename": "Sweet_Sixteen_RunPod_v2.0.2_Dynamic.wav"
+    },
+    {
+      "path": "/runpod-volume/stemforge/output/masters/sounddecay/78152fbb57503079/Sweet_Sixteen_RunPod_v2.0.2_balanced_master.wav",
+      "filename": "Sweet_Sixteen_RunPod_v2.0.2_Balanced.wav"
+    },
+    {
+      "path": "/runpod-volume/stemforge/output/masters/sounddecay/f24931a6d0be1fb3/Sweet_Sixteen_RunPod_v2.0.2_dense_master.wav",
+      "filename": "Sweet_Sixteen_RunPod_v2.0.2_Dense.wav"
+    },
+    {
+      "path": "/runpod-volume/stemforge/output/masters/sounddecay/6d054966b9a1bfea/mastering_report.json",
+      "filename": "Sweet_Sixteen_RunPod_v2.0.2_Mastering_Report.json"
+    }
+  ]
+}
