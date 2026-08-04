@@ -1,0 +1,30 @@
+name: Publish StemForge v1.0.3
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "release/v1.0.3.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create v1.0.3 release from current main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view v1.0.3 --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "v1.0.3 already exists."
+            exit 0
+          fi
+          gh release create v1.0.3 \
+            --repo "${GITHUB_REPOSITORY}" \
+            --target "${GITHUB_SHA}" \
+            --title "StemForge Lyric Alignment v1.0.3" \
+            --notes "Deploy monotonic dynamic-programming lyric reconciliation and add an aligner version health check."
