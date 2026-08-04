@@ -47,6 +47,8 @@ def system_info_job(payload: dict | None = None) -> dict:
             "atomic_input_downloads": True,
             "input_retry_and_stale_link_detection": True,
             "optional_size_and_sha256_validation": True,
+            "drive_head_to_range_get_preflight_fallback": True,
+            "single_canonical_stem_remix_workflow": True,
             "dynamic_workflow_asset_counts": True,
             "failure_diagnostic_artifacts": True,
         },
