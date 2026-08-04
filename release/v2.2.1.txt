@@ -1,0 +1,21 @@
+StemForge v2.2.1 quality and reliability hotfix
+
+Audio quality
+- Adds strict stem reconstruction gating before any full stem-replacement mix.
+- Falls back to a master-anchored delta remix when stems do not reconstruct safely.
+- Excludes auxiliary pad stems from reconstruction fitting and supports direct overlay roles.
+- Removes autonomous per-stem and mix-bus stereo widening from the remix path.
+- Removes the envelope-based independent stem gain solver that amplified leakage and noise.
+- Generates a true clean premaster before loudness normalization and peak trimming.
+- Adds residual, correlation, derivative, discontinuity, non-finite, and high-frequency noise gates.
+- Rejects bad audio instead of accepting it solely because it is not clipped.
+
+RunPod and GitHub relay reliability
+- Uses atomic input downloads with retries, stale-link errors, HTML-response detection, and optional size/SHA-256 validation.
+- Queues remix runs instead of cancelling active jobs.
+- Supports manual workflow dispatch with an explicit request path.
+- Derives expected stem, MIDI, profile, WAV, and asset counts from request metadata.
+- Preflights remote URLs before paid RunPod processing begins.
+- Verifies the exact worker version and build returned by RunPod.
+- Preserves failure diagnostics and validates downloaded WAV containers and quality reports.
+- Adds regression CI for static-like artifacts, unsafe stem reconstruction, and breakdown-pad isolation.
