@@ -1,0 +1,92 @@
+name: StemForge v2 Volume Bridge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "v2_bridge_requests/**/*.json"
+
+permissions:
+  contents: write
+
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Transfer verified chunks to RunPod volume
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RUNPOD_API_KEY"
+          mkdir -p v2_bridge_results
+          mapfile -t REQUESTS < <(
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" |
+              grep -E '^v2_bridge_requests/.+\.json$' || true
+          )
+
+          call_runsync() {
+            local payload_file="$1"
+            local response_file="$2"
+            curl -sS --max-time 900 \
+              -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/runsync" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              --data-binary "@${payload_file}" > "${response_file}"
+            jq -e '.status == "COMPLETED" and .output.status == "completed"' "${response_file}" >/dev/null
+          }
+
+          for REQUEST in "${REQUESTS[@]}"; do
+            NAME="$(basename "$REQUEST" .json)"
+            RESULT="v2_bridge_results/${NAME}.json"
+            UPLOAD_ID="$(jq -r '.upload_id' "$REQUEST")"
+            EXPECTED_CHUNKS="$(jq -r '.expected_chunks' "$REQUEST")"
+            CHUNK_DIR="v2_bridge_chunks/${UPLOAD_ID}"
+            TMP_DIR="$(mktemp -d)"
+
+            jq '{input:.init}' "$REQUEST" > "${TMP_DIR}/init.json"
+            call_runsync "${TMP_DIR}/init.json" "${TMP_DIR}/init-result.json"
+
+            : > "${TMP_DIR}/chunk-results.ndjson"
+            for INDEX in $(seq 0 $((EXPECTED_CHUNKS - 1))); do
+              CHUNK_FILE="${CHUNK_DIR}/$(printf '%06d' "$INDEX").json"
+              if [ ! -f "$CHUNK_FILE" ]; then
+                echo "Missing $CHUNK_FILE" >&2
+                exit 1
+              fi
+              call_runsync "$CHUNK_FILE" "${TMP_DIR}/chunk-${INDEX}.json"
+              jq -c '.output | {index,size_bytes,sha256}' "${TMP_DIR}/chunk-${INDEX}.json" >> "${TMP_DIR}/chunk-results.ndjson"
+            done
+
+            jq '{input:.finalize}' "$REQUEST" > "${TMP_DIR}/finalize.json"
+            call_runsync "${TMP_DIR}/finalize.json" "${TMP_DIR}/finalize-result.json"
+
+            jq -n \
+              --arg status "COMPLETED" \
+              --arg source "$REQUEST" \
+              --slurpfile init "${TMP_DIR}/init-result.json" \
+              --slurpfile final "${TMP_DIR}/finalize-result.json" \
+              --slurpfile chunks "${TMP_DIR}/chunk-results.ndjson" \
+              '{status:$status,source:$source,init:$init[0].output,chunks:$chunks,final:$final[0].output}' > "$RESULT"
+            rm -rf "$TMP_DIR"
+          done
+
+      - name: Commit transfer results
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git status --short v2_bridge_results | grep -q .; then
+            git config user.name "stemforge-v2-bridge"
+            git config user.email "stemforge-v2-bridge@users.noreply.github.com"
+            git add v2_bridge_results
+            git commit -m "Add StemForge v2 volume transfer results [skip ci]"
+            git push
+          fi
