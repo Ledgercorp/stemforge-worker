@@ -1,0 +1,28 @@
+name: Publish StemForge v2.1.0 Hotfix 1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "release/v2.1.0-hotfix1.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish hotfix release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view v2.1.0-hotfix1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            exit 0
+          fi
+          gh release create v2.1.0-hotfix1 \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "StemForge v2.1.0 Hotfix 1" \
+            --notes "Fixes NumPy scalar JSON serialization in full-pass stem integrity reports."
