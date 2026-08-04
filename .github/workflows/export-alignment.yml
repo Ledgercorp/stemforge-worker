@@ -1,0 +1,163 @@
+name: Export StemForge Alignment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "export_requests/**/*.json"
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Build subtitle deliverables
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t REQUESTS < <(
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" \
+              | grep -E '^export_requests/.+\.json$' || true
+          )
+
+          for REQUEST in "${REQUESTS[@]}"; do
+            RESULT_PATH="$(jq -r '.result_path' "$REQUEST")"
+            OUTPUT_PREFIX="$(jq -r '.output_prefix' "$REQUEST")"
+            python - "$RESULT_PATH" "$OUTPUT_PREFIX" <<'PY'
+          import csv
+          import json
+          import sys
+          from pathlib import Path
+
+          result_path = Path(sys.argv[1])
+          prefix = sys.argv[2]
+          data = json.loads(result_path.read_text(encoding="utf-8"))
+          output = data.get("output") or {}
+          lines = output.get("lines") or []
+          out_dir = Path("deliverables") / prefix
+          out_dir.mkdir(parents=True, exist_ok=True)
+
+          def srt_time(seconds: float) -> str:
+              milliseconds = max(0, round(float(seconds) * 1000))
+              hours, rem = divmod(milliseconds, 3600000)
+              minutes, rem = divmod(rem, 60000)
+              secs, ms = divmod(rem, 1000)
+              return f"{hours:02d}:{minutes:02d}:{secs:02d},{ms:03d}"
+
+          def ass_time(seconds: float) -> str:
+              centiseconds = max(0, round(float(seconds) * 100))
+              hours, rem = divmod(centiseconds, 360000)
+              minutes, rem = divmod(rem, 6000)
+              secs, cs = divmod(rem, 100)
+              return f"{hours}:{minutes:02d}:{secs:02d}.{cs:02d}"
+
+          def lrc_time(seconds: float) -> str:
+              centiseconds = max(0, round(float(seconds) * 100))
+              minutes, rem = divmod(centiseconds, 6000)
+              secs, cs = divmod(rem, 100)
+              return f"{minutes:02d}:{secs:02d}.{cs:02d}"
+
+          srt_blocks = []
+          lrc_lines = []
+          ass_events = []
+          for i, line in enumerate(lines, start=1):
+              start = float(line["start"])
+              end = max(float(line["end"]), start + 0.05)
+              text = str(line["text"]).strip()
+              srt_blocks.append(f"{i}\n{srt_time(start)} --> {srt_time(end)}\n{text}")
+              lrc_lines.append(f"[{lrc_time(start)}]{text}")
+              escaped = text.replace("{", "\\{").replace("}", "\\}").replace("\n", "\\N")
+              ass_events.append(
+                  f"Dialogue: 0,{ass_time(start)},{ass_time(end)},Default,,0,0,0,,{escaped}"
+              )
+
+          (out_dir / f"{prefix}.srt").write_text("\n\n".join(srt_blocks) + "\n", encoding="utf-8")
+          (out_dir / f"{prefix}.lrc").write_text("\n".join(lrc_lines) + "\n", encoding="utf-8")
+
+          ass_header = """[Script Info]
+          ScriptType: v4.00+
+          PlayResX: 1920
+          PlayResY: 1080
+          WrapStyle: 2
+
+          [V4+ Styles]
+          Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+          Style: Default,Helvetica Neue,52,&H00FFFFFF,&H000000FF,&H66000000,&H00000000,0,0,0,0,100,100,0,0,1,2,0,2,120,120,110,1
+
+          [Events]
+          Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+          """
+          (out_dir / f"{prefix}.ass").write_text(ass_header + "\n".join(ass_events) + "\n", encoding="utf-8")
+
+          with (out_dir / f"{prefix}.csv").open("w", encoding="utf-8", newline="") as handle:
+              writer = csv.writer(handle)
+              writer.writerow(["index", "start", "end", "confidence", "anchor_coverage", "needs_review", "text"])
+              for line in lines:
+                  writer.writerow([
+                      line.get("index"),
+                      line.get("start"),
+                      line.get("end"),
+                      line.get("confidence"),
+                      line.get("anchor_coverage"),
+                      line.get("needs_review"),
+                      line.get("text"),
+                  ])
+
+          compact = {
+              "status": data.get("status"),
+              "runpod_job_id": data.get("id"),
+              "aligner_version": output.get("aligner_version"),
+              "device": output.get("device"),
+              "language": output.get("language"),
+              "metrics": output.get("metrics"),
+              "review_required": output.get("review_required"),
+              "review_line_indices": output.get("review_line_indices"),
+              "lines": [
+                  {
+                      "index": line.get("index"),
+                      "start": line.get("start"),
+                      "end": line.get("end"),
+                      "confidence": line.get("confidence"),
+                      "anchor_coverage": line.get("anchor_coverage"),
+                      "needs_review": line.get("needs_review"),
+                      "text": line.get("text"),
+                  }
+                  for line in lines
+              ],
+          }
+          (out_dir / f"{prefix}.json").write_text(json.dumps(compact, indent=2), encoding="utf-8")
+
+          report = [
+              f"# {prefix} alignment report",
+              "",
+              f"- RunPod status: {data.get('status')}",
+              f"- Worker aligner: {output.get('aligner_version')}",
+              f"- Device: {output.get('device')}",
+              f"- Line count: {len(lines)}",
+              f"- Review required: {output.get('review_required')}",
+              f"- Review lines: {output.get('review_line_indices')}",
+              f"- Metrics: {json.dumps(output.get('metrics'), sort_keys=True)}",
+          ]
+          (out_dir / "REPORT.md").write_text("\n".join(report) + "\n", encoding="utf-8")
+          PY
+          done
+
+      - name: Commit deliverables
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git status --short deliverables | grep -q .; then
+            git config user.name "stemforge-exporter"
+            git config user.email "stemforge-exporter@users.noreply.github.com"
+            git add deliverables
+            git commit -m "Export StemForge alignment deliverables [skip ci]"
+            git push
+          fi
