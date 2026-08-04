@@ -1,0 +1,33 @@
+name: Probe StemForge Full Pass Run
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "status_probe_jobs/full-pass-*.json"
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture workflow status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: f3471c3200fee2fe5a924fbfea1f3a5787eeabc7
+        run: |
+          set -euo pipefail
+          DATA="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/run-stemforge-full-pass-export.yml/runs?per_page=20")"
+          MATCH="$(printf '%s' "$DATA" | jq --arg sha "$TARGET_SHA" '[.workflow_runs[] | select(.head_sha == $sha)] | first // {}')"
+          mkdir -p status_probe_results
+          printf '%s\n' "$MATCH" > status_probe_results/hypervigilant-full-pass.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add status_probe_results/hypervigilant-full-pass.json
+          git commit -m "Record Hypervigilant full-pass workflow status [skip ci]" || exit 0
+          git push
