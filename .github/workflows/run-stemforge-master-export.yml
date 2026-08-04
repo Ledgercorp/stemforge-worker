@@ -105,14 +105,10 @@ jobs:
           TITLE="Temporary StemForge Output ${GITHUB_RUN_ID}"
           gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
-            --draft \
             --target "$GITHUB_SHA" \
             --title "$TITLE" \
-            --notes "Temporary private transfer container for one RunPod StemForge render."
-          RELEASES_FILE="$(mktemp)"
-          gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=100" > "$RELEASES_FILE"
-          RELEASE_ID="$(jq -r --arg title "$TITLE" '.[] | select(.draft == true and .name == $title) | .id' "$RELEASES_FILE" | head -n 1)"
-          rm -f "$RELEASES_FILE"
+            --notes "Temporary transfer container inside this private repository for one RunPod StemForge render."
+          RELEASE_ID="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.id')"
           test -n "$RELEASE_ID"
           echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
 
@@ -221,7 +217,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          RELEASE_ID="${{ steps.release.outputs.release_id }}"
-          if [ -n "$RELEASE_ID" ]; then
-            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" || true
+          TAG="${{ steps.meta.outputs.output_tag }}"
+          if [ -n "$TAG" ]; then
+            gh release delete "$TAG" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
           fi
