@@ -1,0 +1,49 @@
+StemForge v2.4.0 Naturalize Balanced
+
+Naturalize fidelity pipeline
+- Replaces the previous fixed-depth Naturalize defaults with bounded musical parameter ranges and the Naturalize Balanced preset.
+- Primary vibrato: 14–16 Hz, default 15 Hz, 8–12 cents, default 10 cents, sine.
+- Tremolo: 12–16 Hz, default 15 Hz, 6–12 percent, default 10 percent, sine or soft triangle.
+- Secondary vibrato: 8–11 Hz, default 10 Hz, 6–10 cents, default 9 cents.
+- Flanger: 0.8–1.2 ms, default 1.0 ms, 0.6–1.1 Hz, default 0.9 Hz, feedback capped at 15 percent, wet mix capped at 40 percent.
+- Uses frequency-dependent modulation depth with stronger treatment in the musical midrange and lighter treatment at spectral extremes.
+
+Constrained post-cocktail denoise
+- Uses an adaptive music-oriented spectral denoiser only after modulation and optional humanization layers.
+- Limits reduction to 3–8 dB, default 5 dB.
+- Estimates the noise profile from the quietest 200–500 ms after modulation.
+- Protects transients with fast attack, slower release, and a dry preservation component.
+- Explicitly forbids pre-cocktail denoising and spectral-uniformity restoration.
+
+Additional naturalization layers
+- Optional pink or tape-hiss noise-floor restoration between -72 and -60 dBFS.
+- Onset-aware, velocity-sensitive micro-timing jitter with stronger vocal routing.
+- Low-drive, gain-compensated tape/tube-style saturation.
+- Optional gentle multiband compression.
+- Vocal, harmonic, percussion, and fallback role multipliers inside the requested ranges.
+
+Iteration and transparency safeguards
+- Global intensity range 0.6–1.4 with an explicit zero bypass and default 1.0.
+- Maximum two passes; the second pass is capped at 0.70 times intensity.
+- Automatic intensity reduction attempts before rejection.
+- Hard artifact gates for warble risk, pumping, metallic/derivative artifacts, transient loss, aliasing/high-frequency growth, clipping, non-finite samples, and clarity degradation.
+- Retains the original and pre-denoise intermediate by default for A/B and rollback.
+
+Optional neural resynthesis
+- Adds a lazy Vocos adapter as the default Surgical fast path when the package and compute budget are available.
+- Adds an optional BigVGAN-v2 adapter for explicitly selected high-quality reconstruction.
+- Adds an optional environment-provisioned DisCoder adapter for explicitly selected maximum-music-fidelity reconstruction.
+- Neural reconstruction always follows the DSP cocktail and constrained denoise.
+- Uses stem-aware wet/dry routing and intensity-scaled feature perturbation.
+- Preserves stereo side information while resynthesizing the mid component.
+- Independently quality-gates every vocoder result and falls back to the pure DSP path when the backend is unavailable or degrades the audio.
+
+Agent and logging contract
+- Keeps a single callable naturalize operation with auto, quick, and surgical modes.
+- Auto mode prefers Surgical processing when vocal stems exist and falls back to Quick only when necessary.
+- Logs every resolved DSP parameter, exact denoise amount, selected quiet profile, noise-floor level, pass count and intensity, role multiplier, reconstruction decision, vocoder backend/model, wet ratio, feature perturbation, safety metrics, and fallback decision.
+- Integrates as a fidelity/authenticity enhancement only. It is not an audio-origin detector, concealment system, or detection-evasion tool.
+
+Build identity
+- stemforge_version: 2.4.0
+- build: v2.4.0-naturalize-balanced-vocoder

@@ -1,0 +1,35 @@
+name: Publish StemForge v2.4.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "release/v2.4.0.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish immutable v2.4.0 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view v2.4.0 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit v2.4.0 \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "StemForge v2.4.0 Naturalize Balanced" \
+              --notes-file release/v2.4.0.txt
+          else
+            gh release create v2.4.0 \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "StemForge v2.4.0 Naturalize Balanced" \
+              --notes-file release/v2.4.0.txt
+          fi
