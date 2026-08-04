@@ -1,0 +1,69 @@
+{
+  "delayTime": 20825,
+  "executionTime": 194,
+  "id": "e2412b81-c9a0-4485-a1d1-6268e1dcbee9-u1",
+  "output": {
+    "action": "system_info",
+    "executables": {
+      "ffmpeg": true,
+      "ffprobe": true
+    },
+    "feature_groups": {
+      "analysis": [
+        "analyze_audio",
+        "analyze_audio_v2",
+        "compare_audio",
+        "compare_audio_v2"
+      ],
+      "interchange": [
+        "export_daw"
+      ],
+      "lyrics": [
+        "align_lyrics",
+        "align_lyrics_smart"
+      ],
+      "memory": [
+        "get_memory",
+        "record_feedback",
+        "record_rule",
+        "get_production_profile"
+      ],
+      "processing": [
+        "master_audio",
+        "repair_audio",
+        "humanize_audio"
+      ],
+      "stems": [
+        "inspect_stems",
+        "inspect_stems_v2",
+        "separate_stems"
+      ],
+      "transfer": [
+        "create_upload",
+        "create_download",
+        "delete_storage_objects"
+      ],
+      "visual": [
+        "render_lyric_video"
+      ]
+    },
+    "packages": {
+      "boto3": true,
+      "demucs": true,
+      "pyloudnorm": true,
+      "torch": true,
+      "whisperx": true
+    },
+    "status": "completed",
+    "stemforge_version": "2.0.0",
+    "storage": {
+      "bucket_configured": false,
+      "mode": "runpod_volume",
+      "note": "Set STEMFORGE_S3_BUCKET and S3-compatible credentials to activate private expiring upload and download links.",
+      "output_root": "/runpod-volume/stemforge/output",
+      "signed_transfer_ready": false
+    }
+  },
+  "status": "COMPLETED",
+  "workerId": "echpoi3dmwagzy"
+}
