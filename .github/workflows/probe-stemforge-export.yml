@@ -1,0 +1,41 @@
+name: Probe StemForge Export
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "action_probes/**/*.txt"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Capture export workflow status
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^action_probes/.+\.txt$' | head -n 1)"
+          NAME="$(basename "$REQUEST" .txt)"
+          mkdir -p action_probe_results
+          gh run list \
+            --repo "$GITHUB_REPOSITORY" \
+            --workflow run-stemforge-master-export.yml \
+            --limit 10 \
+            --json databaseId,status,conclusion,headSha,createdAt,updatedAt,url,displayTitle \
+            > "action_probe_results/${NAME}.json"
+          git config user.name "stemforge-action-probe"
+          git config user.email "stemforge-action-probe@users.noreply.github.com"
+          git add action_probe_results
+          git commit -m "Add StemForge export workflow probe [skip ci]"
+          git pull --rebase origin main
+          git push
