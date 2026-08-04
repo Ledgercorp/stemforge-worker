@@ -1,0 +1,78 @@
+name: Probe RunPod Template
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "template_probe_requests/**/*.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  probe-template:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve request name
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+          mapfile -t REQUESTS < <(printf '%s\n' "$CHANGED" | grep -E '^template_probe_requests/.+\.txt$' || true)
+          test "${#REQUESTS[@]}" -eq 1
+          echo "name=$(basename "${REQUESTS[0]}" .txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Query endpoint and template
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p template_probe_output diagnostics
+          curl --fail --silent --show-error --max-time 120 \
+            "https://rest.runpod.io/v1/endpoints/${RUNPOD_ENDPOINT_ID}" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            > diagnostics/endpoint-raw.json
+
+          TEMPLATE_ID="$(jq -r '.templateId // .template.id // empty' diagnostics/endpoint-raw.json)"
+          test -n "$TEMPLATE_ID"
+
+          curl --fail --silent --show-error --max-time 120 \
+            "https://rest.runpod.io/v1/templates/${TEMPLATE_ID}?includeEndpointBoundTemplates=true" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            > diagnostics/template-raw.json
+
+          jq -n \
+            --slurpfile endpoint diagnostics/endpoint-raw.json \
+            --slurpfile template diagnostics/template-raw.json \
+            --arg observed_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{observed_at:$observed_at,endpoint:{id:$endpoint[0].id,name:$endpoint[0].name,templateId:($endpoint[0].templateId // $endpoint[0].template.id),version:$endpoint[0].version,workersMin:$endpoint[0].workersMin,workersMax:$endpoint[0].workersMax,idleTimeout:$endpoint[0].idleTimeout,executionTimeoutMs:$endpoint[0].executionTimeoutMs,scalerType:$endpoint[0].scalerType,scalerValue:$endpoint[0].scalerValue,gpuTypeIds:$endpoint[0].gpuTypeIds,gpuCount:$endpoint[0].gpuCount,flashboot:$endpoint[0].flashboot},template:{id:$template[0].id,name:$template[0].name,imageName:$template[0].imageName,isServerless:$template[0].isServerless,containerDiskInGb:$template[0].containerDiskInGb,volumeInGb:$template[0].volumeInGb,volumeMountPath:$template[0].volumeMountPath,dockerEntrypoint:$template[0].dockerEntrypoint,dockerStartCmd:$template[0].dockerStartCmd,ports:$template[0].ports}}' \
+            > template_probe_output/result.json
+
+      - name: Publish safe metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          NAME='${{ steps.meta.outputs.name }}'
+          ENCODED="$(base64 -w0 template_probe_output/result.json)"
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/template_probe_results/${NAME}.json" \
+            -f message="Record safe RunPod template metadata [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
+
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runpod-template-probe-${{ github.run_id }}
+          path: diagnostics/
+          retention-days: 3
