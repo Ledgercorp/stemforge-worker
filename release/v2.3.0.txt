@@ -41,3 +41,4 @@ Testing and compatibility
 
 Release verification
 - Publishes the immutable `v2.3.0` GitHub release before the live RunPod health and Naturalize smoke tests are accepted.
+- The release publisher checks out the repository before reading these notes, so publication is reproducible and idempotent.
