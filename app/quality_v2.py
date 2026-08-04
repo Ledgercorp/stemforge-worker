@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 
 import numpy as np
-from scipy import signal
+from scipy import integrate, signal
 
 
 def _rms(audio: np.ndarray) -> float:
@@ -84,7 +84,7 @@ def _band_energy(audio: np.ndarray, sample_rate: int, low_hz: float, high_hz: fl
     mask = (frequencies >= float(low_hz)) & (frequencies < upper)
     if not np.any(mask):
         return 0.0
-    return max(0.0, float(np.trapezoid(psd[mask], frequencies[mask])))
+    return max(0.0, float(integrate.trapezoid(psd[mask], frequencies[mask])))
 
 
 def compare_audio_quality(reference: np.ndarray, candidate: np.ndarray, sample_rate: int) -> dict:
