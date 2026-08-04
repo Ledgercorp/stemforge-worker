@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
-from app.api import SUPPORTED_ACTIONS
+from app.actions_v2 import SUPPORTED_ACTIONS
 from app.full_pass_v2 import _naturalize_config
 from app.naturalize_v2 import (
     _resolve_intensity,
