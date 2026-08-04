@@ -104,7 +104,7 @@ jobs:
           test -n "$TEMPLATE_ID"
 
           curl --fail --silent --show-error --max-time 120 \
-            "https://rest.runpod.io/v1/templates/${TEMPLATE_ID}" \
+            "https://rest.runpod.io/v1/templates/${TEMPLATE_ID}?includeEndpointBoundTemplates=true" \
             -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$TEMPLATE_RAW"
 
           jq '{id,name,templateId,version,workersMin,workersMax,idleTimeout,executionTimeoutMs,scalerType,scalerValue,gpuTypeIds,gpuCount,flashboot}' \
