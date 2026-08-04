@@ -1,0 +1,209 @@
+name: Verify Live StemForge v2.3.0
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "verification_requests/v2.3.0-naturalize-*.txt"
+
+permissions:
+  contents: write
+
+env:
+  RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+  RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify v2.3.0 GitHub release
+        run: |
+          set -euo pipefail
+          gh release view v2.3.0 \
+            --repo "$GITHUB_REPOSITORY" \
+            --json tagName,targetCommitish,name,isDraft,isPrerelease \
+            > release.json
+          jq -e '.tagName == "v2.3.0" and .isDraft == false and .isPrerelease == false' release.json >/dev/null
+
+      - name: Generate Naturalize smoke request
+        run: |
+          python - <<'PY'
+          import base64
+          import io
+          import json
+          import math
+          import struct
+          import wave
+
+          sample_rate = 48000
+          duration_seconds = 0.75
+          frame_count = int(sample_rate * duration_seconds)
+          buffer = io.BytesIO()
+          with wave.open(buffer, "wb") as handle:
+              handle.setnchannels(2)
+              handle.setsampwidth(2)
+              handle.setframerate(sample_rate)
+              for index in range(frame_count):
+                  time = index / sample_rate
+                  sample = 0.12 * math.sin(2.0 * math.pi * 220.0 * time)
+                  sample += 0.04 * math.sin(2.0 * math.pi * 880.0 * time)
+                  integer = max(-32768, min(32767, round(sample * 32767.0)))
+                  handle.writeframesraw(struct.pack("<hh", integer, integer))
+
+          request = {
+              "input": {
+                  "action": "naturalize",
+                  "artist": "StemForge verification",
+                  "song": "v2.3.0 Naturalize smoke test",
+                  "audio_base64": base64.b64encode(buffer.getvalue()).decode("ascii"),
+                  "mode": "quick",
+                  "intensity": 0.05,
+                  "retain_original": True,
+                  "publish_outputs": False,
+              }
+          }
+          with open("naturalize_request.json", "w", encoding="utf-8") as output:
+              json.dump(request, output)
+          PY
+
+      - name: Verify live system information
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 120 \
+            -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data '{"input":{"action":"system_info"}}' \
+            > health_submit.json
+          JOB_ID="$(jq -r '.id // empty' health_submit.json)"
+          test -n "$JOB_ID"
+          for attempt in $(seq 1 180); do
+            curl --fail --silent --show-error --max-time 120 \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              > health_result.json
+            STATE="$(jq -r '.status // empty' health_result.json)"
+            case "$STATE" in
+              COMPLETED) break ;;
+              FAILED|TIMED_OUT|CANCELLED)
+                cat health_result.json >&2
+                exit 1
+                ;;
+            esac
+            sleep 3
+          done
+          jq -e '.status == "COMPLETED"' health_result.json >/dev/null
+          jq -e '.output.status == "completed"' health_result.json >/dev/null
+          jq -e '.output.stemforge_version == "2.3.0"' health_result.json >/dev/null
+          jq -e '.output.build == "v2.3.0-naturalize-quality"' health_result.json >/dev/null
+          jq -e '.output.naturalize.callable_action == "naturalize"' health_result.json >/dev/null
+          jq -e '.output.naturalize.agent_policy.denoise_must_follow_all_modulation == true' health_result.json >/dev/null
+          jq -e '.output.naturalize.agent_policy.not_a_detection_tool == true' health_result.json >/dev/null
+          jq -e '((.output.feature_groups.processing // []) | index("naturalize")) != null' health_result.json >/dev/null
+
+      - name: Run live Quick Naturalize smoke test
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 120 \
+            -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary @naturalize_request.json \
+            > naturalize_submit.json
+          JOB_ID="$(jq -r '.id // empty' naturalize_submit.json)"
+          test -n "$JOB_ID"
+          for attempt in $(seq 1 300); do
+            curl --fail --silent --show-error --max-time 120 \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              > naturalize_result.json
+            STATE="$(jq -r '.status // empty' naturalize_result.json)"
+            case "$STATE" in
+              COMPLETED) break ;;
+              FAILED|TIMED_OUT|CANCELLED)
+                cat naturalize_result.json >&2
+                exit 1
+                ;;
+            esac
+            sleep 3
+          done
+          jq -e '.status == "COMPLETED"' naturalize_result.json >/dev/null
+          jq -e '.output.status == "completed"' naturalize_result.json >/dev/null
+          jq -e '.output.action == "naturalize"' naturalize_result.json >/dev/null
+          jq -e '.output.stemforge_version == "2.3.0"' naturalize_result.json >/dev/null
+          jq -e '.output.resolved_mode == "quick"' naturalize_result.json >/dev/null
+          jq -e '.output.non_destructive == true' naturalize_result.json >/dev/null
+          jq -e '.output.safety.accepted == true' naturalize_result.json >/dev/null
+          jq -e '.output.processing_order == ["vibrato_15hz_depth_10","tremolo_15hz_depth_10","vibrato_10hz_depth_10","flanger_1ms_modulation_0.90_depth_9","light_denoise_after_modulation"]' naturalize_result.json >/dev/null
+          jq -e '.output.original_reference_path != null' naturalize_result.json >/dev/null
+          jq -e '.output.agent_log.callable_operation == "naturalize"' naturalize_result.json >/dev/null
+
+      - name: Publish live verification record
+        run: |
+          set -euo pipefail
+          jq -n \
+            --arg verified_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --argjson run_id "$GITHUB_RUN_ID" \
+            --arg commit "$GITHUB_SHA" \
+            --slurpfile release release.json \
+            --slurpfile health health_result.json \
+            --slurpfile naturalize naturalize_result.json \
+            '{
+              status:"completed",
+              verified_at:$verified_at,
+              workflow_run_id:$run_id,
+              commit:$commit,
+              release:$release[0],
+              live_worker:{
+                stemforge_version:$health[0].output.stemforge_version,
+                build:$health[0].output.build,
+                naturalize:$health[0].output.naturalize
+              },
+              smoke_test:{
+                action:$naturalize[0].output.action,
+                status:$naturalize[0].output.status,
+                resolved_mode:$naturalize[0].output.resolved_mode,
+                intensity:$naturalize[0].output.intensity,
+                processing_order:$naturalize[0].output.processing_order,
+                non_destructive:$naturalize[0].output.non_destructive,
+                safety:$naturalize[0].output.safety,
+                naturalness_characteristics:$naturalize[0].output.naturalness_characteristics
+              }
+            }' > verification.json
+
+          CONTENT="$(base64 -w0 verification.json)"
+          PATH_NAME="verification/v2.3.0-live.json"
+          CURRENT_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${PATH_NAME}?ref=main" --jq '.sha' 2>/dev/null || true)"
+          if [ -n "$CURRENT_SHA" ]; then
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${PATH_NAME}" \
+              -f message="Record live StemForge v2.3.0 verification [skip ci]" \
+              -f content="$CONTENT" \
+              -f sha="$CURRENT_SHA" \
+              -f branch=main >/dev/null
+          else
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${PATH_NAME}" \
+              -f message="Record live StemForge v2.3.0 verification [skip ci]" \
+              -f content="$CONTENT" \
+              -f branch=main >/dev/null
+          fi
+
+      - name: Upload verification diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stemforge-v2.3.0-live-verification-${{ github.run_id }}
+          path: |
+            release.json
+            health_submit.json
+            health_result.json
+            naturalize_submit.json
+            naturalize_result.json
+            verification.json
+          if-no-files-found: ignore
+          retention-days: 7
