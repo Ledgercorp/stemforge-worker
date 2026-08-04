@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "stem_remix_jobs/**/*.json"
+      - "stem_remix_retry_jobs/**/*.json"
+      - "stem_remix_retry_triggers/**/*.txt"
 
 permissions:
   contents: write
@@ -32,14 +34,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^stem_remix_jobs/.+\.json$' | head -n 1)"
-          test -n "$REQUEST"
+          CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+          REQUEST="$(printf '%s\n' "$CHANGED" | grep -E '^stem_remix_(retry_)?jobs/.+\.json$' | head -n 1 || true)"
+          if [ -z "$REQUEST" ]; then
+            TRIGGER="$(printf '%s\n' "$CHANGED" | grep -E '^stem_remix_retry_triggers/.+\.txt$' | head -n 1)"
+            REQUEST="$(tr -d '\r\n' < "$TRIGGER")"
+          fi
+          test -f "$REQUEST"
           NAME="$(basename "$REQUEST" .json)"
           ARTIFACT_NAME="$(jq -r '.artifact_name // "stemforge-stem-remix"' "$REQUEST")"
+          EXPECTED_STEMS="$(jq -r '.input.stems | length' "$REQUEST")"
+          EXPECTED_MIDI="$(jq -r 'if .input.midi_zip_base64 or .input.midi_zip_url then 7 else 0 end' "$REQUEST")"
           TAG="stemforge-stem-remix-${GITHUB_RUN_ID}"
           echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
           echo "request_name=$NAME" >> "$GITHUB_OUTPUT"
           echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+          echo "expected_stems=$EXPECTED_STEMS" >> "$GITHUB_OUTPUT"
+          echo "expected_midi=$EXPECTED_MIDI" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Wait for live StemForge v2.2.0
@@ -48,8 +59,7 @@ jobs:
           set -euo pipefail
           READY=0
           for check in $(seq 1 50); do
-            SUBMIT="$(mktemp)"
-            RESULT="$(mktemp)"
+            SUBMIT="$(mktemp)"; RESULT="$(mktemp)"
             curl -sS --max-time 120 -X POST \
               "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
               -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
@@ -62,22 +72,16 @@ jobs:
                   "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
                   -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT"
                 STATE="$(jq -r '.status // empty' "$RESULT")"
-                case "$STATE" in
-                  COMPLETED) break ;;
-                  FAILED|TIMED_OUT|CANCELLED) break ;;
-                esac
+                case "$STATE" in COMPLETED|FAILED|TIMED_OUT|CANCELLED) break ;; esac
                 sleep 2
               done
               VERSION="$(jq -r '.output.stemforge_version // empty' "$RESULT")"
               BUILD="$(jq -r '.output.build // empty' "$RESULT")"
               ACTION_READY="$(jq -r '((.output.feature_groups.processing // []) | index("stem_remix")) != null' "$RESULT")"
-              if [ "$VERSION" = "2.2.0" ] && [ "$BUILD" = "v2.2.0-stem-remix" ] && [ "$ACTION_READY" = "true" ]; then
-                READY=1
-                rm -f "$SUBMIT" "$RESULT"
-                break
-              fi
+              if [ "$VERSION" = "2.2.0" ] && [ "$BUILD" = "v2.2.0-stem-remix" ] && [ "$ACTION_READY" = "true" ]; then READY=1; fi
             fi
             rm -f "$SUBMIT" "$RESULT"
+            [ "$READY" -eq 1 ] && break
             sleep 10
           done
           test "$READY" -eq 1
@@ -89,12 +93,7 @@ jobs:
           set -euo pipefail
           TAG="${{ steps.meta.outputs.tag }}"
           TITLE="Temporary StemForge Stem Remix ${GITHUB_RUN_ID}"
-          gh release create "$TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --draft \
-            --target "$GITHUB_SHA" \
-            --title "$TITLE" \
-            --notes "Temporary private output container for one RunPod stem remix."
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --target "$GITHUB_SHA" --title "$TITLE" --notes "Temporary private output container for one RunPod stem remix."
           RELEASE_ID="$(gh api "repos/${GITHUB_REPOSITORY}/releases" --jq ".[] | select(.name == \"$TITLE\") | .id" | head -n 1)"
           test -n "$RELEASE_ID"
           echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
@@ -108,12 +107,8 @@ jobs:
           mkdir -p fetched_output
           RUNTIME="$(mktemp)"
           RESULT="fetched_output/RunPod_Stem_Remix_Result.json"
-          jq \
-            --arg repository "$GITHUB_REPOSITORY" \
-            --argjson release_id "$RELEASE_ID" \
-            --arg token "$GH_TOKEN" \
-            '.input.github_release_export={repository:$repository,release_id:$release_id,token:$token}' \
-            "$REQUEST" > "$RUNTIME"
+          jq --arg repository "$GITHUB_REPOSITORY" --argjson release_id "$RELEASE_ID" --arg token "$GH_TOKEN" \
+            '.input.github_release_export={repository:$repository,release_id:$release_id,token:$token}' "$REQUEST" > "$RUNTIME"
           SUBMIT="$(mktemp)"
           curl -sS --max-time 120 -X POST \
             "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
@@ -126,20 +121,16 @@ jobs:
           rm -f "$SUBMIT" "$RUNTIME"
           TERMINAL=0
           for attempt in $(seq 1 1000); do
-            curl -sS --max-time 120 \
-              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
-              -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT"
+            curl -sS --max-time 120 "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT"
             STATE="$(jq -r '.status // empty' "$RESULT")"
-            case "$STATE" in
-              COMPLETED) TERMINAL=1; break ;;
-              FAILED|TIMED_OUT|CANCELLED) cat "$RESULT" >&2; exit 1 ;;
-            esac
+            case "$STATE" in COMPLETED) TERMINAL=1; break ;; FAILED|TIMED_OUT|CANCELLED) cat "$RESULT" >&2; exit 1 ;; esac
             sleep 5
           done
           test "$TERMINAL" -eq 1
           jq -e '.output.status == "completed"' "$RESULT" >/dev/null
           jq -e '.output.stemforge_version == "2.2.0" and .output.action == "stem_remix"' "$RESULT" >/dev/null
-          jq -e '.output.input_summary.stem_count == 8 and .output.input_summary.midi_file_count == 7' "$RESULT" >/dev/null
+          jq -e --argjson n '${{ steps.meta.outputs.expected_stems }}' '.output.input_summary.stem_count == $n' "$RESULT" >/dev/null
+          jq -e --argjson n '${{ steps.meta.outputs.expected_midi }}' '.output.input_summary.midi_file_count == $n' "$RESULT" >/dev/null
           jq -e '.output.mixes | length == 2' "$RESULT" >/dev/null
           jq -e 'all(.output.mixes[]; .safety.accepted == true)' "$RESULT" >/dev/null
 
@@ -168,23 +159,12 @@ jobs:
         run: |
           set -euo pipefail
           NAME="${{ steps.meta.outputs.request_name }}"
-          ARTIFACT_NAME="${{ steps.meta.outputs.artifact_name }}"
-          MANIFEST="$(jq -n \
-            --arg request "$NAME" \
-            --arg artifact_name "$ARTIFACT_NAME" \
-            --argjson run_id "$GITHUB_RUN_ID" \
-            --arg commit "$GITHUB_SHA" \
-            '{request:$request,artifact_name:$artifact_name,run_id:$run_id,commit:$commit,status:"completed"}')"
+          MANIFEST="$(jq -n --arg request "$NAME" --arg artifact_name '${{ steps.meta.outputs.artifact_name }}' --argjson run_id "$GITHUB_RUN_ID" --arg commit "$GITHUB_SHA" '{request:$request,artifact_name:$artifact_name,run_id:$run_id,commit:$commit,status:"completed"}')"
           ENCODED="$(printf '%s' "$MANIFEST" | base64 -w0)"
-          gh api --method PUT \
-            "repos/${GITHUB_REPOSITORY}/contents/stem_remix_manifests/${NAME}.json" \
-            -f message="Complete StemForge stem remix [skip ci]" \
-            -f content="$ENCODED" \
-            -f branch="main" >/dev/null
+          gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/stem_remix_manifests/${NAME}.json" -f message="Complete StemForge stem remix [skip ci]" -f content="$ENCODED" -f branch="main" >/dev/null
 
       - name: Remove temporary release
         if: always()
         shell: bash
         run: |
-          gh release delete "${{ steps.meta.outputs.tag }}" \
-            --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+          gh release delete "${{ steps.meta.outputs.tag }}" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
