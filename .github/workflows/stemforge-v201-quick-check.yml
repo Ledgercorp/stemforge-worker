@@ -1,0 +1,44 @@
+name: StemForge v2.0.1 Quick Check
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "v201_quick_checks/**/*.json"
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Query live worker synchronously
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v201_quick_results
+          FILE="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^v201_quick_checks/.+\.json$' | head -n 1)"
+          NAME="$(basename "$FILE" .json)"
+          curl -sS --max-time 900 \
+            -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/runsync" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${FILE}" | jq . > "v201_quick_results/${NAME}.json"
+      - name: Commit result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "stemforge-v201-check"
+          git config user.email "stemforge-v201-check@users.noreply.github.com"
+          git add v201_quick_results
+          git commit -m "Add StemForge v2.0.1 quick check result [skip ci]"
+          git push
