@@ -3,6 +3,7 @@ from __future__ import annotations
 from app.analysis_v2 import analyze_audio_v2_job, compare_audio_v2_job
 from app.audio_analysis import analyze_audio_url
 from app.daw_v2 import export_daw_job
+from app.github_delivery import master_audio_github_delivery_job
 from app.lyric_align import ALIGNER_VERSION, align_lyrics_job
 from app.lyrics_v2 import align_lyrics_smart_job
 from app.mastering import mastering_plan as legacy_mastering_plan
@@ -33,8 +34,8 @@ SUPPORTED_ACTIONS = {
     "align_lyrics", "align_lyrics_smart", "aligner_info",
     "analyze_audio", "analyze_audio_v2", "compare_audio", "compare_audio_v2",
     "inspect_stems", "inspect_stems_v2", "separate_stems",
-    "mastering_plan", "legacy_mastering_plan", "master_audio", "repair_audio", "humanize_audio",
-    "render_lyric_video", "export_daw",
+    "mastering_plan", "legacy_mastering_plan", "master_audio", "master_audio_github_delivery",
+    "repair_audio", "humanize_audio", "render_lyric_video", "export_daw",
     "get_memory", "record_feedback", "record_rule", "get_production_profile",
 }
 
@@ -78,6 +79,7 @@ def handle_job(payload: dict) -> dict:
         "mastering_plan": lambda: mastering_plan(payload),
         "legacy_mastering_plan": lambda: legacy_mastering_plan(payload),
         "master_audio": lambda: master_audio_job(payload),
+        "master_audio_github_delivery": lambda: master_audio_github_delivery_job(payload),
         "repair_audio": lambda: repair_audio_job(payload),
         "humanize_audio": lambda: humanize_audio_job(payload),
         "render_lyric_video": lambda: render_lyric_video_job(payload),
