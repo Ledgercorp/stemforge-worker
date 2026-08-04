@@ -81,6 +81,15 @@ jobs:
             echo "required_build=$REQUIRED_BUILD"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Validate request against the relay contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Contract violations fail here, before a temporary release is
+          # created and before any GPU time is spent. See
+          # docs/RELAY_CONTRACT.md.
+          python3 tools/validate_jobs.py '${{ steps.meta.outputs.request }}'
+
       - name: Preflight remote inputs
         shell: bash
         run: |

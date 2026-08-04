@@ -11,6 +11,21 @@ build: v2.4.0-naturalize-balanced-vocoder
 
 A GitHub release or merge does not by itself prove that the live RunPod endpoint has rolled forward. Production work must verify the exact version and build through `system_info` before accepting a render.
 
+## Operating this repository
+
+Renders are driven by JSON request files committed to `main` and submitted to RunPod by a workflow.
+
+- `docs/RELAY_CONTRACT.md` — what a request file must contain, which directory routes to which workflow, and how to read a result.
+- `AGENTS.md` — the working agreement between the StemForge GPT (live operator) and Claude Code (engine side).
+
+Validate a request before committing it, so contract mistakes cost a second instead of a GPU round trip:
+
+```bash
+python tools/validate_jobs.py <request>.json
+```
+
+The same check runs in CI and again inside the relay and stem-remix workflows before any worker is started.
+
 ## Live capabilities
 
 ### Lyrics
