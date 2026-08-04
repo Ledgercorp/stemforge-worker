@@ -5,20 +5,30 @@ this repository's **GitHub source on `main`**. There is no external container
 registry, which is why the repository has a `Dockerfile` but no registry
 configuration, no image reference and no build workflow: RunPod builds it.
 
-Builds run automatically on every push to `main`; the Builds tab shows one entry per commit. Merging to `main` and tagging a release
-therefore change nothing on the endpoint by themselves — a build has to be
-started in the RunPod console. A release is only real once the live worker
-reports the expected identity through `system_info`.
+RunPod builds automatically on every push to `main` — the console's **Builds**
+tab carries one entry per commit, and no manual trigger is needed. What a
+build does not do is announce itself: a completed build plus a stale version
+reading looks identical to a failed deployment. A release is only real once
+the live worker reports the expected identity through `system_info`.
 
 ## Deploying a release
 
 1. Merge the release to `main` and confirm `app/system_v2.py` declares the
    intended `VERSION` and `BUILD`.
-2. In the RunPod console, open endpoint `dyup1dztjr4u15` and trigger a new
-   build from the GitHub source. It builds the current `main`.
-3. Wait for the build to finish and the workers to roll over.
-4. Run the **Verify StemForge Deployment** workflow
-   (`.github/workflows/verify-stemforge-deployment.yml`) from the Actions tab.
+2. Watch the RunPod console's **Builds** tab. The push starts a build on its
+   own; wait for it to complete and for workers to roll over. Only trigger a
+   build by hand if none appeared.
+3. Verify, by either route:
+   - the **Verify StemForge Deployment** workflow
+     (`.github/workflows/verify-stemforge-deployment.yml`) from the Actions
+     tab, which also runs the test suite first; or
+   - the console's **Requests** tab, posting
+     `{"input":{"action":"system_info"}}` and reading `stemforge_version` and
+     `build` directly. This is free and needs no merge.
+
+Re-check after the build completes, not before. A version reading taken while
+a build is still running is the single easiest way to conclude a release
+failed when it is minutes from being live.
 
 The verify workflow compiles the worker, runs the full pytest suite, validates
 request files, asserts the source declares the expected version and build, then
