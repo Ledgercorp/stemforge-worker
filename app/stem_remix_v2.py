@@ -11,7 +11,6 @@ from scipy import signal
 
 from app.analysis_v2 import analyze_array
 from app.audio_core import (
-    apply_mid_side_width,
     ensure_pcm_wav,
     highpass,
     limit_peak,
@@ -23,6 +22,7 @@ from app.audio_core import (
 )
 from app.full_pass_v2 import _analyze_midi, _materialize_stems, _safe_extract_midi, _stem_specs
 from app.mastering_v2 import _upload_github_release_asset
+from app.quality_v2 import compare_audio_quality, quality_gate
 from app.storage import WORKSPACE, materialize_input, publish_files
 
 
@@ -38,50 +38,80 @@ ROLE_ALIASES = {
     "percussion": "percussion",
     "synth": "synth",
     "other": "other",
+    "pad": "pad",
+    "bass pad": "bass_pad",
+    "bass_pad": "bass_pad",
+    "breakdown pad": "bass_pad",
+    "full mix": "full_mix",
+    "full_mix": "full_mix",
 }
+
+AUXILIARY_ROLES = {"pad", "bass_pad"}
 
 MIX_PROFILES = {
     "balanced": {
-        "role_gain_db": {
-            "lead_vocals": 1.0,
-            "backing_vocals": 5.0,
-            "drums": 1.1,
-            "bass": 1.0,
-            "guitar": -0.4,
-            "percussion": 2.5,
-            "synth": 0.5,
-            "other": 0.0,
-        },
-        "target_lufs": -12.5,
-        "ceiling_dbfs": -1.0,
-        "bus_ratio": 1.55,
-        "bus_threshold_db": -14.0,
-        "bus_attack_ms": 30.0,
-        "bus_width": 0.99,
-    },
-    "heavy": {
+        "target_lufs": -12.8,
+        "ceiling_dbfs": -1.1,
+        "bus_threshold_db": -13.0,
+        "bus_ratio": 1.30,
+        "bus_attack_ms": 34.0,
         "role_gain_db": {
             "lead_vocals": 0.8,
-            "backing_vocals": 4.0,
-            "drums": 2.0,
-            "bass": 2.0,
-            "guitar": 0.5,
-            "percussion": 2.0,
-            "synth": 0.3,
-            "other": -0.3,
+            "backing_vocals": 0.5,
+            "drums": 0.7,
+            "bass": 0.7,
+            "guitar": -0.2,
+            "percussion": 0.3,
+            "synth": 0.2,
+            "other": 0.0,
+            "pad": -4.5,
+            "bass_pad": -4.0,
         },
-        "target_lufs": -10.8,
-        "ceiling_dbfs": -0.9,
-        "bus_ratio": 2.0,
-        "bus_threshold_db": -16.0,
-        "bus_attack_ms": 22.0,
-        "bus_width": 0.98,
+        "delta_amount": {
+            "lead_vocals": 0.32,
+            "backing_vocals": 0.24,
+            "drums": 0.26,
+            "bass": 0.28,
+            "guitar": 0.18,
+            "percussion": 0.18,
+            "synth": 0.18,
+            "other": 0.12,
+        },
+    },
+    "heavy": {
+        "target_lufs": -11.2,
+        "ceiling_dbfs": -1.0,
+        "bus_threshold_db": -15.0,
+        "bus_ratio": 1.55,
+        "bus_attack_ms": 27.0,
+        "role_gain_db": {
+            "lead_vocals": 0.7,
+            "backing_vocals": 0.3,
+            "drums": 1.2,
+            "bass": 1.2,
+            "guitar": 0.2,
+            "percussion": 0.4,
+            "synth": 0.1,
+            "other": -0.1,
+            "pad": -3.2,
+            "bass_pad": -2.8,
+        },
+        "delta_amount": {
+            "lead_vocals": 0.34,
+            "backing_vocals": 0.24,
+            "drums": 0.34,
+            "bass": 0.36,
+            "guitar": 0.22,
+            "percussion": 0.20,
+            "synth": 0.18,
+            "other": 0.12,
+        },
     },
 }
 
 
-def _safe_role(name: str) -> str:
-    lowered = re.sub(r"\s+", " ", name.strip().lower())
+def _safe_role(value: str) -> str:
+    lowered = re.sub(r"\s+", " ", value.strip().lower())
     return ROLE_ALIASES.get(lowered, lowered.replace(" ", "_"))
 
 
@@ -89,13 +119,31 @@ def _gain(audio: np.ndarray, gain_db: float) -> np.ndarray:
     return (audio * (10.0 ** (float(gain_db) / 20.0))).astype(np.float32)
 
 
-def _sos_filter(audio: np.ndarray, sample_rate: int, kind: str, frequency_hz: float, order: int = 2) -> np.ndarray:
+def _sos_filter(
+    audio: np.ndarray,
+    sample_rate: int,
+    kind: str,
+    frequency_hz: float,
+    order: int = 2,
+) -> np.ndarray:
     frequency_hz = float(np.clip(frequency_hz, 10.0, sample_rate * 0.45))
-    sos = signal.butter(order, frequency_hz, btype=kind, fs=sample_rate, output="sos")
+    sos = signal.butter(
+        order,
+        frequency_hz,
+        btype=kind,
+        fs=sample_rate,
+        output="sos",
+    )
     return signal.sosfiltfilt(sos, audio, axis=0).astype(np.float32)
 
 
-def _bell(audio: np.ndarray, sample_rate: int, frequency_hz: float, gain_db: float, q: float = 0.8) -> np.ndarray:
+def _bell(
+    audio: np.ndarray,
+    sample_rate: int,
+    frequency_hz: float,
+    gain_db: float,
+    q: float = 0.8,
+) -> np.ndarray:
     a = 10.0 ** (gain_db / 40.0)
     omega = 2.0 * math.pi * frequency_hz / sample_rate
     alpha = math.sin(omega) / (2.0 * q)
@@ -106,127 +154,142 @@ def _bell(audio: np.ndarray, sample_rate: int, frequency_hz: float, gain_db: flo
     a0 = 1.0 + alpha / a
     a1 = -2.0 * cos_omega
     a2 = 1.0 - alpha / a
-    sos = np.array([[b0 / a0, b1 / a0, b2 / a0, 1.0, a1 / a0, a2 / a0]])
+    sos = np.array(
+        [[b0 / a0, b1 / a0, b2 / a0, 1.0, a1 / a0, a2 / a0]],
+        dtype=np.float64,
+    )
     return signal.sosfiltfilt(sos, audio, axis=0).astype(np.float32)
 
 
-def _prepare_role(audio: np.ndarray, sample_rate: int, role: str, release_ms: float) -> tuple[np.ndarray, list[dict]]:
+def _prepare_role(
+    audio: np.ndarray,
+    sample_rate: int,
+    role: str,
+    release_ms: float,
+) -> tuple[np.ndarray, list[dict]]:
+    """Conservative stem processing without autonomous stereo widening."""
     processed = audio.astype(np.float32)
     chain: list[dict] = []
 
     if role == "lead_vocals":
-        processed = highpass(processed, sample_rate, cutoff_hz=75.0)
-        processed = _bell(processed, sample_rate, 280.0, -1.2, 0.9)
-        processed = _bell(processed, sample_rate, 2600.0, 1.0, 0.75)
-        processed = linked_compressor(processed, sample_rate, threshold_db=-19.0, ratio=2.2, attack_ms=14.0, release_ms=max(110.0, release_ms * 0.75))
-        processed = apply_mid_side_width(processed, 0.72)
+        processed = highpass(processed, sample_rate, cutoff_hz=72.0)
+        processed = _bell(processed, sample_rate, 300.0, -0.8, 0.9)
+        processed = _bell(processed, sample_rate, 2600.0, 0.7, 0.8)
+        processed = linked_compressor(
+            processed,
+            sample_rate,
+            threshold_db=-18.0,
+            ratio=1.8,
+            attack_ms=18.0,
+            release_ms=max(120.0, release_ms * 0.75),
+        )
         chain = [
-            {"type": "highpass", "hz": 75.0},
-            {"type": "bell", "hz": 280.0, "gain_db": -1.2},
-            {"type": "bell", "hz": 2600.0, "gain_db": 1.0},
-            {"type": "compressor", "threshold_db": -19.0, "ratio": 2.2},
-            {"type": "width", "amount": 0.72},
+            {"type": "highpass", "hz": 72.0},
+            {"type": "bell", "hz": 300.0, "gain_db": -0.8},
+            {"type": "bell", "hz": 2600.0, "gain_db": 0.7},
+            {"type": "compressor", "threshold_db": -18.0, "ratio": 1.8},
         ]
     elif role == "backing_vocals":
-        processed = highpass(processed, sample_rate, cutoff_hz=115.0)
-        processed = _bell(processed, sample_rate, 350.0, -1.5, 0.8)
-        processed = linked_compressor(processed, sample_rate, threshold_db=-27.0, ratio=2.6, attack_ms=20.0, release_ms=max(130.0, release_ms * 0.85))
-        processed = apply_mid_side_width(processed, 1.28)
+        processed = highpass(processed, sample_rate, cutoff_hz=105.0)
+        processed = _bell(processed, sample_rate, 350.0, -1.0, 0.85)
+        processed = linked_compressor(
+            processed,
+            sample_rate,
+            threshold_db=-24.0,
+            ratio=2.0,
+            attack_ms=22.0,
+            release_ms=max(140.0, release_ms * 0.9),
+        )
         chain = [
-            {"type": "highpass", "hz": 115.0},
-            {"type": "bell", "hz": 350.0, "gain_db": -1.5},
-            {"type": "compressor", "threshold_db": -27.0, "ratio": 2.6},
-            {"type": "width", "amount": 1.28},
+            {"type": "highpass", "hz": 105.0},
+            {"type": "bell", "hz": 350.0, "gain_db": -1.0},
+            {"type": "compressor", "threshold_db": -24.0, "ratio": 2.0},
         ]
     elif role == "drums":
-        processed = highpass(processed, sample_rate, cutoff_hz=25.0)
-        compressed = linked_compressor(processed, sample_rate, threshold_db=-18.0, ratio=4.0, attack_ms=28.0, release_ms=max(90.0, release_ms * 0.55))
-        processed = (processed * 0.78 + compressed * 0.22).astype(np.float32)
-        processed = _bell(processed, sample_rate, 65.0, 0.7, 0.8)
-        processed = _bell(processed, sample_rate, 4200.0, 0.7, 0.7)
+        processed = highpass(processed, sample_rate, cutoff_hz=24.0)
+        compressed = linked_compressor(
+            processed,
+            sample_rate,
+            threshold_db=-17.0,
+            ratio=2.8,
+            attack_ms=30.0,
+            release_ms=max(100.0, release_ms * 0.6),
+        )
+        processed = (processed * 0.86 + compressed * 0.14).astype(np.float32)
+        processed = _bell(processed, sample_rate, 68.0, 0.4, 0.85)
         chain = [
-            {"type": "highpass", "hz": 25.0},
-            {"type": "parallel_compressor", "wet": 0.22, "ratio": 4.0},
-            {"type": "bell", "hz": 65.0, "gain_db": 0.7},
-            {"type": "bell", "hz": 4200.0, "gain_db": 0.7},
+            {"type": "highpass", "hz": 24.0},
+            {"type": "parallel_compressor", "wet": 0.14, "ratio": 2.8},
+            {"type": "bell", "hz": 68.0, "gain_db": 0.4},
         ]
     elif role == "bass":
-        processed = highpass(processed, sample_rate, cutoff_hz=25.0)
-        processed = _sos_filter(processed, sample_rate, "lowpass", 9000.0)
-        processed = _bell(processed, sample_rate, 72.0, 0.8, 0.85)
-        processed = _bell(processed, sample_rate, 280.0, -0.8, 0.9)
-        processed = linked_compressor(processed, sample_rate, threshold_db=-18.0, ratio=2.8, attack_ms=32.0, release_ms=max(130.0, release_ms * 0.8))
-        processed = apply_mid_side_width(processed, 0.35)
+        processed = highpass(processed, sample_rate, cutoff_hz=24.0)
+        processed = _sos_filter(processed, sample_rate, "lowpass", 7500.0)
+        processed = _bell(processed, sample_rate, 72.0, 0.5, 0.9)
+        processed = _bell(processed, sample_rate, 280.0, -0.5, 0.9)
+        processed = linked_compressor(
+            processed,
+            sample_rate,
+            threshold_db=-17.0,
+            ratio=2.0,
+            attack_ms=35.0,
+            release_ms=max(145.0, release_ms * 0.85),
+        )
         chain = [
-            {"type": "highpass", "hz": 25.0},
-            {"type": "lowpass", "hz": 9000.0},
-            {"type": "bell", "hz": 72.0, "gain_db": 0.8},
-            {"type": "bell", "hz": 280.0, "gain_db": -0.8},
-            {"type": "compressor", "threshold_db": -18.0, "ratio": 2.8},
-            {"type": "width", "amount": 0.35},
+            {"type": "highpass", "hz": 24.0},
+            {"type": "lowpass", "hz": 7500.0},
+            {"type": "bell", "hz": 72.0, "gain_db": 0.5},
+            {"type": "bell", "hz": 280.0, "gain_db": -0.5},
+            {"type": "compressor", "threshold_db": -17.0, "ratio": 2.0},
         ]
     elif role == "guitar":
-        processed = highpass(processed, sample_rate, cutoff_hz=68.0)
-        processed = _bell(processed, sample_rate, 330.0, -0.8, 0.85)
-        processed = _bell(processed, sample_rate, 1800.0, 0.5, 0.75)
-        processed = apply_mid_side_width(processed, 1.08)
+        processed = highpass(processed, sample_rate, cutoff_hz=62.0)
+        processed = _bell(processed, sample_rate, 340.0, -0.6, 0.85)
+        processed = _bell(processed, sample_rate, 1800.0, 0.3, 0.8)
         chain = [
-            {"type": "highpass", "hz": 68.0},
-            {"type": "bell", "hz": 330.0, "gain_db": -0.8},
-            {"type": "bell", "hz": 1800.0, "gain_db": 0.5},
-            {"type": "width", "amount": 1.08},
+            {"type": "highpass", "hz": 62.0},
+            {"type": "bell", "hz": 340.0, "gain_db": -0.6},
+            {"type": "bell", "hz": 1800.0, "gain_db": 0.3},
         ]
     elif role == "percussion":
-        processed = highpass(processed, sample_rate, cutoff_hz=110.0)
-        processed = _bell(processed, sample_rate, 5500.0, 1.0, 0.75)
-        processed = apply_mid_side_width(processed, 1.18)
+        processed = highpass(processed, sample_rate, cutoff_hz=100.0)
+        processed = _bell(processed, sample_rate, 5500.0, 0.5, 0.8)
         chain = [
-            {"type": "highpass", "hz": 110.0},
-            {"type": "bell", "hz": 5500.0, "gain_db": 1.0},
-            {"type": "width", "amount": 1.18},
+            {"type": "highpass", "hz": 100.0},
+            {"type": "bell", "hz": 5500.0, "gain_db": 0.5},
         ]
     elif role == "synth":
-        processed = highpass(processed, sample_rate, cutoff_hz=42.0)
-        processed = _bell(processed, sample_rate, 450.0, -0.7, 0.8)
-        processed = apply_mid_side_width(processed, 1.12)
+        processed = highpass(processed, sample_rate, cutoff_hz=38.0)
+        processed = _bell(processed, sample_rate, 450.0, -0.4, 0.85)
         chain = [
-            {"type": "highpass", "hz": 42.0},
-            {"type": "bell", "hz": 450.0, "gain_db": -0.7},
-            {"type": "width", "amount": 1.12},
+            {"type": "highpass", "hz": 38.0},
+            {"type": "bell", "hz": 450.0, "gain_db": -0.4},
         ]
+    elif role in AUXILIARY_ROLES:
+        processed = highpass(processed, sample_rate, cutoff_hz=24.0)
+        processed = _sos_filter(processed, sample_rate, "lowpass", 1800.0)
+        processed = linked_compressor(
+            processed,
+            sample_rate,
+            threshold_db=-20.0,
+            ratio=1.7,
+            attack_ms=40.0,
+            release_ms=max(180.0, release_ms),
+        )
+        chain = [
+            {"type": "highpass", "hz": 24.0},
+            {"type": "lowpass", "hz": 1800.0},
+            {"type": "compressor", "threshold_db": -20.0, "ratio": 1.7},
+        ]
+    elif role == "full_mix":
+        chain = [{"type": "passthrough"}]
     else:
-        processed = highpass(processed, sample_rate, cutoff_hz=30.0)
-        processed = apply_mid_side_width(processed, 1.03)
-        chain = [{"type": "highpass", "hz": 30.0}, {"type": "width", "amount": 1.03}]
+        processed = highpass(processed, sample_rate, cutoff_hz=28.0)
+        chain = [{"type": "highpass", "hz": 28.0}]
 
+    if not np.all(np.isfinite(processed)):
+        raise ValueError(f"Processing role '{role}' produced non-finite samples.")
     return processed.astype(np.float32), chain
-
-
-def _envelope(audio: np.ndarray, sample_rate: int, window_seconds: float = 0.25) -> np.ndarray:
-    mono = np.mean(audio, axis=1, dtype=np.float64)
-    window = max(1, int(sample_rate * window_seconds))
-    count = len(mono) // window
-    if count <= 0:
-        return np.array([float(np.sqrt(np.mean(mono**2) + 1e-20))])
-    framed = mono[: count * window].reshape(count, window)
-    return np.sqrt(np.mean(framed**2, axis=1) + 1e-20)
-
-
-def _reference_gains(stems: list[np.ndarray], master: np.ndarray, sample_rate: int) -> np.ndarray:
-    x = np.column_stack([_envelope(item, sample_rate) for item in stems])
-    y = _envelope(master, sample_rate)
-    length = min(len(y), len(x))
-    x = x[:length]
-    y = y[:length]
-    scale = max(float(np.trace(x.T @ x) / max(1, x.shape[1])), 1e-12)
-    regularization = scale * 0.18
-    matrix = x.T @ x + np.eye(x.shape[1]) * regularization
-    target = x.T @ y + np.ones(x.shape[1]) * regularization
-    try:
-        gains = np.linalg.solve(matrix, target)
-    except np.linalg.LinAlgError:
-        gains = np.ones(x.shape[1], dtype=np.float64)
-    return np.clip(gains, 0.55, 1.65)
 
 
 def _tempo_release(midi_report: dict) -> float:
@@ -236,88 +299,209 @@ def _tempo_release(midi_report: dict) -> float:
     return float(np.clip((60000.0 / float(bpm)) * 0.36, 140.0, 260.0))
 
 
-def _mix_profile(prepared: list[dict], reference_gains: np.ndarray, sample_rate: int, profile_name: str, release_ms: float) -> tuple[np.ndarray, dict]:
-    settings = MIX_PROFILES[profile_name]
-    mixed = np.zeros_like(prepared[0]["audio"], dtype=np.float64)
+def _correlation(reference: np.ndarray, candidate: np.ndarray) -> float:
+    length = min(len(reference), len(candidate))
+    ref = np.mean(reference[:length].astype(np.float64), axis=1)
+    can = np.mean(candidate[:length].astype(np.float64), axis=1)
+    ref -= np.mean(ref)
+    can -= np.mean(can)
+    denominator = float(np.linalg.norm(ref) * np.linalg.norm(can)) + 1e-20
+    return float(np.dot(ref, can) / denominator)
+
+
+def _reconstruction_diagnostics(core_stems: list[np.ndarray], master: np.ndarray) -> dict:
+    if not core_stems:
+        return {
+            "stem_count": 0,
+            "least_squares_gain": 1.0,
+            "null_residual_relative_db": 0.0,
+            "waveform_correlation": 0.0,
+            "safe_for_full_stem_mix": False,
+            "reasons": ["no_core_stems"],
+        }
+
+    stem_sum = np.sum(core_stems, axis=0, dtype=np.float64)
+    denominator = float(np.sum(np.square(stem_sum)) + 1e-20)
+    gain = float(np.sum(master.astype(np.float64) * stem_sum) / denominator)
+    matched = stem_sum * gain
+    residual = master.astype(np.float64) - matched
+    reference_rms = float(np.sqrt(np.mean(np.square(master, dtype=np.float64)) + 1e-20))
+    residual_rms = float(np.sqrt(np.mean(np.square(residual)) + 1e-20))
+    residual_db = 20.0 * math.log10(max(residual_rms, 1e-12) / max(reference_rms, 1e-12))
+    correlation = _correlation(master, matched)
+    reasons: list[str] = []
+    if residual_db > -18.0:
+        reasons.append("null_residual_above_minus_18_db")
+    if correlation < 0.97:
+        reasons.append("reconstruction_correlation_below_0_97")
+    if gain < 0.5 or gain > 1.5:
+        reasons.append("reconstruction_gain_out_of_range")
+    return {
+        "stem_count": len(core_stems),
+        "least_squares_gain": round(gain, 7),
+        "null_residual_relative_db": round(residual_db, 4),
+        "waveform_correlation": round(correlation, 7),
+        "safe_for_full_stem_mix": not reasons,
+        "reasons": reasons,
+    }
+
+
+def _select_mode(payload: dict, reconstruction: dict) -> dict:
+    requested = str(payload.get("remix_mode") or "auto").strip().lower()
+    valid = {"auto", "full_stem_mix", "master_anchored_delta"}
+    if requested not in valid:
+        raise ValueError(f"Unknown remix_mode '{requested}'. Available modes: {sorted(valid)}")
+
+    safe = bool(reconstruction.get("safe_for_full_stem_mix"))
+    if requested == "full_stem_mix" and not safe:
+        if not bool(payload.get("allow_unsafe_full_stem_mix", False)):
+            return {
+                "status": "rejected",
+                "requested": requested,
+                "selected": None,
+                "reason": "The supplied stems do not reconstruct the master safely enough for a full stem replacement mix.",
+            }
+    selected = (
+        "full_stem_mix"
+        if requested == "full_stem_mix" or (requested == "auto" and safe)
+        else "master_anchored_delta"
+    )
+    return {
+        "status": "selected",
+        "requested": requested,
+        "selected": selected,
+        "reason": (
+            "Strict reconstruction thresholds passed."
+            if selected == "full_stem_mix"
+            else "The coherent stereo master is retained while stem-derived fader and processing deltas are applied."
+        ),
+    }
+
+
+def _profile_stem_gain(item: dict, profile: dict) -> float:
+    role = item["role"]
+    configured = float(profile["role_gain_db"].get(role, 0.0))
+    override = float(item.get("gain_db", 0.0))
+    return configured + override
+
+
+def _build_premaster(
+    prepared: list[dict],
+    master: np.ndarray,
+    profile_name: str,
+    mode: str,
+    reconstruction_gain: float,
+) -> tuple[np.ndarray, list[dict]]:
+    profile = MIX_PROFILES[profile_name]
     gain_report: list[dict] = []
 
-    for index, item in enumerate(prepared):
-        role = item["role"]
-        creative_db = float(settings["role_gain_db"].get(role, 0.0))
-        reference_gain = float(reference_gains[index])
-        total_gain = reference_gain * (10.0 ** (creative_db / 20.0))
-        mixed += item["audio"].astype(np.float64) * total_gain
-        gain_report.append({
-            "name": item["name"],
-            "role": role,
-            "reference_gain_linear": round(reference_gain, 6),
-            "reference_gain_db": round(20.0 * math.log10(max(reference_gain, 1e-12)), 3),
-            "creative_offset_db": creative_db,
-            "total_gain_db": round(20.0 * math.log10(max(total_gain, 1e-12)), 3),
-        })
+    if mode == "full_stem_mix":
+        mixed = np.zeros_like(master, dtype=np.float64)
+        for item in prepared:
+            role = item["role"]
+            gain_db = _profile_stem_gain(item, profile)
+            if item["overlay"]:
+                total_gain = 10.0 ** (gain_db / 20.0)
+            else:
+                total_gain = reconstruction_gain * (10.0 ** (gain_db / 20.0))
+            mixed += item["processed"].astype(np.float64) * total_gain
+            gain_report.append(
+                {
+                    "name": item["name"],
+                    "role": role,
+                    "mode": "direct_sum",
+                    "gain_db": round(20.0 * math.log10(max(total_gain, 1e-12)), 4),
+                }
+            )
+    else:
+        mixed = master.astype(np.float64).copy()
+        for item in prepared:
+            role = item["role"]
+            gain_db = _profile_stem_gain(item, profile)
+            if item["overlay"]:
+                overlay_gain = 10.0 ** (gain_db / 20.0)
+                mixed += item["processed"].astype(np.float64) * overlay_gain
+                gain_report.append(
+                    {
+                        "name": item["name"],
+                        "role": role,
+                        "mode": "direct_overlay",
+                        "gain_db": round(gain_db, 4),
+                    }
+                )
+                continue
 
-    mixed = mixed.astype(np.float32)
-    maximum = peak(mixed)
-    headroom_ceiling = 10.0 ** (-6.0 / 20.0)
-    headroom_gain_db = 0.0
-    if maximum > headroom_ceiling:
-        factor = headroom_ceiling / maximum
-        mixed *= factor
-        headroom_gain_db = 20.0 * math.log10(factor)
+            fader_scale = 10.0 ** (gain_db / 20.0) - 1.0
+            delta_amount = float(profile["delta_amount"].get(role, 0.12))
+            delta_amount *= float(item.get("delta_amount", 1.0))
+            fader_delta = item["raw"].astype(np.float64) * fader_scale
+            processing_delta = (
+                item["processed"].astype(np.float64)
+                - item["raw"].astype(np.float64)
+            ) * delta_amount
+            mixed += fader_delta + processing_delta
+            gain_report.append(
+                {
+                    "name": item["name"],
+                    "role": role,
+                    "mode": "master_anchored_delta",
+                    "fader_gain_db": round(gain_db, 4),
+                    "processing_delta_amount": round(delta_amount, 5),
+                }
+            )
 
-    mixed = highpass(mixed, sample_rate, cutoff_hz=20.0)
-    mixed = _bell(mixed, sample_rate, 115.0, -0.6 if profile_name == "balanced" else -0.3, 0.75)
-    mixed = _bell(mixed, sample_rate, 1900.0, 0.5, 0.7)
-    mixed = apply_mid_side_width(mixed, float(settings["bus_width"]))
-    mixed = linked_compressor(
-        mixed,
+    if not np.all(np.isfinite(mixed)):
+        raise ValueError("Stem mix produced non-finite samples.")
+    return mixed.astype(np.float32), gain_report
+
+
+def _peak_trim(audio: np.ndarray, ceiling_dbfs: float) -> tuple[np.ndarray, float]:
+    ceiling = 10.0 ** (float(ceiling_dbfs) / 20.0)
+    maximum = peak(audio)
+    if maximum <= ceiling:
+        return audio.astype(np.float32), 0.0
+    factor = ceiling / maximum
+    return (audio * factor).astype(np.float32), 20.0 * math.log10(factor)
+
+
+def _finish_profile(
+    premaster: np.ndarray,
+    sample_rate: int,
+    profile_name: str,
+    release_ms: float,
+) -> tuple[np.ndarray, dict]:
+    settings = MIX_PROFILES[profile_name]
+    processed = highpass(premaster, sample_rate, cutoff_hz=18.0)
+    processed = linked_compressor(
+        processed,
         sample_rate,
         threshold_db=float(settings["bus_threshold_db"]),
         ratio=float(settings["bus_ratio"]),
         attack_ms=float(settings["bus_attack_ms"]),
         release_ms=release_ms,
     )
-    mixed, loudness = normalize_loudness(mixed, sample_rate, float(settings["target_lufs"]), maximum_gain_db=10.0)
-    mixed, limiter = limit_peak(mixed, ceiling_dbfs=float(settings["ceiling_dbfs"]))
-
-    return mixed.astype(np.float32), {
-        "profile": profile_name,
-        "stem_gains": gain_report,
-        "headroom_gain_db": round(headroom_gain_db, 3),
-        "bus": {
-            "highpass_hz": 20.0,
-            "low_bell_db": -0.6 if profile_name == "balanced" else -0.3,
-            "presence_bell_db": 0.5,
-            "width": float(settings["bus_width"]),
-            "compressor_threshold_db": float(settings["bus_threshold_db"]),
-            "compressor_ratio": float(settings["bus_ratio"]),
-            "compressor_attack_ms": float(settings["bus_attack_ms"]),
-            "compressor_release_ms": round(release_ms, 3),
-            **loudness,
-            **limiter,
-        },
-    }
-
-
-def _reference_comparison(reference: np.ndarray, candidate: np.ndarray) -> dict:
-    length = min(len(reference), len(candidate))
-    ref = reference[:length].astype(np.float64)
-    can = candidate[:length].astype(np.float64)
-    ref_mono = np.mean(ref, axis=1)
-    can_mono = np.mean(can, axis=1)
-    ref_mono -= ref_mono.mean()
-    can_mono -= can_mono.mean()
-    denominator = np.sqrt(np.dot(ref_mono, ref_mono) * np.dot(can_mono, can_mono)) + 1e-20
-    correlation = float(np.dot(ref_mono, can_mono) / denominator)
-    residual = ref - can
-    residual_relative_db = 20.0 * math.log10(
-        max(float(np.sqrt(np.mean(residual**2) + 1e-20)), 1e-12)
-        / max(float(np.sqrt(np.mean(ref**2) + 1e-20)), 1e-12)
+    processed, loudness = normalize_loudness(
+        processed,
+        sample_rate,
+        float(settings["target_lufs"]),
+        maximum_gain_db=6.0,
     )
-    return {
-        "waveform_correlation": round(correlation, 6),
-        "residual_relative_db": round(residual_relative_db, 3),
-        "note": "The supplied master was used only as a diagnostic balance reference and was not mixed into the remix.",
+    processed, peak_trim = limit_peak(
+        processed,
+        ceiling_dbfs=float(settings["ceiling_dbfs"]),
+    )
+    if not np.all(np.isfinite(processed)):
+        raise ValueError(f"Profile '{profile_name}' produced non-finite samples.")
+    return processed.astype(np.float32), {
+        "profile": profile_name,
+        "highpass_hz": 18.0,
+        "stereo_width_processing": False,
+        "compressor_threshold_db": float(settings["bus_threshold_db"]),
+        "compressor_ratio": float(settings["bus_ratio"]),
+        "compressor_attack_ms": float(settings["bus_attack_ms"]),
+        "compressor_release_ms": round(release_ms, 4),
+        **loudness,
+        **peak_trim,
     }
 
 
@@ -328,7 +512,9 @@ def _github_config(payload: dict) -> tuple[str, int, str] | None:
     repository = str(config.get("repository") or "").strip()
     release_id = int(config.get("release_id") or 0)
     token = str(config.get("token") or "").strip()
-    if "/" not in repository or release_id <= 0 or not token:
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
+        raise ValueError("github_release_export.repository must be owner/repository.")
+    if release_id <= 0 or not token:
         raise ValueError("Invalid github_release_export configuration.")
     return repository, release_id, token
 
@@ -344,8 +530,8 @@ def stem_remix_job(payload: dict) -> dict:
         return {"status": "rejected", "reason": f"Unknown mix profiles: {invalid}"}
 
     specs = _stem_specs(payload)
-    if len(specs) < 2:
-        return {"status": "rejected", "reason": "At least two stems are required."}
+    if len(specs) < 1:
+        return {"status": "rejected", "reason": "At least one stem is required."}
 
     job_id = uuid.uuid4().hex[:16]
     job_root = (WORKSPACE / "jobs" / "stem_remix" / job_id).resolve()
@@ -357,127 +543,228 @@ def stem_remix_job(payload: dict) -> dict:
 
     stem_paths = _materialize_stems(specs, job_root)
     loaded: list[dict] = []
-    raw_stems: list[np.ndarray] = []
     shortest = len(master)
-    for name, path in stem_paths:
-        pcm = ensure_pcm_wav(path, job_root / "pcm" / f"{len(loaded):02d}.wav")
+    for index, ((name, path), spec) in enumerate(zip(stem_paths, specs)):
+        pcm = ensure_pcm_wav(path, job_root / "pcm" / f"{index:02d}.wav")
         audio, stem_rate = load_audio(pcm)
         if stem_rate != sample_rate:
             raise ValueError(f"Unexpected sample-rate mismatch for {name}: {stem_rate}")
         shortest = min(shortest, len(audio))
-        raw_stems.append(audio)
-        loaded.append({"name": name, "role": _safe_role(name)})
+        explicit_role = str(spec.get("role") or name)
+        role = _safe_role(explicit_role)
+        overlay = bool(spec.get("overlay", False)) or role in AUXILIARY_ROLES
+        loaded.append(
+            {
+                "name": name,
+                "role": role,
+                "overlay": overlay,
+                "gain_db": float(spec.get("gain_db", 0.0)),
+                "delta_amount": float(spec.get("delta_amount", 1.0)),
+                "raw": audio,
+            }
+        )
 
     master = master[:shortest]
-    raw_stems = [item[:shortest] for item in raw_stems]
+    for item in loaded:
+        item["raw"] = item["raw"][:shortest]
 
     midi_paths: list[Path] = []
-    midi_archive = materialize_input(payload, "midi_zip", job_root / "midi.zip", required=False)
+    midi_archive = materialize_input(
+        payload,
+        "midi_zip",
+        job_root / "midi.zip",
+        required=False,
+    )
     if midi_archive is not None:
         midi_paths = _safe_extract_midi(midi_archive, job_root / "midi")
     midi_report = _analyze_midi(midi_paths)
     release_ms = _tempo_release(midi_report)
 
-    reference_gains = _reference_gains(raw_stems, master, sample_rate)
+    core_raw = [item["raw"] for item in loaded if not item["overlay"]]
+    reconstruction = _reconstruction_diagnostics(core_raw, master)
+    mode_decision = _select_mode(payload, reconstruction)
+    if mode_decision["status"] == "rejected":
+        return {
+            "status": "rejected",
+            "reason": mode_decision["reason"],
+            "reconstruction": reconstruction,
+            "mode_decision": mode_decision,
+        }
+    selected_mode = str(mode_decision["selected"])
+
     prepared: list[dict] = []
     stem_processing: list[dict] = []
-    for metadata, audio in zip(loaded, raw_stems):
-        processed, chain = _prepare_role(audio, sample_rate, metadata["role"], release_ms)
-        prepared.append({**metadata, "audio": processed})
-        stem_processing.append({
-            "name": metadata["name"],
-            "role": metadata["role"],
-            "input_metrics": analyze_array(audio, sample_rate),
-            "processing": chain,
-            "processed_metrics": analyze_array(processed, sample_rate),
-        })
+    for item in loaded:
+        processed, chain = _prepare_role(
+            item["raw"],
+            sample_rate,
+            item["role"],
+            release_ms,
+        )
+        prepared_item = {**item, "processed": processed}
+        prepared.append(prepared_item)
+        stem_processing.append(
+            {
+                "name": item["name"],
+                "role": item["role"],
+                "overlay": item["overlay"],
+                "input_metrics": analyze_array(item["raw"], sample_rate),
+                "processing": chain,
+                "processed_metrics": analyze_array(processed, sample_rate),
+            }
+        )
 
     safe_song = re.sub(r"[^A-Za-z0-9._-]+", "_", song).strip("._-") or "untitled"
     outputs: list[Path] = []
     mixes: list[dict] = []
 
     for profile_name in requested:
-        rendered, chain = _mix_profile(prepared, reference_gains, sample_rate, profile_name, release_ms)
+        profile_premaster, stem_gains = _build_premaster(
+            prepared,
+            master,
+            profile_name,
+            selected_mode,
+            float(reconstruction["least_squares_gain"]),
+        )
+        rendered, bus_chain = _finish_profile(
+            profile_premaster,
+            sample_rate,
+            profile_name,
+            release_ms,
+        )
+        metrics = analyze_array(rendered, sample_rate)
+        safety = quality_gate(
+            master,
+            rendered,
+            sample_rate,
+            metrics,
+            mode=selected_mode,
+        )
         path = job_root / f"{safe_song}_Stem_Remix_{profile_name}.wav"
         write_audio(path, rendered, sample_rate)
         outputs.append(path)
-        metrics = analyze_array(rendered, sample_rate)
-        reasons = []
-        if metrics.get("clipped_sample_count", 0) > 0:
-            reasons.append("clipped_samples")
-        if float(metrics.get("true_peak_dbtp", 0.0)) > -0.75:
-            reasons.append("true_peak_margin")
-        mixes.append({
-            "profile": profile_name,
-            "chain": chain,
-            "metrics": metrics,
-            "reference_comparison": _reference_comparison(master, rendered),
-            "local_path": str(path),
-            "safety": {"accepted": not reasons, "reasons": reasons},
-        })
+        mixes.append(
+            {
+                "profile": profile_name,
+                "mix_mode": selected_mode,
+                "stem_gains": stem_gains,
+                "bus_chain": bus_chain,
+                "metrics": metrics,
+                "reference_comparison": compare_audio_quality(master, rendered, sample_rate),
+                "local_path": str(path),
+                "safety": safety,
+            }
+        )
 
-    premaster, premaster_chain = _mix_profile(prepared, reference_gains, sample_rate, "balanced", release_ms)
-    premaster, premaster_loudness = normalize_loudness(premaster, sample_rate, -16.0, maximum_gain_db=6.0)
-    premaster, premaster_limit = limit_peak(premaster, ceiling_dbfs=-3.0)
+    balanced_premaster, premaster_stem_gains = _build_premaster(
+        prepared,
+        master,
+        "balanced",
+        selected_mode,
+        float(reconstruction["least_squares_gain"]),
+    )
+    balanced_premaster, premaster_trim_db = _peak_trim(balanced_premaster, -6.0)
     premaster_path = job_root / f"{safe_song}_Stem_Remix_Premaster.wav"
-    write_audio(premaster_path, premaster, sample_rate)
+    write_audio(premaster_path, balanced_premaster, sample_rate)
     outputs.append(premaster_path)
 
     report = {
         "status": "completed",
-        "engine": "StemForge reference-guided stem remix engine v2.2",
+        "engine": "StemForge coherence-safe stem remix engine v2.2.1",
         "artist": artist,
         "song": song,
         "input_summary": {
             "stem_count": len(prepared),
+            "core_stem_count": len(core_raw),
+            "auxiliary_stem_count": len(prepared) - len(core_raw),
             "stem_names": [item["name"] for item in prepared],
             "midi_file_count": len(midi_paths),
             "duration_seconds": round(shortest / sample_rate, 6),
             "sample_rate": sample_rate,
         },
-        "reference_policy": {
-            "master_used_as_audio_source": False,
-            "master_used_for": ["broadband envelope balance fitting", "post-render diagnostic comparison"],
-            "timeline_shift_policy": "No automatic stem shifts were applied because the supplied stems share the exact master duration and export origin.",
-        },
         "midi_analysis": midi_report,
-        "tempo_linked_release_ms": round(release_ms, 3),
+        "tempo_linked_release_ms": round(release_ms, 4),
+        "reconstruction": reconstruction,
+        "mode_decision": mode_decision,
+        "reference_policy": {
+            "master_used_as_audio_source": selected_mode == "master_anchored_delta",
+            "master_used_for": (
+                ["coherent mix foundation", "quality reference"]
+                if selected_mode == "master_anchored_delta"
+                else ["strict reconstruction validation", "quality reference"]
+            ),
+            "auxiliary_stems_excluded_from_reconstruction": True,
+        },
         "stem_processing": stem_processing,
         "mixes": mixes,
         "premaster": {
             "filename": premaster_path.name,
-            "chain": premaster_chain,
-            "final_level": {**premaster_loudness, **premaster_limit},
-            "metrics": analyze_array(premaster, sample_rate),
+            "mix_mode": selected_mode,
+            "stem_gains": premaster_stem_gains,
+            "peak_trim_db": round(premaster_trim_db, 4),
+            "bus_compression": False,
+            "loudness_normalization": False,
+            "limiting": False,
+            "metrics": analyze_array(balanced_premaster, sample_rate),
         },
         "honesty_note": (
-            "This is a new mix rendered from the supplied stems. The original stereo master was used only as a balance reference and was not blended into the output. "
-            "Because the raw stem sum did not null closely against the supplied master, the remix may intentionally differ in bus effects and nonlinear processing."
+            "A full stem-replacement mix is used only when the supplied stems pass strict reconstruction thresholds. "
+            "Otherwise the worker performs a master-anchored delta remix so stem-level treatment does not expose separation leakage, phase cancellation, or static-like artifacts."
         ),
     }
 
+    failed_profiles = [
+        item["profile"] for item in mixes if not item["safety"]["accepted"]
+    ]
     report_path = job_root / f"{safe_song}_Stem_Remix_Report.json"
-    report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    outputs.append(report_path)
+    if failed_profiles:
+        report["status"] = "rejected"
+        report["reason"] = f"Quality gate rejected profiles: {failed_profiles}"
+        report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        return report
 
     github = _github_config(payload)
     if github is not None:
         repository, release_id, token = github
-        assets = []
+        assets: list[dict] = []
         for path in outputs:
-            asset = _upload_github_release_asset(path, repository=repository, release_id=release_id, token=token)
+            asset = _upload_github_release_asset(
+                path,
+                repository=repository,
+                release_id=release_id,
+                token=token,
+            )
             assets.append(asset)
             for mix in mixes:
                 if Path(mix["local_path"]).name == path.name:
                     mix["output"] = asset
             if path == premaster_path:
                 report["premaster"]["output"] = asset
-            if path == report_path:
-                report["report_output"] = asset
-        report["github_release_export"] = {"repository": repository, "release_id": release_id, "assets": assets}
+
+        report["github_release_export"] = {
+            "repository": repository,
+            "release_id": release_id,
+            "assets": assets,
+        }
+        report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        report_asset = _upload_github_release_asset(
+            report_path,
+            repository=repository,
+            release_id=release_id,
+            token=token,
+        )
+        report["report_output"] = report_asset
+        report["github_release_export"]["assets"].append(report_asset)
         return report
 
-    published = publish_files(outputs, artist=artist, category="stem_remixes", ttl_seconds=int(payload.get("output_ttl_seconds", 86400)))
+    report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    outputs.append(report_path)
+    published = publish_files(
+        outputs,
+        artist=artist,
+        category="stem_remixes",
+        ttl_seconds=int(payload.get("output_ttl_seconds", 86400)),
+    )
     by_name = {item["filename"]: item for item in published}
     for mix in mixes:
         mix["output"] = by_name[Path(mix["local_path"]).name]
