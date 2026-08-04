@@ -30,6 +30,7 @@ jobs:
     timeout-minutes: 15
     env:
       PYTHONPATH: ${{ github.workspace }}
+      STEMFORGE_WORKSPACE: ${{ runner.temp }}/stemforge
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
