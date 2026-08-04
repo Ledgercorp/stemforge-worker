@@ -1,0 +1,37 @@
+name: Probe StemForge CI Status
+
+on:
+  push:
+    branches:
+      - "fix/**"
+    paths:
+      - "probes/ci-status/*.txt"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Record branch CI runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep '^probes/ci-status/' | head -n 1)"
+          NAME="$(basename "$FILE" .txt)"
+          BRANCH="${GITHUB_REF_NAME}"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?branch=${BRANCH}&per_page=20" \
+            --jq '{runs:[.workflow_runs[] | {id,event,status,conclusion,head_sha,created_at,updated_at,run_attempt,display_title}]}' \
+            > result.json
+          ENCODED="$(base64 -w0 result.json)"
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/probe_results/${NAME}.json" \
+            -f message="Record CI workflow state [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="$BRANCH" >/dev/null
