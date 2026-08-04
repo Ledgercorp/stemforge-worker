@@ -35,7 +35,7 @@ def test_intensity_accepts_fraction_or_percent() -> None:
 def test_zero_intensity_is_a_true_non_destructive_bypass() -> None:
     source, _, _ = _parts()
     output, report = naturalize_arrays(source, 48000, mode="quick", intensity=0.0)
-    assert report["status"] == "completed"
+    assert report["status"] == "completed", report["safety"]
     assert report["non_destructive"] is True
     assert np.max(np.abs(output - source)) < 1e-6
     assert report["operations"][4]["operation"] == "light_post_modulation_denoise"
@@ -45,7 +45,7 @@ def test_zero_intensity_is_a_true_non_destructive_bypass() -> None:
 def test_quick_naturalize_uses_the_mandatory_order() -> None:
     source, _, _ = _parts()
     output, report = naturalize_arrays(source, 48000, mode="quick", intensity=0.12)
-    assert report["status"] == "completed"
+    assert report["status"] == "completed", report["safety"]
     assert output.shape == source.shape
     assert np.all(np.isfinite(output))
     assert report["processing_order"] == [
@@ -76,7 +76,7 @@ def test_surgical_mode_anchors_to_master_when_stems_do_not_reconstruct() -> None
         vocal=vocal,
         instrumental=damaged_instrumental,
     )
-    assert report["status"] == "completed"
+    assert report["status"] == "completed", report["safety"]
     assert output.shape == source.shape
     assert report["reconstruction_gate"]["accepted"] is False
     assert report["anchor_decision"]["instrumental_source"] == "master_minus_vocal"
@@ -103,7 +103,7 @@ def test_auto_job_falls_back_to_quick_and_retains_ab_reference(tmp_path: Path) -
             "job_dir": str(tmp_path / "job"),
         }
     )
-    assert report["status"] == "completed"
+    assert report["status"] == "completed", report.get("safety")
     assert report["resolved_mode"] == "quick"
     assert report["automatic_mode_selection"] is True
     assert report["fallback_reason"] is not None
