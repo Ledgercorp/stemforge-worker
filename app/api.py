@@ -11,6 +11,7 @@ from app.mastering import mastering_plan as legacy_mastering_plan
 from app.mastering_v2 import master_audio_job, mastering_plan
 from app.memory import get_memory, record_feedback
 from app.memory_v2 import get_production_profile_job, record_rule_job
+from app.naturalize_v2 import naturalize_audio_job
 from app.perceptual_listener import compare_audio_urls
 from app.repair_v2 import humanize_audio_job, repair_audio_job
 from app.separation_v2 import separate_stems_job
@@ -38,7 +39,7 @@ SUPPORTED_ACTIONS = {
     "inspect_stems", "inspect_stems_v2", "separate_stems", "stem_remix",
     "mastering_plan", "legacy_mastering_plan", "master_audio", "master_audio_github_delivery",
     "full_pass",
-    "repair_audio", "humanize_audio", "render_lyric_video", "export_daw",
+    "repair_audio", "humanize_audio", "naturalize", "render_lyric_video", "export_daw",
     "get_memory", "record_feedback", "record_rule", "get_production_profile",
 }
 
@@ -87,6 +88,7 @@ def handle_job(payload: dict) -> dict:
         "full_pass": lambda: full_pass_job(payload),
         "repair_audio": lambda: repair_audio_job(payload),
         "humanize_audio": lambda: humanize_audio_job(payload),
+        "naturalize": lambda: naturalize_audio_job(payload),
         "render_lyric_video": lambda: render_lyric_video_job(payload),
         "export_daw": lambda: export_daw_job(payload),
         "get_memory": lambda: {
