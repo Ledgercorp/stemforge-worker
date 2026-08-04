@@ -1,0 +1,3329 @@
+{
+  "delayTime": 8643,
+  "executionTime": 65353,
+  "id": "a0be7c20-3385-47a4-9a8b-e11ef1e304df-u2",
+  "output": {
+    "aligner_version": "monotonic_dynamic_programming_v3",
+    "device": "cuda",
+    "exports": {
+      "ass_path": "/runpod-volume/stemforge/output/sounddecay_Sweet_Sixteen.ass",
+      "csv_path": "/runpod-volume/stemforge/output/sounddecay_Sweet_Sixteen.csv",
+      "json_path": "/runpod-volume/stemforge/output/sounddecay_Sweet_Sixteen.json",
+      "lrc_path": "/runpod-volume/stemforge/output/sounddecay_Sweet_Sixteen.lrc",
+      "srt_path": "/runpod-volume/stemforge/output/sounddecay_Sweet_Sixteen.srt"
+    },
+    "language": "en",
+    "lines": [
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.3942,
+        "end": 8.056,
+        "index": 1,
+        "needs_review": true,
+        "start": 6.133,
+        "text": "I remember the feeling,",
+        "words": [
+          {
+            "end": 6.183,
+            "line_index": 0,
+            "normalized": "i",
+            "score": 0.001,
+            "source": "recognized_anchor",
+            "start": 6.133,
+            "word": "I"
+          },
+          {
+            "end": 6.594,
+            "line_index": 0,
+            "normalized": "remember",
+            "score": 0.328,
+            "source": "recognized_anchor",
+            "start": 6.173,
+            "word": "remember"
+          },
+          {
+            "end": 6.734,
+            "line_index": 0,
+            "normalized": "the",
+            "score": 0.343,
+            "source": "recognized_anchor",
+            "start": 6.634,
+            "word": "the"
+          },
+          {
+            "end": 8.056,
+            "line_index": 0,
+            "normalized": "feeling",
+            "score": 0.905,
+            "source": "recognized_anchor",
+            "start": 6.994,
+            "word": "feeling"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8617,
+        "end": 10.358,
+        "index": 2,
+        "needs_review": false,
+        "start": 8.276,
+        "text": "warm but uneasy,",
+        "words": [
+          {
+            "end": 8.656,
+            "line_index": 1,
+            "normalized": "warm",
+            "score": 0.919,
+            "source": "recognized_anchor",
+            "start": 8.276,
+            "word": "warm"
+          },
+          {
+            "end": 9.177,
+            "line_index": 1,
+            "normalized": "but",
+            "score": 0.861,
+            "source": "recognized_anchor",
+            "start": 8.716,
+            "word": "but"
+          },
+          {
+            "end": 10.358,
+            "line_index": 1,
+            "normalized": "uneasy",
+            "score": 0.805,
+            "source": "recognized_anchor",
+            "start": 9.377,
+            "word": "uneasy"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8562,
+        "end": 12.481,
+        "index": 3,
+        "needs_review": false,
+        "start": 10.418,
+        "text": "new home, new city,",
+        "words": [
+          {
+            "end": 10.639,
+            "line_index": 2,
+            "normalized": "new",
+            "score": 0.888,
+            "source": "recognized_anchor",
+            "start": 10.418,
+            "word": "new"
+          },
+          {
+            "end": 11.239,
+            "line_index": 2,
+            "normalized": "home",
+            "score": 0.902,
+            "source": "recognized_anchor",
+            "start": 10.739,
+            "word": "home"
+          },
+          {
+            "end": 11.7,
+            "line_index": 2,
+            "normalized": "new",
+            "score": 0.771,
+            "source": "recognized_anchor",
+            "start": 11.38,
+            "word": "new"
+          },
+          {
+            "end": 12.481,
+            "line_index": 2,
+            "normalized": "city",
+            "score": 0.864,
+            "source": "recognized_anchor",
+            "start": 11.94,
+            "word": "city"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.6667,
+        "confidence": 0.799,
+        "end": 14.824,
+        "index": 4,
+        "needs_review": false,
+        "start": 12.982,
+        "text": "low self-esteem.",
+        "words": [
+          {
+            "end": 13.342,
+            "line_index": 3,
+            "normalized": "low",
+            "score": 0.848,
+            "source": "recognized_anchor",
+            "start": 12.982,
+            "word": "low"
+          },
+          {
+            "end": 13.527,
+            "line_index": 3,
+            "normalized": "self",
+            "score": 0,
+            "source": "interpolated",
+            "start": 13.427,
+            "word": "self"
+          },
+          {
+            "end": 14.824,
+            "line_index": 3,
+            "normalized": "esteem",
+            "score": 0.75,
+            "source": "fuzzy_anchor",
+            "start": 13.542,
+            "word": "esteem"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.2,
+        "confidence": 0,
+        "end": 28.356516666666668,
+        "index": 5,
+        "needs_review": true,
+        "start": 14.844,
+        "text": "I took pill after pill",
+        "words": [
+          {
+            "end": 14.894,
+            "line_index": 4,
+            "normalized": "i",
+            "score": 0,
+            "source": "recognized_anchor",
+            "start": 14.844,
+            "word": "I"
+          },
+          {
+            "end": 18.193516666666667,
+            "line_index": 4,
+            "normalized": "took",
+            "score": 0,
+            "source": "interpolated",
+            "start": 17.743516666666668,
+            "word": "took"
+          },
+          {
+            "end": 21.581183333333332,
+            "line_index": 4,
+            "normalized": "pill",
+            "score": 0,
+            "source": "interpolated",
+            "start": 21.131183333333333,
+            "word": "pill"
+          },
+          {
+            "end": 24.96885,
+            "line_index": 4,
+            "normalized": "after",
+            "score": 0,
+            "source": "interpolated",
+            "start": 24.51885,
+            "word": "after"
+          },
+          {
+            "end": 28.356516666666668,
+            "line_index": 4,
+            "normalized": "pill",
+            "score": 0,
+            "source": "interpolated",
+            "start": 27.90651666666667,
+            "word": "pill"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.2,
+        "confidence": 0.56,
+        "end": 43.0496375,
+        "index": 6,
+        "needs_review": true,
+        "start": 31.29418333333333,
+        "text": "just to quiet my head,",
+        "words": [
+          {
+            "end": 31.74418333333333,
+            "line_index": 5,
+            "normalized": "just",
+            "score": 0,
+            "source": "interpolated",
+            "start": 31.29418333333333,
+            "word": "just"
+          },
+          {
+            "end": 35.33,
+            "line_index": 5,
+            "normalized": "to",
+            "score": 0.56,
+            "source": "recognized_anchor",
+            "start": 35.19,
+            "word": "to"
+          },
+          {
+            "end": 37.9481375,
+            "line_index": 5,
+            "normalized": "quiet",
+            "score": 0,
+            "source": "interpolated",
+            "start": 37.4981375,
+            "word": "quiet"
+          },
+          {
+            "end": 40.4988875,
+            "line_index": 5,
+            "normalized": "my",
+            "score": 0,
+            "source": "interpolated",
+            "start": 40.0488875,
+            "word": "my"
+          },
+          {
+            "end": 43.0496375,
+            "line_index": 5,
+            "normalized": "head",
+            "score": 0,
+            "source": "interpolated",
+            "start": 42.5996375,
+            "word": "head"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.2,
+        "confidence": 0.541,
+        "end": 49.258570000000006,
+        "index": 7,
+        "needs_review": true,
+        "start": 45.533,
+        "text": "then smoked by the window",
+        "words": [
+          {
+            "end": 45.774,
+            "line_index": 6,
+            "normalized": "then",
+            "score": 0.541,
+            "source": "fuzzy_anchor",
+            "start": 45.533,
+            "word": "then"
+          },
+          {
+            "end": 46.89397,
+            "line_index": 6,
+            "normalized": "smoked",
+            "score": 0,
+            "source": "interpolated",
+            "start": 46.44397,
+            "word": "smoked"
+          },
+          {
+            "end": 47.682170000000006,
+            "line_index": 6,
+            "normalized": "by",
+            "score": 0,
+            "source": "interpolated",
+            "start": 47.23217,
+            "word": "by"
+          },
+          {
+            "end": 48.47037,
+            "line_index": 6,
+            "normalized": "the",
+            "score": 0,
+            "source": "interpolated",
+            "start": 48.02037,
+            "word": "the"
+          },
+          {
+            "end": 49.258570000000006,
+            "line_index": 6,
+            "normalized": "window",
+            "score": 0,
+            "source": "interpolated",
+            "start": 48.80857,
+            "word": "window"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.6,
+        "confidence": 0.791,
+        "end": 55.1134125,
+        "index": 8,
+        "needs_review": false,
+        "start": 49.715,
+        "text": "and stayed in my bed.",
+        "words": [
+          {
+            "end": 49.855,
+            "line_index": 7,
+            "normalized": "and",
+            "score": 0.767,
+            "source": "recognized_anchor",
+            "start": 49.715,
+            "word": "and"
+          },
+          {
+            "end": 51.296,
+            "line_index": 7,
+            "normalized": "stayed",
+            "score": 0.8,
+            "source": "fuzzy_anchor",
+            "start": 50.895,
+            "word": "stayed"
+          },
+          {
+            "end": 52.417925000000004,
+            "line_index": 7,
+            "normalized": "in",
+            "score": 0,
+            "source": "interpolated",
+            "start": 51.967925,
+            "word": "in"
+          },
+          {
+            "end": 53.157,
+            "line_index": 7,
+            "normalized": "my",
+            "score": 0.806,
+            "source": "recognized_anchor",
+            "start": 52.877,
+            "word": "my"
+          },
+          {
+            "end": 55.1134125,
+            "line_index": 7,
+            "normalized": "bed",
+            "score": 0,
+            "source": "interpolated",
+            "start": 54.6634125,
+            "word": "bed"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.25,
+        "confidence": 0.658,
+        "end": 61.994775000000004,
+        "index": 9,
+        "needs_review": true,
+        "start": 56.4356625,
+        "text": "Dropped acid alone while",
+        "words": [
+          {
+            "end": 56.8856625,
+            "line_index": 8,
+            "normalized": "dropped",
+            "score": 0,
+            "source": "interpolated",
+            "start": 56.4356625,
+            "word": "Dropped"
+          },
+          {
+            "end": 58.6579125,
+            "line_index": 8,
+            "normalized": "acid",
+            "score": 0,
+            "source": "interpolated",
+            "start": 58.2079125,
+            "word": "acid"
+          },
+          {
+            "end": 60.566,
+            "line_index": 8,
+            "normalized": "alone",
+            "score": 0.658,
+            "source": "fuzzy_anchor",
+            "start": 60.246,
+            "word": "alone"
+          },
+          {
+            "end": 61.994775000000004,
+            "line_index": 8,
+            "normalized": "while",
+            "score": 0,
+            "source": "interpolated",
+            "start": 61.544775,
+            "word": "while"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.5,
+        "confidence": 0.298,
+        "end": 66.51835,
+        "index": 10,
+        "needs_review": true,
+        "start": 62.869,
+        "text": "the ceiling turned strange",
+        "words": [
+          {
+            "end": 62.929,
+            "line_index": 9,
+            "normalized": "the",
+            "score": 0.178,
+            "source": "recognized_anchor",
+            "start": 62.869,
+            "word": "the"
+          },
+          {
+            "end": 64.24685000000001,
+            "line_index": 9,
+            "normalized": "ceiling",
+            "score": 0,
+            "source": "interpolated",
+            "start": 63.796850000000006,
+            "word": "ceiling"
+          },
+          {
+            "end": 65.532,
+            "line_index": 9,
+            "normalized": "turned",
+            "score": 0.418,
+            "source": "recognized_anchor",
+            "start": 64.971,
+            "word": "turned"
+          },
+          {
+            "end": 66.51835,
+            "line_index": 9,
+            "normalized": "strange",
+            "score": 0,
+            "source": "interpolated",
+            "start": 66.06835,
+            "word": "strange"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.25,
+        "confidence": 0.74,
+        "end": 72.53812500000001,
+        "index": 11,
+        "needs_review": true,
+        "start": 66.794,
+        "text": "and waited for something",
+        "words": [
+          {
+            "end": 66.894,
+            "line_index": 10,
+            "normalized": "and",
+            "score": 0.74,
+            "source": "recognized_anchor",
+            "start": 66.794,
+            "word": "and"
+          },
+          {
+            "end": 68.89312500000001,
+            "line_index": 10,
+            "normalized": "waited",
+            "score": 0,
+            "source": "interpolated",
+            "start": 68.44312500000001,
+            "word": "waited"
+          },
+          {
+            "end": 70.715625,
+            "line_index": 10,
+            "normalized": "for",
+            "score": 0,
+            "source": "interpolated",
+            "start": 70.265625,
+            "word": "for"
+          },
+          {
+            "end": 72.53812500000001,
+            "line_index": 10,
+            "normalized": "something",
+            "score": 0,
+            "source": "interpolated",
+            "start": 72.088125,
+            "word": "something"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0,
+        "confidence": 0,
+        "end": 79.828125,
+        "index": 12,
+        "needs_review": true,
+        "start": 73.91062500000001,
+        "text": "inside me to change.",
+        "words": [
+          {
+            "end": 74.36062500000001,
+            "line_index": 11,
+            "normalized": "inside",
+            "score": 0,
+            "source": "interpolated",
+            "start": 73.91062500000001,
+            "word": "inside"
+          },
+          {
+            "end": 76.183125,
+            "line_index": 11,
+            "normalized": "me",
+            "score": 0,
+            "source": "interpolated",
+            "start": 75.733125,
+            "word": "me"
+          },
+          {
+            "end": 78.00562500000001,
+            "line_index": 11,
+            "normalized": "to",
+            "score": 0,
+            "source": "interpolated",
+            "start": 77.555625,
+            "word": "to"
+          },
+          {
+            "end": 79.828125,
+            "line_index": 11,
+            "normalized": "change",
+            "score": 0,
+            "source": "interpolated",
+            "start": 79.378125,
+            "word": "change"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.55,
+        "end": 82.756,
+        "index": 13,
+        "needs_review": false,
+        "start": 81.474,
+        "text": "My dealer knew",
+        "words": [
+          {
+            "end": 81.614,
+            "line_index": 12,
+            "normalized": "my",
+            "score": 0.352,
+            "source": "recognized_anchor",
+            "start": 81.474,
+            "word": "My"
+          },
+          {
+            "end": 82.155,
+            "line_index": 12,
+            "normalized": "dealer",
+            "score": 0.6,
+            "source": "recognized_anchor",
+            "start": 81.675,
+            "word": "dealer"
+          },
+          {
+            "end": 82.756,
+            "line_index": 12,
+            "normalized": "knew",
+            "score": 0.698,
+            "source": "recognized_anchor",
+            "start": 82.215,
+            "word": "knew"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.765,
+        "end": 84.719,
+        "index": 14,
+        "needs_review": false,
+        "start": 82.816,
+        "text": "when I needed a spark,",
+        "words": [
+          {
+            "end": 83.137,
+            "line_index": 13,
+            "normalized": "when",
+            "score": 0.595,
+            "source": "recognized_anchor",
+            "start": 82.816,
+            "word": "when"
+          },
+          {
+            "end": 83.317,
+            "line_index": 13,
+            "normalized": "i",
+            "score": 0.926,
+            "source": "recognized_anchor",
+            "start": 83.237,
+            "word": "I"
+          },
+          {
+            "end": 83.958,
+            "line_index": 13,
+            "normalized": "needed",
+            "score": 0.824,
+            "source": "recognized_anchor",
+            "start": 83.397,
+            "word": "needed"
+          },
+          {
+            "end": 84.138,
+            "line_index": 13,
+            "normalized": "a",
+            "score": 0.691,
+            "source": "recognized_anchor",
+            "start": 84.058,
+            "word": "a"
+          },
+          {
+            "end": 84.719,
+            "line_index": 13,
+            "normalized": "spark",
+            "score": 0.789,
+            "source": "recognized_anchor",
+            "start": 84.178,
+            "word": "spark"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.6412,
+        "end": 88.591,
+        "index": 15,
+        "needs_review": false,
+        "start": 86.128,
+        "text": "and I called that friendship",
+        "words": [
+          {
+            "end": 86.289,
+            "line_index": 14,
+            "normalized": "and",
+            "score": 0.528,
+            "source": "recognized_anchor",
+            "start": 86.128,
+            "word": "and"
+          },
+          {
+            "end": 86.489,
+            "line_index": 14,
+            "normalized": "i",
+            "score": 0.664,
+            "source": "recognized_anchor",
+            "start": 86.409,
+            "word": "I"
+          },
+          {
+            "end": 87.109,
+            "line_index": 14,
+            "normalized": "called",
+            "score": 0.556,
+            "source": "recognized_anchor",
+            "start": 86.549,
+            "word": "called"
+          },
+          {
+            "end": 87.57,
+            "line_index": 14,
+            "normalized": "that",
+            "score": 0.806,
+            "source": "recognized_anchor",
+            "start": 87.189,
+            "word": "that"
+          },
+          {
+            "end": 88.591,
+            "line_index": 14,
+            "normalized": "friendship",
+            "score": 0.652,
+            "source": "recognized_anchor",
+            "start": 87.73,
+            "word": "friendship"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.5,
+        "confidence": 0.4785,
+        "end": 98.31031,
+        "index": 16,
+        "needs_review": true,
+        "start": 88.891,
+        "text": "because it was enough.",
+        "words": [
+          {
+            "end": 89.171,
+            "line_index": 15,
+            "normalized": "because",
+            "score": 0.393,
+            "source": "fuzzy_anchor",
+            "start": 88.891,
+            "word": "because"
+          },
+          {
+            "end": 89.512,
+            "line_index": 15,
+            "normalized": "it",
+            "score": 0.564,
+            "source": "recognized_anchor",
+            "start": 89.372,
+            "word": "it"
+          },
+          {
+            "end": 93.79771000000001,
+            "line_index": 15,
+            "normalized": "was",
+            "score": 0,
+            "source": "interpolated",
+            "start": 93.34771,
+            "word": "was"
+          },
+          {
+            "end": 98.31031,
+            "line_index": 15,
+            "normalized": "enough",
+            "score": 0,
+            "source": "interpolated",
+            "start": 97.86031,
+            "word": "enough"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.5,
+        "confidence": 0.9,
+        "end": 112.595,
+        "index": 17,
+        "needs_review": true,
+        "start": 102.37291,
+        "text": "At sixteen, I thought",
+        "words": [
+          {
+            "end": 102.82291000000001,
+            "line_index": 16,
+            "normalized": "at",
+            "score": 0,
+            "source": "interpolated",
+            "start": 102.37291,
+            "word": "At"
+          },
+          {
+            "end": 107.33551000000001,
+            "line_index": 16,
+            "normalized": "sixteen",
+            "score": 0,
+            "source": "interpolated",
+            "start": 106.88551000000001,
+            "word": "sixteen"
+          },
+          {
+            "end": 112.155,
+            "line_index": 16,
+            "normalized": "i",
+            "score": 0.904,
+            "source": "recognized_anchor",
+            "start": 112.075,
+            "word": "I"
+          },
+          {
+            "end": 112.595,
+            "line_index": 16,
+            "normalized": "thought",
+            "score": 0.896,
+            "source": "recognized_anchor",
+            "start": 112.255,
+            "word": "thought"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.7607,
+        "end": 114.999,
+        "index": 18,
+        "needs_review": false,
+        "start": 112.716,
+        "text": "I had years left to lose.",
+        "words": [
+          {
+            "end": 112.816,
+            "line_index": 17,
+            "normalized": "i",
+            "score": 0.944,
+            "source": "recognized_anchor",
+            "start": 112.716,
+            "word": "I"
+          },
+          {
+            "end": 113.136,
+            "line_index": 17,
+            "normalized": "had",
+            "score": 0.76,
+            "source": "recognized_anchor",
+            "start": 112.876,
+            "word": "had"
+          },
+          {
+            "end": 113.617,
+            "line_index": 17,
+            "normalized": "years",
+            "score": 0.778,
+            "source": "recognized_anchor",
+            "start": 113.156,
+            "word": "years"
+          },
+          {
+            "end": 113.957,
+            "line_index": 17,
+            "normalized": "left",
+            "score": 0.57,
+            "source": "recognized_anchor",
+            "start": 113.717,
+            "word": "left"
+          },
+          {
+            "end": 114.278,
+            "line_index": 17,
+            "normalized": "to",
+            "score": 0.732,
+            "source": "recognized_anchor",
+            "start": 113.997,
+            "word": "to"
+          },
+          {
+            "end": 114.999,
+            "line_index": 17,
+            "normalized": "lose",
+            "score": 0.78,
+            "source": "recognized_anchor",
+            "start": 114.298,
+            "word": "lose"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0,
+        "confidence": 0,
+        "end": 115.42733333333334,
+        "index": 19,
+        "needs_review": true,
+        "start": 115.14066666666666,
+        "text": "At seventeen,",
+        "words": [
+          {
+            "end": 115.26066666666667,
+            "line_index": 18,
+            "normalized": "at",
+            "score": 0,
+            "source": "interpolated",
+            "start": 115.14066666666666,
+            "word": "At"
+          },
+          {
+            "end": 115.42733333333334,
+            "line_index": 18,
+            "normalized": "seventeen",
+            "score": 0,
+            "source": "interpolated",
+            "start": 115.30733333333333,
+            "word": "seventeen"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.663,
+        "end": 119.665,
+        "index": 20,
+        "needs_review": false,
+        "start": 115.499,
+        "text": "I had habits to choose.",
+        "words": [
+          {
+            "end": 116.601,
+            "line_index": 19,
+            "normalized": "i",
+            "score": 0.823,
+            "source": "recognized_anchor",
+            "start": 115.499,
+            "word": "I"
+          },
+          {
+            "end": 117.642,
+            "line_index": 19,
+            "normalized": "had",
+            "score": 0.607,
+            "source": "recognized_anchor",
+            "start": 117.442,
+            "word": "had"
+          },
+          {
+            "end": 118.503,
+            "line_index": 19,
+            "normalized": "habits",
+            "score": 0.604,
+            "source": "recognized_anchor",
+            "start": 117.702,
+            "word": "habits"
+          },
+          {
+            "end": 118.764,
+            "line_index": 19,
+            "normalized": "to",
+            "score": 0.562,
+            "source": "recognized_anchor",
+            "start": 118.543,
+            "word": "to"
+          },
+          {
+            "end": 119.665,
+            "line_index": 19,
+            "normalized": "choose",
+            "score": 0.719,
+            "source": "recognized_anchor",
+            "start": 118.844,
+            "word": "choose"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.8,
+        "confidence": 0.7352,
+        "end": 121.707,
+        "index": 21,
+        "needs_review": false,
+        "start": 119.6905,
+        "text": "I don't miss the fear",
+        "words": [
+          {
+            "end": 119.7405,
+            "line_index": 20,
+            "normalized": "i",
+            "score": 0,
+            "source": "interpolated",
+            "start": 119.6905,
+            "word": "I"
+          },
+          {
+            "end": 120.225,
+            "line_index": 20,
+            "normalized": "don't",
+            "score": 0.61,
+            "source": "recognized_anchor",
+            "start": 119.725,
+            "word": "don't"
+          },
+          {
+            "end": 120.666,
+            "line_index": 20,
+            "normalized": "miss",
+            "score": 0.813,
+            "source": "recognized_anchor",
+            "start": 120.306,
+            "word": "miss"
+          },
+          {
+            "end": 120.986,
+            "line_index": 20,
+            "normalized": "the",
+            "score": 0.867,
+            "source": "recognized_anchor",
+            "start": 120.846,
+            "word": "the"
+          },
+          {
+            "end": 121.707,
+            "line_index": 20,
+            "normalized": "fear",
+            "score": 0.651,
+            "source": "recognized_anchor",
+            "start": 121.127,
+            "word": "fear"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.6695,
+        "end": 123.95,
+        "index": 22,
+        "needs_review": false,
+        "start": 121.928,
+        "text": "or the things I went through.",
+        "words": [
+          {
+            "end": 121.988,
+            "line_index": 21,
+            "normalized": "or",
+            "score": 0.273,
+            "source": "recognized_anchor",
+            "start": 121.928,
+            "word": "or"
+          },
+          {
+            "end": 122.168,
+            "line_index": 21,
+            "normalized": "the",
+            "score": 0.841,
+            "source": "recognized_anchor",
+            "start": 122.028,
+            "word": "the"
+          },
+          {
+            "end": 122.809,
+            "line_index": 21,
+            "normalized": "things",
+            "score": 0.813,
+            "source": "recognized_anchor",
+            "start": 122.288,
+            "word": "things"
+          },
+          {
+            "end": 123.129,
+            "line_index": 21,
+            "normalized": "i",
+            "score": 0.708,
+            "source": "recognized_anchor",
+            "start": 122.989,
+            "word": "I"
+          },
+          {
+            "end": 123.35,
+            "line_index": 21,
+            "normalized": "went",
+            "score": 0.689,
+            "source": "recognized_anchor",
+            "start": 123.149,
+            "word": "went"
+          },
+          {
+            "end": 123.95,
+            "line_index": 21,
+            "normalized": "through",
+            "score": 0.693,
+            "source": "recognized_anchor",
+            "start": 123.41,
+            "word": "through"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.672,
+        "end": 126.313,
+        "index": 23,
+        "needs_review": false,
+        "start": 124.111,
+        "text": "I miss being young enough",
+        "words": [
+          {
+            "end": 124.251,
+            "line_index": 22,
+            "normalized": "i",
+            "score": 0.694,
+            "source": "recognized_anchor",
+            "start": 124.111,
+            "word": "I"
+          },
+          {
+            "end": 124.631,
+            "line_index": 22,
+            "normalized": "miss",
+            "score": 0.773,
+            "source": "recognized_anchor",
+            "start": 124.311,
+            "word": "miss"
+          },
+          {
+            "end": 125.372,
+            "line_index": 22,
+            "normalized": "being",
+            "score": 0.719,
+            "source": "recognized_anchor",
+            "start": 124.851,
+            "word": "being"
+          },
+          {
+            "end": 125.733,
+            "line_index": 22,
+            "normalized": "young",
+            "score": 0.651,
+            "source": "recognized_anchor",
+            "start": 125.432,
+            "word": "young"
+          },
+          {
+            "end": 126.313,
+            "line_index": 22,
+            "normalized": "enough",
+            "score": 0.523,
+            "source": "recognized_anchor",
+            "start": 125.813,
+            "word": "enough"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.6717,
+        "end": 128.116,
+        "index": 24,
+        "needs_review": false,
+        "start": 126.414,
+        "text": "not to know what they'd do.",
+        "words": [
+          {
+            "end": 126.794,
+            "line_index": 23,
+            "normalized": "not",
+            "score": 0.834,
+            "source": "recognized_anchor",
+            "start": 126.414,
+            "word": "not"
+          },
+          {
+            "end": 127.114,
+            "line_index": 23,
+            "normalized": "to",
+            "score": 0.76,
+            "source": "recognized_anchor",
+            "start": 126.834,
+            "word": "to"
+          },
+          {
+            "end": 127.395,
+            "line_index": 23,
+            "normalized": "know",
+            "score": 0.56,
+            "source": "recognized_anchor",
+            "start": 127.134,
+            "word": "know"
+          },
+          {
+            "end": 127.615,
+            "line_index": 23,
+            "normalized": "what",
+            "score": 0.678,
+            "source": "recognized_anchor",
+            "start": 127.435,
+            "word": "what"
+          },
+          {
+            "end": 128.016,
+            "line_index": 23,
+            "normalized": "they'd",
+            "score": 0.8,
+            "source": "fuzzy_anchor",
+            "start": 127.675,
+            "word": "they'd"
+          },
+          {
+            "end": 128.116,
+            "line_index": 23,
+            "normalized": "do",
+            "score": 0.398,
+            "source": "recognized_anchor",
+            "start": 128.056,
+            "word": "do"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.9395,
+        "end": 133.744,
+        "index": 25,
+        "needs_review": false,
+        "start": 131.942,
+        "text": "My first love came",
+        "words": [
+          {
+            "end": 132.102,
+            "line_index": 24,
+            "normalized": "my",
+            "score": 0.968,
+            "source": "recognized_anchor",
+            "start": 131.942,
+            "word": "My"
+          },
+          {
+            "end": 132.623,
+            "line_index": 24,
+            "normalized": "first",
+            "score": 0.878,
+            "source": "recognized_anchor",
+            "start": 132.202,
+            "word": "first"
+          },
+          {
+            "end": 133.204,
+            "line_index": 24,
+            "normalized": "love",
+            "score": 0.997,
+            "source": "recognized_anchor",
+            "start": 132.803,
+            "word": "love"
+          },
+          {
+            "end": 133.744,
+            "line_index": 24,
+            "normalized": "came",
+            "score": 0.915,
+            "source": "recognized_anchor",
+            "start": 133.324,
+            "word": "came"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.6305,
+        "end": 136.227,
+        "index": 26,
+        "needs_review": false,
+        "start": 133.864,
+        "text": "through that apartment door.",
+        "words": [
+          {
+            "end": 134.245,
+            "line_index": 25,
+            "normalized": "through",
+            "score": 0.408,
+            "source": "recognized_anchor",
+            "start": 133.864,
+            "word": "through"
+          },
+          {
+            "end": 134.805,
+            "line_index": 25,
+            "normalized": "that",
+            "score": 0.868,
+            "source": "recognized_anchor",
+            "start": 134.485,
+            "word": "that"
+          },
+          {
+            "end": 135.866,
+            "line_index": 25,
+            "normalized": "apartment",
+            "score": 0.863,
+            "source": "recognized_anchor",
+            "start": 134.885,
+            "word": "apartment"
+          },
+          {
+            "end": 136.227,
+            "line_index": 25,
+            "normalized": "door",
+            "score": 0.383,
+            "source": "recognized_anchor",
+            "start": 135.906,
+            "word": "door"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.8,
+        "confidence": 0.8765,
+        "end": 138.75,
+        "index": 27,
+        "needs_review": false,
+        "start": 136.667,
+        "text": "I had never let anyone",
+        "words": [
+          {
+            "end": 136.747,
+            "line_index": 26,
+            "normalized": "i",
+            "score": 0.997,
+            "source": "recognized_anchor",
+            "start": 136.667,
+            "word": "I"
+          },
+          {
+            "end": 136.928,
+            "line_index": 26,
+            "normalized": "had",
+            "score": 0.946,
+            "source": "recognized_anchor",
+            "start": 136.807,
+            "word": "had"
+          },
+          {
+            "end": 137.488,
+            "line_index": 26,
+            "normalized": "never",
+            "score": 0.866,
+            "source": "recognized_anchor",
+            "start": 137.048,
+            "word": "never"
+          },
+          {
+            "end": 137.991185,
+            "line_index": 26,
+            "normalized": "let",
+            "score": 0,
+            "source": "interpolated",
+            "start": 137.760425,
+            "word": "let"
+          },
+          {
+            "end": 138.75,
+            "line_index": 26,
+            "normalized": "anyone",
+            "score": 0.697,
+            "source": "recognized_anchor",
+            "start": 138.129,
+            "word": "anyone"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8137,
+        "end": 140.732,
+        "index": 28,
+        "needs_review": false,
+        "start": 139.01,
+        "text": "that close before.",
+        "words": [
+          {
+            "end": 139.27,
+            "line_index": 27,
+            "normalized": "that",
+            "score": 0.895,
+            "source": "recognized_anchor",
+            "start": 139.01,
+            "word": "that"
+          },
+          {
+            "end": 139.931,
+            "line_index": 27,
+            "normalized": "close",
+            "score": 0.895,
+            "source": "recognized_anchor",
+            "start": 139.571,
+            "word": "close"
+          },
+          {
+            "end": 140.732,
+            "line_index": 27,
+            "normalized": "before",
+            "score": 0.651,
+            "source": "recognized_anchor",
+            "start": 140.011,
+            "word": "before"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.714,
+        "end": 223.993,
+        "index": 29,
+        "needs_review": true,
+        "start": 185.941,
+        "text": "I kept the opioids",
+        "words": [
+          {
+            "end": 186.021,
+            "line_index": 28,
+            "normalized": "i",
+            "score": 0.882,
+            "source": "recognized_anchor",
+            "start": 185.941,
+            "word": "I"
+          },
+          {
+            "end": 222.932,
+            "line_index": 28,
+            "normalized": "kept",
+            "score": 0.616,
+            "source": "recognized_anchor",
+            "start": 222.652,
+            "word": "kept"
+          },
+          {
+            "end": 223.252,
+            "line_index": 28,
+            "normalized": "the",
+            "score": 0.824,
+            "source": "recognized_anchor",
+            "start": 222.972,
+            "word": "the"
+          },
+          {
+            "end": 223.993,
+            "line_index": 28,
+            "normalized": "opioids",
+            "score": 0.534,
+            "source": "recognized_anchor",
+            "start": 223.372,
+            "word": "opioids"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8606,
+        "end": 226.214,
+        "index": 30,
+        "needs_review": false,
+        "start": 224.013,
+        "text": "hidden where nobody would see,",
+        "words": [
+          {
+            "end": 224.553,
+            "line_index": 29,
+            "normalized": "hidden",
+            "score": 0.729,
+            "source": "recognized_anchor",
+            "start": 224.013,
+            "word": "hidden"
+          },
+          {
+            "end": 224.833,
+            "line_index": 29,
+            "normalized": "where",
+            "score": 0.876,
+            "source": "recognized_anchor",
+            "start": 224.593,
+            "word": "where"
+          },
+          {
+            "end": 225.614,
+            "line_index": 29,
+            "normalized": "nobody",
+            "score": 0.81,
+            "source": "recognized_anchor",
+            "start": 224.913,
+            "word": "nobody"
+          },
+          {
+            "end": 225.874,
+            "line_index": 29,
+            "normalized": "would",
+            "score": 0.909,
+            "source": "recognized_anchor",
+            "start": 225.714,
+            "word": "would"
+          },
+          {
+            "end": 226.214,
+            "line_index": 29,
+            "normalized": "see",
+            "score": 0.979,
+            "source": "recognized_anchor",
+            "start": 225.954,
+            "word": "see"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8062,
+        "end": 228.756,
+        "index": 31,
+        "needs_review": false,
+        "start": 226.234,
+        "text": "took more than I intended",
+        "words": [
+          {
+            "end": 227.035,
+            "line_index": 30,
+            "normalized": "took",
+            "score": 0.642,
+            "source": "recognized_anchor",
+            "start": 226.234,
+            "word": "took"
+          },
+          {
+            "end": 227.355,
+            "line_index": 30,
+            "normalized": "more",
+            "score": 0.888,
+            "source": "recognized_anchor",
+            "start": 227.095,
+            "word": "more"
+          },
+          {
+            "end": 227.675,
+            "line_index": 30,
+            "normalized": "than",
+            "score": 0.624,
+            "source": "recognized_anchor",
+            "start": 227.395,
+            "word": "than"
+          },
+          {
+            "end": 227.915,
+            "line_index": 30,
+            "normalized": "i",
+            "score": 0.993,
+            "source": "recognized_anchor",
+            "start": 227.855,
+            "word": "I"
+          },
+          {
+            "end": 228.756,
+            "line_index": 30,
+            "normalized": "intended",
+            "score": 0.884,
+            "source": "recognized_anchor",
+            "start": 227.995,
+            "word": "intended"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.876,
+        "end": 230.577,
+        "index": 32,
+        "needs_review": false,
+        "start": 228.836,
+        "text": "and kept it all with me.",
+        "words": [
+          {
+            "end": 228.916,
+            "line_index": 31,
+            "normalized": "and",
+            "score": 0.872,
+            "source": "recognized_anchor",
+            "start": 228.836,
+            "word": "and"
+          },
+          {
+            "end": 229.516,
+            "line_index": 31,
+            "normalized": "kept",
+            "score": 0.934,
+            "source": "recognized_anchor",
+            "start": 228.996,
+            "word": "kept"
+          },
+          {
+            "end": 229.856,
+            "line_index": 31,
+            "normalized": "it",
+            "score": 0.791,
+            "source": "recognized_anchor",
+            "start": 229.756,
+            "word": "it"
+          },
+          {
+            "end": 230.096,
+            "line_index": 31,
+            "normalized": "all",
+            "score": 0.993,
+            "source": "recognized_anchor",
+            "start": 229.976,
+            "word": "all"
+          },
+          {
+            "end": 230.296,
+            "line_index": 31,
+            "normalized": "with",
+            "score": 0.892,
+            "source": "recognized_anchor",
+            "start": 230.136,
+            "word": "with"
+          },
+          {
+            "end": 230.577,
+            "line_index": 31,
+            "normalized": "me",
+            "score": 0.774,
+            "source": "recognized_anchor",
+            "start": 230.377,
+            "word": "me"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.592,
+        "end": 233.078,
+        "index": 33,
+        "needs_review": false,
+        "start": 230.597,
+        "text": "I overdosed in silence",
+        "words": [
+          {
+            "end": 230.64700000000002,
+            "line_index": 32,
+            "normalized": "i",
+            "score": 0.002,
+            "source": "recognized_anchor",
+            "start": 230.597,
+            "word": "I"
+          },
+          {
+            "end": 232.298,
+            "line_index": 32,
+            "normalized": "overdosed",
+            "score": 0.704,
+            "source": "recognized_anchor",
+            "start": 231.657,
+            "word": "overdosed"
+          },
+          {
+            "end": 232.478,
+            "line_index": 32,
+            "normalized": "in",
+            "score": 0.726,
+            "source": "recognized_anchor",
+            "start": 232.358,
+            "word": "in"
+          },
+          {
+            "end": 233.078,
+            "line_index": 32,
+            "normalized": "silence",
+            "score": 0.936,
+            "source": "recognized_anchor",
+            "start": 232.558,
+            "word": "silence"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.7815,
+        "end": 235.099,
+        "index": 34,
+        "needs_review": false,
+        "start": 233.138,
+        "text": "with the bedroom door shut tight,",
+        "words": [
+          {
+            "end": 233.338,
+            "line_index": 33,
+            "normalized": "with",
+            "score": 0.961,
+            "source": "recognized_anchor",
+            "start": 233.138,
+            "word": "with"
+          },
+          {
+            "end": 233.498,
+            "line_index": 33,
+            "normalized": "the",
+            "score": 0.76,
+            "source": "recognized_anchor",
+            "start": 233.398,
+            "word": "the"
+          },
+          {
+            "end": 234.199,
+            "line_index": 33,
+            "normalized": "bedroom",
+            "score": 0.866,
+            "source": "recognized_anchor",
+            "start": 233.558,
+            "word": "bedroom"
+          },
+          {
+            "end": 234.439,
+            "line_index": 33,
+            "normalized": "door",
+            "score": 0.76,
+            "source": "recognized_anchor",
+            "start": 234.219,
+            "word": "door"
+          },
+          {
+            "end": 234.719,
+            "line_index": 33,
+            "normalized": "shut",
+            "score": 0.95,
+            "source": "recognized_anchor",
+            "start": 234.459,
+            "word": "shut"
+          },
+          {
+            "end": 235.099,
+            "line_index": 33,
+            "normalized": "tight",
+            "score": 0.392,
+            "source": "recognized_anchor",
+            "start": 234.759,
+            "word": "tight"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8938,
+        "end": 237.461,
+        "index": 35,
+        "needs_review": false,
+        "start": 235.6,
+        "text": "then woke up hours later",
+        "words": [
+          {
+            "end": 235.78,
+            "line_index": 34,
+            "normalized": "then",
+            "score": 0.924,
+            "source": "recognized_anchor",
+            "start": 235.6,
+            "word": "then"
+          },
+          {
+            "end": 236.14,
+            "line_index": 34,
+            "normalized": "woke",
+            "score": 0.988,
+            "source": "recognized_anchor",
+            "start": 235.88,
+            "word": "woke"
+          },
+          {
+            "end": 236.42,
+            "line_index": 34,
+            "normalized": "up",
+            "score": 0.891,
+            "source": "recognized_anchor",
+            "start": 236.28,
+            "word": "up"
+          },
+          {
+            "end": 236.88,
+            "line_index": 34,
+            "normalized": "hours",
+            "score": 0.903,
+            "source": "recognized_anchor",
+            "start": 236.52,
+            "word": "hours"
+          },
+          {
+            "end": 237.461,
+            "line_index": 34,
+            "normalized": "later",
+            "score": 0.763,
+            "source": "recognized_anchor",
+            "start": 236.98,
+            "word": "later"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8922,
+        "end": 239.422,
+        "index": 36,
+        "needs_review": false,
+        "start": 237.561,
+        "text": "and said that I was alright.",
+        "words": [
+          {
+            "end": 237.661,
+            "line_index": 35,
+            "normalized": "and",
+            "score": 0.801,
+            "source": "recognized_anchor",
+            "start": 237.561,
+            "word": "and"
+          },
+          {
+            "end": 238.001,
+            "line_index": 35,
+            "normalized": "said",
+            "score": 0.916,
+            "source": "recognized_anchor",
+            "start": 237.761,
+            "word": "said"
+          },
+          {
+            "end": 238.361,
+            "line_index": 35,
+            "normalized": "that",
+            "score": 0.845,
+            "source": "recognized_anchor",
+            "start": 238.061,
+            "word": "that"
+          },
+          {
+            "end": 238.561,
+            "line_index": 35,
+            "normalized": "i",
+            "score": 0.997,
+            "source": "recognized_anchor",
+            "start": 238.501,
+            "word": "I"
+          },
+          {
+            "end": 238.861,
+            "line_index": 35,
+            "normalized": "was",
+            "score": 0.876,
+            "source": "recognized_anchor",
+            "start": 238.601,
+            "word": "was"
+          },
+          {
+            "end": 239.422,
+            "line_index": 35,
+            "normalized": "alright",
+            "score": 0.918,
+            "source": "recognized_anchor",
+            "start": 239.002,
+            "word": "alright"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.7112,
+        "end": 241.943,
+        "index": 37,
+        "needs_review": false,
+        "start": 240.082,
+        "text": "I didn't know what was wrong",
+        "words": [
+          {
+            "end": 240.182,
+            "line_index": 36,
+            "normalized": "i",
+            "score": 0.793,
+            "source": "recognized_anchor",
+            "start": 240.082,
+            "word": "I"
+          },
+          {
+            "end": 240.722,
+            "line_index": 36,
+            "normalized": "didn't",
+            "score": 0.584,
+            "source": "recognized_anchor",
+            "start": 240.202,
+            "word": "didn't"
+          },
+          {
+            "end": 241.022,
+            "line_index": 36,
+            "normalized": "know",
+            "score": 0.674,
+            "source": "recognized_anchor",
+            "start": 240.762,
+            "word": "know"
+          },
+          {
+            "end": 241.263,
+            "line_index": 36,
+            "normalized": "what",
+            "score": 0.56,
+            "source": "recognized_anchor",
+            "start": 241.062,
+            "word": "what"
+          },
+          {
+            "end": 241.503,
+            "line_index": 36,
+            "normalized": "was",
+            "score": 0.866,
+            "source": "recognized_anchor",
+            "start": 241.323,
+            "word": "was"
+          },
+          {
+            "end": 241.943,
+            "line_index": 36,
+            "normalized": "wrong",
+            "score": 0.79,
+            "source": "recognized_anchor",
+            "start": 241.563,
+            "word": "wrong"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.762,
+        "end": 244.084,
+        "index": 38,
+        "needs_review": false,
+        "start": 242.263,
+        "text": "or why I hated my skin.",
+        "words": [
+          {
+            "end": 242.363,
+            "line_index": 37,
+            "normalized": "or",
+            "score": 0.752,
+            "source": "recognized_anchor",
+            "start": 242.263,
+            "word": "or"
+          },
+          {
+            "end": 242.683,
+            "line_index": 37,
+            "normalized": "why",
+            "score": 0.886,
+            "source": "recognized_anchor",
+            "start": 242.403,
+            "word": "why"
+          },
+          {
+            "end": 242.923,
+            "line_index": 37,
+            "normalized": "i",
+            "score": 0.7,
+            "source": "recognized_anchor",
+            "start": 242.843,
+            "word": "I"
+          },
+          {
+            "end": 243.443,
+            "line_index": 37,
+            "normalized": "hated",
+            "score": 0.6,
+            "source": "recognized_anchor",
+            "start": 242.983,
+            "word": "hated"
+          },
+          {
+            "end": 243.663,
+            "line_index": 37,
+            "normalized": "my",
+            "score": 0.957,
+            "source": "recognized_anchor",
+            "start": 243.503,
+            "word": "my"
+          },
+          {
+            "end": 244.084,
+            "line_index": 37,
+            "normalized": "skin",
+            "score": 0.677,
+            "source": "recognized_anchor",
+            "start": 243.683,
+            "word": "skin"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.6654,
+        "end": 246.445,
+        "index": 39,
+        "needs_review": false,
+        "start": 244.484,
+        "text": "I only knew the pills could cut",
+        "words": [
+          {
+            "end": 244.564,
+            "line_index": 38,
+            "normalized": "i",
+            "score": 0.757,
+            "source": "recognized_anchor",
+            "start": 244.484,
+            "word": "I"
+          },
+          {
+            "end": 245.084,
+            "line_index": 38,
+            "normalized": "only",
+            "score": 0.662,
+            "source": "recognized_anchor",
+            "start": 244.744,
+            "word": "only"
+          },
+          {
+            "end": 245.384,
+            "line_index": 38,
+            "normalized": "knew",
+            "score": 0.461,
+            "source": "recognized_anchor",
+            "start": 245.124,
+            "word": "knew"
+          },
+          {
+            "end": 245.584,
+            "line_index": 38,
+            "normalized": "the",
+            "score": 0.875,
+            "source": "recognized_anchor",
+            "start": 245.424,
+            "word": "the"
+          },
+          {
+            "end": 245.904,
+            "line_index": 38,
+            "normalized": "pills",
+            "score": 0.723,
+            "source": "recognized_anchor",
+            "start": 245.664,
+            "word": "pills"
+          },
+          {
+            "end": 246.144,
+            "line_index": 38,
+            "normalized": "could",
+            "score": 0.404,
+            "source": "recognized_anchor",
+            "start": 245.924,
+            "word": "could"
+          },
+          {
+            "end": 246.445,
+            "line_index": 38,
+            "normalized": "cut",
+            "score": 0.776,
+            "source": "recognized_anchor",
+            "start": 246.204,
+            "word": "cut"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.7458,
+        "end": 248.185,
+        "index": 40,
+        "needs_review": false,
+        "start": 246.505,
+        "text": "the pressure down within.",
+        "words": [
+          {
+            "end": 246.665,
+            "line_index": 39,
+            "normalized": "the",
+            "score": 0.881,
+            "source": "recognized_anchor",
+            "start": 246.505,
+            "word": "the"
+          },
+          {
+            "end": 247.285,
+            "line_index": 39,
+            "normalized": "pressure",
+            "score": 0.653,
+            "source": "recognized_anchor",
+            "start": 246.745,
+            "word": "pressure"
+          },
+          {
+            "end": 247.585,
+            "line_index": 39,
+            "normalized": "down",
+            "score": 0.684,
+            "source": "recognized_anchor",
+            "start": 247.365,
+            "word": "down"
+          },
+          {
+            "end": 248.185,
+            "line_index": 39,
+            "normalized": "within",
+            "score": 0.765,
+            "source": "recognized_anchor",
+            "start": 247.625,
+            "word": "within"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.6716,
+        "end": 293.063,
+        "index": 41,
+        "needs_review": true,
+        "start": 268.332,
+        "text": "I don't call it good,",
+        "words": [
+          {
+            "end": 268.412,
+            "line_index": 40,
+            "normalized": "i",
+            "score": 0.943,
+            "source": "recognized_anchor",
+            "start": 268.332,
+            "word": "I"
+          },
+          {
+            "end": 291.902,
+            "line_index": 40,
+            "normalized": "don't",
+            "score": 0.571,
+            "source": "recognized_anchor",
+            "start": 291.582,
+            "word": "don't"
+          },
+          {
+            "end": 292.383,
+            "line_index": 40,
+            "normalized": "call",
+            "score": 0.866,
+            "source": "recognized_anchor",
+            "start": 291.922,
+            "word": "call"
+          },
+          {
+            "end": 292.503,
+            "line_index": 40,
+            "normalized": "it",
+            "score": 0.064,
+            "source": "recognized_anchor",
+            "start": 292.443,
+            "word": "it"
+          },
+          {
+            "end": 293.063,
+            "line_index": 40,
+            "normalized": "good",
+            "score": 0.914,
+            "source": "recognized_anchor",
+            "start": 292.643,
+            "word": "good"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8138,
+        "end": 295.224,
+        "index": 42,
+        "needs_review": false,
+        "start": 293.283,
+        "text": "and I don't call it bad.",
+        "words": [
+          {
+            "end": 293.443,
+            "line_index": 41,
+            "normalized": "and",
+            "score": 0.737,
+            "source": "recognized_anchor",
+            "start": 293.283,
+            "word": "and"
+          },
+          {
+            "end": 293.643,
+            "line_index": 41,
+            "normalized": "i",
+            "score": 0.903,
+            "source": "recognized_anchor",
+            "start": 293.543,
+            "word": "I"
+          },
+          {
+            "end": 294.063,
+            "line_index": 41,
+            "normalized": "don't",
+            "score": 0.65,
+            "source": "recognized_anchor",
+            "start": 293.703,
+            "word": "don't"
+          },
+          {
+            "end": 294.564,
+            "line_index": 41,
+            "normalized": "call",
+            "score": 0.867,
+            "source": "recognized_anchor",
+            "start": 294.083,
+            "word": "call"
+          },
+          {
+            "end": 294.724,
+            "line_index": 41,
+            "normalized": "it",
+            "score": 0.936,
+            "source": "recognized_anchor",
+            "start": 294.624,
+            "word": "it"
+          },
+          {
+            "end": 295.224,
+            "line_index": 41,
+            "normalized": "bad",
+            "score": 0.79,
+            "source": "recognized_anchor",
+            "start": 294.804,
+            "word": "bad"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8432,
+        "end": 297.325,
+        "index": 43,
+        "needs_review": false,
+        "start": 295.364,
+        "text": "It held some of the worst",
+        "words": [
+          {
+            "end": 295.464,
+            "line_index": 42,
+            "normalized": "it",
+            "score": 0.792,
+            "source": "recognized_anchor",
+            "start": 295.364,
+            "word": "It"
+          },
+          {
+            "end": 295.764,
+            "line_index": 42,
+            "normalized": "held",
+            "score": 0.842,
+            "source": "recognized_anchor",
+            "start": 295.564,
+            "word": "held"
+          },
+          {
+            "end": 296.285,
+            "line_index": 42,
+            "normalized": "some",
+            "score": 0.892,
+            "source": "recognized_anchor",
+            "start": 295.864,
+            "word": "some"
+          },
+          {
+            "end": 296.625,
+            "line_index": 42,
+            "normalized": "of",
+            "score": 0.69,
+            "source": "recognized_anchor",
+            "start": 296.485,
+            "word": "of"
+          },
+          {
+            "end": 296.865,
+            "line_index": 42,
+            "normalized": "the",
+            "score": 0.929,
+            "source": "recognized_anchor",
+            "start": 296.685,
+            "word": "the"
+          },
+          {
+            "end": 297.325,
+            "line_index": 42,
+            "normalized": "worst",
+            "score": 0.914,
+            "source": "recognized_anchor",
+            "start": 296.925,
+            "word": "worst"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8715,
+        "end": 299.546,
+        "index": 44,
+        "needs_review": false,
+        "start": 297.525,
+        "text": "and the best that I had.",
+        "words": [
+          {
+            "end": 297.725,
+            "line_index": 43,
+            "normalized": "and",
+            "score": 0.757,
+            "source": "recognized_anchor",
+            "start": 297.525,
+            "word": "and"
+          },
+          {
+            "end": 297.926,
+            "line_index": 43,
+            "normalized": "the",
+            "score": 0.808,
+            "source": "recognized_anchor",
+            "start": 297.805,
+            "word": "the"
+          },
+          {
+            "end": 298.386,
+            "line_index": 43,
+            "normalized": "best",
+            "score": 0.912,
+            "source": "recognized_anchor",
+            "start": 298.026,
+            "word": "best"
+          },
+          {
+            "end": 298.846,
+            "line_index": 43,
+            "normalized": "that",
+            "score": 0.871,
+            "source": "recognized_anchor",
+            "start": 298.446,
+            "word": "that"
+          },
+          {
+            "end": 299.046,
+            "line_index": 43,
+            "normalized": "i",
+            "score": 0.987,
+            "source": "recognized_anchor",
+            "start": 298.966,
+            "word": "I"
+          },
+          {
+            "end": 299.546,
+            "line_index": 43,
+            "normalized": "had",
+            "score": 0.894,
+            "source": "recognized_anchor",
+            "start": 299.126,
+            "word": "had"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.889,
+        "end": 301.988,
+        "index": 45,
+        "needs_review": false,
+        "start": 299.626,
+        "text": "Now when I remember,",
+        "words": [
+          {
+            "end": 299.847,
+            "line_index": 44,
+            "normalized": "now",
+            "score": 0.877,
+            "source": "recognized_anchor",
+            "start": 299.626,
+            "word": "Now"
+          },
+          {
+            "end": 300.587,
+            "line_index": 44,
+            "normalized": "when",
+            "score": 0.861,
+            "source": "recognized_anchor",
+            "start": 300.187,
+            "word": "when"
+          },
+          {
+            "end": 300.927,
+            "line_index": 44,
+            "normalized": "i",
+            "score": 0.949,
+            "source": "recognized_anchor",
+            "start": 300.827,
+            "word": "I"
+          },
+          {
+            "end": 301.988,
+            "line_index": 44,
+            "normalized": "remember",
+            "score": 0.869,
+            "source": "recognized_anchor",
+            "start": 301.007,
+            "word": "remember"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.7862,
+        "end": 303.829,
+        "index": 46,
+        "needs_review": false,
+        "start": 302.148,
+        "text": "I can't make it clean.",
+        "words": [
+          {
+            "end": 302.228,
+            "line_index": 45,
+            "normalized": "i",
+            "score": 0.912,
+            "source": "recognized_anchor",
+            "start": 302.148,
+            "word": "I"
+          },
+          {
+            "end": 302.708,
+            "line_index": 45,
+            "normalized": "can't",
+            "score": 0.843,
+            "source": "recognized_anchor",
+            "start": 302.288,
+            "word": "can't"
+          },
+          {
+            "end": 303.108,
+            "line_index": 45,
+            "normalized": "make",
+            "score": 0.944,
+            "source": "recognized_anchor",
+            "start": 302.748,
+            "word": "make"
+          },
+          {
+            "end": 303.308,
+            "line_index": 45,
+            "normalized": "it",
+            "score": 0.424,
+            "source": "recognized_anchor",
+            "start": 303.228,
+            "word": "it"
+          },
+          {
+            "end": 303.829,
+            "line_index": 45,
+            "normalized": "clean",
+            "score": 0.808,
+            "source": "recognized_anchor",
+            "start": 303.388,
+            "word": "clean"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.8333,
+        "end": 305.87,
+        "index": 47,
+        "needs_review": false,
+        "start": 303.949,
+        "text": "I hated those years,",
+        "words": [
+          {
+            "end": 304.029,
+            "line_index": 46,
+            "normalized": "i",
+            "score": 0.746,
+            "source": "recognized_anchor",
+            "start": 303.949,
+            "word": "I"
+          },
+          {
+            "end": 304.929,
+            "line_index": 46,
+            "normalized": "hated",
+            "score": 0.884,
+            "source": "recognized_anchor",
+            "start": 304.489,
+            "word": "hated"
+          },
+          {
+            "end": 305.45,
+            "line_index": 46,
+            "normalized": "those",
+            "score": 0.854,
+            "source": "recognized_anchor",
+            "start": 305.029,
+            "word": "those"
+          },
+          {
+            "end": 305.87,
+            "line_index": 46,
+            "normalized": "years",
+            "score": 0.849,
+            "source": "recognized_anchor",
+            "start": 305.53,
+            "word": "years"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.853,
+        "end": 308.071,
+        "index": 48,
+        "needs_review": false,
+        "start": 305.95,
+        "text": "but I still miss sixteen.",
+        "words": [
+          {
+            "end": 306.11,
+            "line_index": 47,
+            "normalized": "but",
+            "score": 0.816,
+            "source": "recognized_anchor",
+            "start": 305.95,
+            "word": "but"
+          },
+          {
+            "end": 306.27,
+            "line_index": 47,
+            "normalized": "i",
+            "score": 0.954,
+            "source": "recognized_anchor",
+            "start": 306.17,
+            "word": "I"
+          },
+          {
+            "end": 306.57,
+            "line_index": 47,
+            "normalized": "still",
+            "score": 0.641,
+            "source": "recognized_anchor",
+            "start": 306.33,
+            "word": "still"
+          },
+          {
+            "end": 306.97,
+            "line_index": 47,
+            "normalized": "miss",
+            "score": 0.889,
+            "source": "recognized_anchor",
+            "start": 306.63,
+            "word": "miss"
+          },
+          {
+            "end": 308.071,
+            "line_index": 47,
+            "normalized": "sixteen",
+            "score": 0.965,
+            "source": "recognized_anchor",
+            "start": 307.131,
+            "word": "sixteen"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.418,
+        "end": 310.072,
+        "index": 49,
+        "needs_review": true,
+        "start": 308.091,
+        "text": "Newark is traffic",
+        "words": [
+          {
+            "end": 308.151,
+            "line_index": 48,
+            "normalized": "newark",
+            "score": 0.001,
+            "source": "fuzzy_anchor",
+            "start": 308.091,
+            "word": "Newark"
+          },
+          {
+            "end": 309.472,
+            "line_index": 48,
+            "normalized": "is",
+            "score": 0.508,
+            "source": "recognized_anchor",
+            "start": 309.372,
+            "word": "is"
+          },
+          {
+            "end": 310.072,
+            "line_index": 48,
+            "normalized": "traffic",
+            "score": 0.745,
+            "source": "recognized_anchor",
+            "start": 309.532,
+            "word": "traffic"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.7572,
+        "end": 312.133,
+        "index": 50,
+        "needs_review": false,
+        "start": 310.412,
+        "text": "I pass on the way,",
+        "words": [
+          {
+            "end": 310.552,
+            "line_index": 49,
+            "normalized": "i",
+            "score": 0.86,
+            "source": "recognized_anchor",
+            "start": 310.412,
+            "word": "I"
+          },
+          {
+            "end": 311.073,
+            "line_index": 49,
+            "normalized": "pass",
+            "score": 0.788,
+            "source": "recognized_anchor",
+            "start": 310.612,
+            "word": "pass"
+          },
+          {
+            "end": 311.433,
+            "line_index": 49,
+            "normalized": "on",
+            "score": 0.72,
+            "source": "recognized_anchor",
+            "start": 311.313,
+            "word": "on"
+          },
+          {
+            "end": 311.693,
+            "line_index": 49,
+            "normalized": "the",
+            "score": 0.633,
+            "source": "recognized_anchor",
+            "start": 311.453,
+            "word": "the"
+          },
+          {
+            "end": 312.133,
+            "line_index": 49,
+            "normalized": "way",
+            "score": 0.785,
+            "source": "recognized_anchor",
+            "start": 311.733,
+            "word": "way"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.7402,
+        "end": 314.354,
+        "index": 51,
+        "needs_review": false,
+        "start": 312.533,
+        "text": "but part of me stays",
+        "words": [
+          {
+            "end": 312.714,
+            "line_index": 50,
+            "normalized": "but",
+            "score": 0.893,
+            "source": "recognized_anchor",
+            "start": 312.533,
+            "word": "but"
+          },
+          {
+            "end": 313.334,
+            "line_index": 50,
+            "normalized": "part",
+            "score": 0.55,
+            "source": "recognized_anchor",
+            "start": 312.774,
+            "word": "part"
+          },
+          {
+            "end": 313.554,
+            "line_index": 50,
+            "normalized": "of",
+            "score": 0.657,
+            "source": "recognized_anchor",
+            "start": 313.454,
+            "word": "of"
+          },
+          {
+            "end": 313.754,
+            "line_index": 50,
+            "normalized": "me",
+            "score": 0.853,
+            "source": "recognized_anchor",
+            "start": 313.594,
+            "word": "me"
+          },
+          {
+            "end": 314.354,
+            "line_index": 50,
+            "normalized": "stays",
+            "score": 0.748,
+            "source": "recognized_anchor",
+            "start": 313.834,
+            "word": "stays"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.6722,
+        "end": 316.436,
+        "index": 52,
+        "needs_review": false,
+        "start": 314.515,
+        "text": "in that bedroom some days.",
+        "words": [
+          {
+            "end": 314.655,
+            "line_index": 51,
+            "normalized": "in",
+            "score": 0.518,
+            "source": "recognized_anchor",
+            "start": 314.515,
+            "word": "in"
+          },
+          {
+            "end": 314.875,
+            "line_index": 51,
+            "normalized": "that",
+            "score": 0.899,
+            "source": "recognized_anchor",
+            "start": 314.695,
+            "word": "that"
+          },
+          {
+            "end": 315.675,
+            "line_index": 51,
+            "normalized": "bedroom",
+            "score": 0.641,
+            "source": "recognized_anchor",
+            "start": 314.935,
+            "word": "bedroom"
+          },
+          {
+            "end": 315.975,
+            "line_index": 51,
+            "normalized": "some",
+            "score": 0.665,
+            "source": "recognized_anchor",
+            "start": 315.715,
+            "word": "some"
+          },
+          {
+            "end": 316.436,
+            "line_index": 51,
+            "normalized": "days",
+            "score": 0.638,
+            "source": "recognized_anchor",
+            "start": 315.995,
+            "word": "days"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.6423,
+        "end": 327.72,
+        "index": 53,
+        "needs_review": false,
+        "start": 326.16,
+        "text": "I wasn't chasing",
+        "words": [
+          {
+            "end": 326.26,
+            "line_index": 52,
+            "normalized": "i",
+            "score": 0.846,
+            "source": "recognized_anchor",
+            "start": 326.16,
+            "word": "I"
+          },
+          {
+            "end": 326.9,
+            "line_index": 52,
+            "normalized": "wasn't",
+            "score": 0.486,
+            "source": "recognized_anchor",
+            "start": 326.3,
+            "word": "wasn't"
+          },
+          {
+            "end": 327.72,
+            "line_index": 52,
+            "normalized": "chasing",
+            "score": 0.595,
+            "source": "recognized_anchor",
+            "start": 326.94,
+            "word": "chasing"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 1,
+        "confidence": 0.6747,
+        "end": 329.781,
+        "index": 54,
+        "needs_review": false,
+        "start": 327.82,
+        "text": "a story to tell.",
+        "words": [
+          {
+            "end": 327.94,
+            "line_index": 53,
+            "normalized": "a",
+            "score": 0.701,
+            "source": "recognized_anchor",
+            "start": 327.82,
+            "word": "a"
+          },
+          {
+            "end": 328.781,
+            "line_index": 53,
+            "normalized": "story",
+            "score": 0.679,
+            "source": "recognized_anchor",
+            "start": 327.96,
+            "word": "story"
+          },
+          {
+            "end": 329.041,
+            "line_index": 53,
+            "normalized": "to",
+            "score": 0.662,
+            "source": "recognized_anchor",
+            "start": 328.821,
+            "word": "to"
+          },
+          {
+            "end": 329.781,
+            "line_index": 53,
+            "normalized": "tell",
+            "score": 0.657,
+            "source": "recognized_anchor",
+            "start": 329.081,
+            "word": "tell"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.6,
+        "confidence": 0.6064,
+        "end": 346.927,
+        "index": 55,
+        "needs_review": true,
+        "start": 330.421,
+        "text": "I don't miss that bedroom,",
+        "words": [
+          {
+            "end": 330.501,
+            "line_index": 54,
+            "normalized": "i",
+            "score": 0.538,
+            "source": "recognized_anchor",
+            "start": 330.421,
+            "word": "I"
+          },
+          {
+            "end": 335.2310333333333,
+            "line_index": 54,
+            "normalized": "don't",
+            "score": 0,
+            "source": "interpolated",
+            "start": 334.7810333333333,
+            "word": "don't"
+          },
+          {
+            "end": 340.26636666666667,
+            "line_index": 54,
+            "normalized": "miss",
+            "score": 0,
+            "source": "interpolated",
+            "start": 339.8163666666667,
+            "word": "miss"
+          },
+          {
+            "end": 346.007,
+            "line_index": 54,
+            "normalized": "that",
+            "score": 0.554,
+            "source": "recognized_anchor",
+            "start": 345.607,
+            "word": "that"
+          },
+          {
+            "end": 346.927,
+            "line_index": 54,
+            "normalized": "bedroom",
+            "score": 0.7272727272727273,
+            "source": "fuzzy_anchor",
+            "start": 346.127,
+            "word": "bedroom"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.25,
+        "confidence": 0.8,
+        "end": 355.4595925,
+        "index": 56,
+        "needs_review": true,
+        "start": 349.1041333333333,
+        "text": "at least not completely,",
+        "words": [
+          {
+            "end": 349.5541333333333,
+            "line_index": 55,
+            "normalized": "at",
+            "score": 0,
+            "source": "interpolated",
+            "start": 349.1041333333333,
+            "word": "at"
+          },
+          {
+            "end": 352.11546666666663,
+            "line_index": 55,
+            "normalized": "least",
+            "score": 0,
+            "source": "interpolated",
+            "start": 351.66546666666665,
+            "word": "least"
+          },
+          {
+            "end": 355.051,
+            "line_index": 55,
+            "normalized": "not",
+            "score": 0.8,
+            "source": "fuzzy_anchor",
+            "start": 354.611,
+            "word": "not"
+          },
+          {
+            "end": 355.4595925,
+            "line_index": 55,
+            "normalized": "completely",
+            "score": 0,
+            "source": "interpolated",
+            "start": 355.27221249999997,
+            "word": "completely"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.25,
+        "confidence": 0.581,
+        "end": 357.57111000000003,
+        "index": 57,
+        "needs_review": true,
+        "start": 355.5324625,
+        "text": "but sometimes I miss",
+        "words": [
+          {
+            "end": 355.7198425,
+            "line_index": 56,
+            "normalized": "but",
+            "score": 0,
+            "source": "interpolated",
+            "start": 355.5324625,
+            "word": "but"
+          },
+          {
+            "end": 355.9800925,
+            "line_index": 56,
+            "normalized": "sometimes",
+            "score": 0,
+            "source": "interpolated",
+            "start": 355.7927125,
+            "word": "sometimes"
+          },
+          {
+            "end": 356.172,
+            "line_index": 56,
+            "normalized": "i",
+            "score": 0.581,
+            "source": "recognized_anchor",
+            "start": 356.092,
+            "word": "I"
+          },
+          {
+            "end": 357.57111000000003,
+            "line_index": 56,
+            "normalized": "miss",
+            "score": 0,
+            "source": "interpolated",
+            "start": 357.12111000000004,
+            "word": "miss"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.1667,
+        "confidence": 0.7,
+        "end": 365.47228,
+        "index": 58,
+        "needs_review": true,
+        "start": 358.23771,
+        "text": "what it meant to be sixteen.",
+        "words": [
+          {
+            "end": 358.68771,
+            "line_index": 57,
+            "normalized": "what",
+            "score": 0,
+            "source": "interpolated",
+            "start": 358.23771,
+            "word": "what"
+          },
+          {
+            "end": 359.80431,
+            "line_index": 57,
+            "normalized": "it",
+            "score": 0,
+            "source": "interpolated",
+            "start": 359.35431,
+            "word": "it"
+          },
+          {
+            "end": 360.92091,
+            "line_index": 57,
+            "normalized": "meant",
+            "score": 0,
+            "source": "interpolated",
+            "start": 360.47091,
+            "word": "meant"
+          },
+          {
+            "end": 361.935,
+            "line_index": 57,
+            "normalized": "to",
+            "score": 0.7,
+            "source": "recognized_anchor",
+            "start": 361.755,
+            "word": "to"
+          },
+          {
+            "end": 363.80348,
+            "line_index": 57,
+            "normalized": "be",
+            "score": 0,
+            "source": "interpolated",
+            "start": 363.35348,
+            "word": "be"
+          },
+          {
+            "end": 365.47228,
+            "line_index": 57,
+            "normalized": "sixteen",
+            "score": 0,
+            "source": "interpolated",
+            "start": 365.02228,
+            "word": "sixteen"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0.5,
+        "confidence": 0.779,
+        "end": 371.239,
+        "index": 59,
+        "needs_review": false,
+        "start": 366.69108,
+        "text": "I remember the feeling,",
+        "words": [
+          {
+            "end": 367.14108,
+            "line_index": 58,
+            "normalized": "i",
+            "score": 0,
+            "source": "interpolated",
+            "start": 366.69108,
+            "word": "I"
+          },
+          {
+            "end": 368.80987999999996,
+            "line_index": 58,
+            "normalized": "remember",
+            "score": 0,
+            "source": "interpolated",
+            "start": 368.35988,
+            "word": "remember"
+          },
+          {
+            "end": 370.399,
+            "line_index": 58,
+            "normalized": "the",
+            "score": 0.943,
+            "source": "recognized_anchor",
+            "start": 370.279,
+            "word": "the"
+          },
+          {
+            "end": 371.239,
+            "line_index": 58,
+            "normalized": "feeling",
+            "score": 0.615,
+            "source": "fuzzy_anchor",
+            "start": 370.499,
+            "word": "feeling"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0,
+        "confidence": 0,
+        "end": 372.279,
+        "index": 60,
+        "needs_review": true,
+        "start": 371.299,
+        "text": "warm but uneasy,",
+        "words": [
+          {
+            "end": 371.599,
+            "line_index": 59,
+            "normalized": "warm",
+            "score": 0,
+            "source": "interpolated",
+            "start": 371.299,
+            "word": "warm"
+          },
+          {
+            "end": 371.93899999999996,
+            "line_index": 59,
+            "normalized": "but",
+            "score": 0,
+            "source": "interpolated",
+            "start": 371.63899999999995,
+            "word": "but"
+          },
+          {
+            "end": 372.279,
+            "line_index": 59,
+            "normalized": "uneasy",
+            "score": 0,
+            "source": "interpolated",
+            "start": 371.979,
+            "word": "uneasy"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0,
+        "confidence": 0,
+        "end": 374.319,
+        "index": 61,
+        "needs_review": true,
+        "start": 372.31899999999996,
+        "text": "a new home, a new city,",
+        "words": [
+          {
+            "end": 372.61899999999997,
+            "line_index": 60,
+            "normalized": "a",
+            "score": 0,
+            "source": "interpolated",
+            "start": 372.31899999999996,
+            "word": "a"
+          },
+          {
+            "end": 372.959,
+            "line_index": 60,
+            "normalized": "new",
+            "score": 0,
+            "source": "interpolated",
+            "start": 372.659,
+            "word": "new"
+          },
+          {
+            "end": 373.299,
+            "line_index": 60,
+            "normalized": "home",
+            "score": 0,
+            "source": "interpolated",
+            "start": 372.99899999999997,
+            "word": "home"
+          },
+          {
+            "end": 373.639,
+            "line_index": 60,
+            "normalized": "a",
+            "score": 0,
+            "source": "interpolated",
+            "start": 373.339,
+            "word": "a"
+          },
+          {
+            "end": 373.979,
+            "line_index": 60,
+            "normalized": "new",
+            "score": 0,
+            "source": "interpolated",
+            "start": 373.679,
+            "word": "new"
+          },
+          {
+            "end": 374.319,
+            "line_index": 60,
+            "normalized": "city",
+            "score": 0,
+            "source": "interpolated",
+            "start": 374.019,
+            "word": "city"
+          }
+        ]
+      },
+      {
+        "anchor_coverage": 0,
+        "confidence": 0,
+        "end": 375.679,
+        "index": 62,
+        "needs_review": true,
+        "start": 374.359,
+        "text": "a life in between.",
+        "words": [
+          {
+            "end": 374.659,
+            "line_index": 61,
+            "normalized": "a",
+            "score": 0,
+            "source": "interpolated",
+            "start": 374.359,
+            "word": "a"
+          },
+          {
+            "end": 374.99899999999997,
+            "line_index": 61,
+            "normalized": "life",
+            "score": 0,
+            "source": "interpolated",
+            "start": 374.69899999999996,
+            "word": "life"
+          },
+          {
+            "end": 375.339,
+            "line_index": 61,
+            "normalized": "in",
+            "score": 0,
+            "source": "interpolated",
+            "start": 375.039,
+            "word": "in"
+          },
+          {
+            "end": 375.679,
+            "line_index": 61,
+            "normalized": "between",
+            "score": 0,
+            "source": "interpolated",
+            "start": 375.37899999999996,
+            "word": "between"
+          }
+        ]
+      }
+    ],
+    "metrics": {
+      "alignment_method": "monotonic_dynamic_programming_v2",
+      "anchor_coverage": 0.7812,
+      "detected_word_count": 755,
+      "expected_word_count": 288,
+      "recognized_or_fuzzy_anchor_count": 225,
+      "sequence_similarity": 0.8705
+    },
+    "model": "large-v3",
+    "review_line_indices": [
+      1,
+      5,
+      6,
+      7,
+      9,
+      10,
+      11,
+      12,
+      16,
+      17,
+      19,
+      29,
+      41,
+      49,
+      55,
+      56,
+      57,
+      58,
+      60,
+      61,
+      62
+    ],
+    "review_required": true,
+    "status": "completed"
+  },
+  "status": "COMPLETED",
+  "workerId": "z9r26j3wgo1s0o"
+}
