@@ -6,8 +6,8 @@ import shutil
 from app import numpy_json_patch as _numpy_json_patch
 from app.storage import storage_status
 
-VERSION = "2.2.1"
-BUILD = "v2.2.1-quality-hotfix"
+VERSION = "2.3.0"
+BUILD = "v2.3.0-naturalize-quality"
 
 
 def system_info_job(payload: dict | None = None) -> dict:
