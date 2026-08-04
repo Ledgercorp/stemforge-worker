@@ -38,3 +38,6 @@ Testing and compatibility
 - Adds Naturalize tests for mandatory operation order, zero-intensity bypass, Quick/Surgical routing, master anchoring, full-pass configuration, and A/B retention.
 - Adds regression coverage for static-like artifacts, unsafe stem reconstruction, hidden clipping, non-finite audio, high-band noise-floor behavior, and breakdown-pad isolation.
 - Tests on a conservative Python 3.11 scientific stack and adds NumPy 1.x compatibility for shared analysis code.
+
+Release verification
+- Publishes the immutable `v2.3.0` GitHub release before the live RunPod health and Naturalize smoke tests are accepted.
