@@ -5,7 +5,7 @@ import shutil
 
 from app.storage import storage_status
 
-VERSION = "2.0.1"
+VERSION = "2.0.2"
 
 
 def system_info_job(payload: dict | None = None) -> dict:
