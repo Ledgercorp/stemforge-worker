@@ -13,3 +13,4 @@ pyloudnorm
 matplotlib
 boto3
 demucs
+mido
