@@ -1,0 +1,19 @@
+{
+  "artifact_name": "Hypervigilant_RunPod_v2.2_Final_Bass_Pad_Remix",
+  "input": {
+    "action": "stem_remix",
+    "artist": "sounddecay",
+    "song": "Hypervigilant Final Bass Pad Remix",
+    "master_url": "https://drive.google.com/uc?export=download&id=1gezCxh-8nBKn3DdTBp3jHazPQlfzwd9W",
+    "stems": [
+      {"name": "Other", "url": "https://drive.google.com/uc?export=download&id=1gezCxh-8nBKn3DdTBp3jHazPQlfzwd9W"},
+      {"name": "Bass", "url": "https://drive.google.com/uc?export=download&id=13c67JtIGgjcGHef9_IjaSQFqAlr1exac"}
+    ],
+    "mix_profiles": ["balanced", "heavy"],
+    "output_ttl_seconds": 86400
+  },
+  "policy": {
+    "executionTimeout": 5400000,
+    "ttl": 7200000
+  }
+}
