@@ -1,8 +1,8 @@
 {
   "status": "completed",
-  "verified_at": "2026-08-04T20:37:56Z",
-  "workflow_run_id": 30948647339,
-  "commit": "e2c14cca0053677e0b10ef7fa83ad7ace636f493",
+  "verified_at": "2026-08-04T20:45:15Z",
+  "workflow_run_id": 30949045065,
+  "commit": "a5e16f9bf12e938f3e96a28b86cb7062c009dfad",
   "release": {
     "isDraft": false,
     "isPrerelease": false,
