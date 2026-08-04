@@ -1,0 +1,32 @@
+name: Probe StemForge v2.2 Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "probes/v220-release/*.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record release state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          NAME="$(basename "$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep '^probes/v220-release/' | head -n 1)" .txt)"
+          if gh release view v2.2.0 --repo "$GITHUB_REPOSITORY" --json tagName,targetCommitish,name,isDraft > release.json 2>/dev/null; then
+            jq '. + {exists:true}' release.json > result.json
+          else
+            printf '%s\n' '{"exists":false}' > result.json
+          fi
+          ENCODED="$(base64 -w0 result.json)"
+          gh api --method PUT \
+            "repos/${GITHUB_REPOSITORY}/contents/probe_results/${NAME}.json" \
+            -f message="Record StemForge v2.2 release state [skip ci]" \
+            -f content="$ENCODED" \
+            -f branch="main" >/dev/null
