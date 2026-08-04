@@ -1,0 +1,26 @@
+{
+  "artifact_name": "Hypervigilant_RunPod_v2.2_Stem_Remix",
+  "input": {
+    "action": "stem_remix",
+    "artist": "sounddecay",
+    "song": "Hypervigilant RunPod v2.2",
+    "master_url": "https://drive.google.com/uc?export=download&id=1gezCxh-8nBKn3DdTBp3jHazPQlfzwd9W",
+    "stems": [
+      {"name": "Lead Vocals", "url": "https://drive.google.com/uc?export=download&id=1HRsK6oSFf3D8kRXXsmISRhU55o_StBwR"},
+      {"name": "Backing Vocals", "url": "https://drive.google.com/uc?export=download&id=1NSV6sIWuXp9NjwBmHPRX39Uq8AlDCqFt"},
+      {"name": "Drums", "url": "https://drive.google.com/uc?export=download&id=1qTVjje_aS7xcL72zTVnWIqBgUtH-b8SQ"},
+      {"name": "Bass", "url": "https://drive.google.com/uc?export=download&id=1_ycwgwr2qpYKpldzpYiicdtTgBX1ad9C"},
+      {"name": "Guitar", "url": "https://drive.google.com/uc?export=download&id=1r9nTOy2Z86DmcvZOLs1CriKnRjeobQsr"},
+      {"name": "Percussion", "url": "https://drive.google.com/uc?export=download&id=1_sUeEQ5QbGMsywK7-kpZvVCu4DtPEQ0a"},
+      {"name": "Synth", "url": "https://drive.google.com/uc?export=download&id=1qaN704rVi3lnXjvdI0rqNxDaBffQyzVY"},
+      {"name": "Other", "url": "https://drive.google.com/uc?export=download&id=1hNxaxOSYN-pg1CczfpFfsTv-piZ2UTlM"}
+    ],
+    "midi_zip_url": "https://drive.google.com/uc?export=download&id=13c67JtIGgjcGHef9_IjaSQFqAlr1exac",
+    "mix_profiles": ["balanced", "heavy"],
+    "output_ttl_seconds": 86400
+  },
+  "policy": {
+    "executionTimeout": 5400000,
+    "ttl": 7200000
+  }
+}
