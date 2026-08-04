@@ -1,0 +1,32 @@
+name: Probe Hotfix Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "status_probe_jobs/hotfix-release-*.json"
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture release workflow status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: c226e87ece5965f91875ecbfec47c8a20c48a672
+        run: |
+          set -euo pipefail
+          DATA="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/publish-v2-1-0-hotfix2.yml/runs?per_page=20")"
+          MATCH="$(printf '%s' "$DATA" | jq --arg sha "$TARGET_SHA" '[.workflow_runs[] | select(.head_sha == $sha)] | first // {}')"
+          mkdir -p status_probe_results
+          printf '%s\n' "$MATCH" > status_probe_results/hotfix2-release-run.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add status_probe_results/hotfix2-release-run.json
+          git commit -m "Record hotfix 2 release workflow status [skip ci]" || exit 0
+          git push
