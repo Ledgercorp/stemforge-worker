@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
+from app.full_pass_v2 import _naturalize_config
 from app.naturalize_v2 import (
     _resolve_intensity,
     naturalize_arrays,
@@ -30,6 +31,16 @@ def test_intensity_accepts_fraction_or_percent() -> None:
     assert _resolve_intensity({"intensity": 0.4}) == 0.4
     assert _resolve_intensity({"depth": 40}) == 0.4
     assert _resolve_intensity({"intensity": 500}) == 1.0
+
+
+def test_full_pass_accepts_boolean_string_and_object_naturalize_config() -> None:
+    assert _naturalize_config(False) is None
+    assert _naturalize_config(True) == {}
+    assert _naturalize_config("surgical") == {"mode": "surgical"}
+    assert _naturalize_config({"mode": "quick", "intensity": 0.2}) == {
+        "mode": "quick",
+        "intensity": 0.2,
+    }
 
 
 def test_zero_intensity_is_a_true_non_destructive_bypass() -> None:
@@ -83,6 +94,39 @@ def test_surgical_mode_anchors_to_master_when_stems_do_not_reconstruct() -> None
     assert report["operations"][0]["operation"] == "surgical_vocal_naturalize"
     assert report["operations"][1]["operation"] == "surgical_instrumental_naturalize"
     assert report["operations"][2]["operation"] == "light_post_modulation_denoise"
+
+
+def test_auto_job_prefers_surgical_when_vocal_stem_is_available(tmp_path: Path) -> None:
+    source, vocal, instrumental = _parts(seconds=0.5)
+    input_root = WORKSPACE / "test_naturalize_surgical"
+    input_root.mkdir(parents=True, exist_ok=True)
+    source_path = input_root / "source.wav"
+    vocal_path = input_root / "vocals.wav"
+    instrumental_path = input_root / "instrumental.wav"
+    sf.write(source_path, source, 48000, subtype="PCM_24")
+    sf.write(vocal_path, vocal, 48000, subtype="PCM_24")
+    sf.write(instrumental_path, instrumental, 48000, subtype="PCM_24")
+    report = naturalize_audio_job(
+        {
+            "action": "naturalize",
+            "artist": "test",
+            "song": "auto surgical",
+            "audio_path": str(source_path),
+            "mode": "auto",
+            "intensity": 0.0,
+            "publish_outputs": False,
+            "job_dir": str(tmp_path / "surgical_job"),
+            "stems": [
+                {"name": "Lead Vocals", "path": str(vocal_path)},
+                {"name": "Instrumental", "path": str(instrumental_path)},
+            ],
+        }
+    )
+    assert report["status"] == "completed", report.get("safety")
+    assert report["resolved_mode"] == "surgical"
+    assert report["automatic_mode_selection"] is True
+    assert report["fallback_reason"] is None
+    assert report["agent_log"]["preferred_mode_when_stems_available"] == "surgical"
 
 
 def test_auto_job_falls_back_to_quick_and_retains_ab_reference(tmp_path: Path) -> None:
