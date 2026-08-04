@@ -102,13 +102,16 @@ jobs:
         run: |
           set -euo pipefail
           TAG="${{ steps.meta.outputs.output_tag }}"
-          gh release create "$TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --draft \
-            --target "$GITHUB_SHA" \
-            --title "Temporary StemForge Output ${GITHUB_RUN_ID}" \
-            --notes "Temporary private transfer container for one RunPod StemForge render."
-          RELEASE_ID="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.id')"
+          RELEASE_JSON="$(gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/releases" \
+            -f tag_name="$TAG" \
+            -f target_commitish="$GITHUB_SHA" \
+            -f name="Temporary StemForge Output ${GITHUB_RUN_ID}" \
+            -f body="Temporary private transfer container for one RunPod StemForge render." \
+            -F draft=true \
+            -F prerelease=false)"
+          RELEASE_ID="$(printf '%s' "$RELEASE_JSON" | jq -r '.id // empty')"
+          test -n "$RELEASE_ID"
           echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
 
       - name: Run live worker and export before shutdown
@@ -160,12 +163,24 @@ jobs:
           jq -e '.output.status == "completed" and .output.stemforge_version == "2.0.3"' "$RESULT_FILE" >/dev/null
           jq -e '.output.candidates | length == 3' "$RESULT_FILE" >/dev/null
 
-      - name: Download private release assets
+      - name: Download private release assets by ID
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${{ steps.meta.outputs.output_tag }}"
-          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir fetched_output
+          RELEASE_ID="${{ steps.release.outputs.release_id }}"
+          ASSETS_FILE="$(mktemp)"
+          gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" --paginate > "$ASSETS_FILE"
+          ASSET_COUNT="$(jq 'length' "$ASSETS_FILE")"
+          test "$ASSET_COUNT" -eq 4
+          while IFS= read -r ASSET; do
+            ASSET_ID="$(printf '%s' "$ASSET" | jq -r '.id')"
+            ASSET_NAME="$(printf '%s' "$ASSET" | jq -r '.name')"
+            gh api \
+              -H "Accept: application/octet-stream" \
+              "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" \
+              > "fetched_output/${ASSET_NAME}"
+          done < <(jq -c '.[]' "$ASSETS_FILE")
+          rm -f "$ASSETS_FILE"
           find fetched_output -maxdepth 1 -type f -printf '%f\n' | sort
           WAV_COUNT="$(find fetched_output -maxdepth 1 -type f -iname '*.wav' | wc -l)"
           test "$WAV_COUNT" -eq 3
@@ -204,5 +219,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          TAG="${{ steps.meta.outputs.output_tag }}"
-          gh release delete "$TAG" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+          RELEASE_ID="${{ steps.release.outputs.release_id }}"
+          if [ -n "$RELEASE_ID" ]; then
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" || true
+          fi
