@@ -1,0 +1,10 @@
+{
+  "input": {
+    "action": "master_audio",
+    "audio_url": "https://drive.google.com/uc?export=download&id=1gezCxh-8nBKn3DdTBp3jHazPQlfzwd9W",
+    "artist": "sounddecay",
+    "song": "Sweet Sixteen RunPod v2.0.2",
+    "profiles": ["dynamic", "balanced", "dense"],
+    "output_ttl_seconds": 86400
+  }
+}
