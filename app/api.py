@@ -6,7 +6,6 @@ from app.audio_analysis import analyze_audio_url
 from app.daw_v2 import export_daw_job
 from app.full_pass_v2 import full_pass_job
 from app.github_delivery import master_audio_github_delivery_job
-from app.lyric_align import ALIGNER_VERSION, align_lyrics_job
 from app.lyrics_v2 import align_lyrics_smart_job
 from app.mastering import mastering_plan as legacy_mastering_plan
 from app.mastering_v2 import master_audio_job, mastering_plan
@@ -32,6 +31,25 @@ from app.volume_transfer import (
 )
 
 
+def _align_lyrics(payload: dict) -> dict:
+    # WhisperX/Torch are GPU-heavy optional dependencies. Import them only when
+    # the caller actually requests lyric alignment so lightweight actions such
+    # as system_info and naturalize remain usable in CPU-only environments.
+    from app.lyric_align import align_lyrics_job
+
+    return align_lyrics_job(payload)
+
+
+def _aligner_info() -> dict:
+    from app.lyric_align import ALIGNER_VERSION
+
+    return {
+        "status": "completed",
+        "aligner_version": ALIGNER_VERSION,
+        "stemforge_version": VERSION,
+    }
+
+
 def handle_job(payload: dict) -> dict:
     action = str(payload.get("action", "system_info"))
     if action not in SUPPORTED_ACTIONS:
@@ -54,13 +72,9 @@ def handle_job(payload: dict) -> dict:
         "volume_file_info": lambda: volume_file_info_job(payload),
         "volume_file_chunk": lambda: volume_file_chunk_job(payload),
         "volume_delete": lambda: volume_delete_job(payload),
-        "align_lyrics": lambda: align_lyrics_job(payload),
+        "align_lyrics": lambda: _align_lyrics(payload),
         "align_lyrics_smart": lambda: align_lyrics_smart_job(payload),
-        "aligner_info": lambda: {
-            "status": "completed",
-            "aligner_version": ALIGNER_VERSION,
-            "stemforge_version": VERSION,
-        },
+        "aligner_info": _aligner_info,
         "analyze_audio": lambda: analyze_audio_url(payload),
         "analyze_audio_v2": lambda: analyze_audio_v2_job(payload),
         "compare_audio": lambda: compare_audio_urls(payload),
