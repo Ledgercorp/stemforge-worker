@@ -1,0 +1,151 @@
+name: StemForge Volume Export
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "download_requests/**/*.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stemforge-volume-export
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Retrieve persistent RunPod files
+        id: retrieve
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RUNPOD_API_KEY"
+
+          mapfile -t REQUESTS < <(
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" \
+              | grep -E '^download_requests/.+\.json$' || true
+          )
+          if [ "${#REQUESTS[@]}" -ne 1 ]; then
+            echo "Expected exactly one changed download request; found ${#REQUESTS[@]}."
+            exit 1
+          fi
+
+          REQUEST="${REQUESTS[0]}"
+          NAME="$(basename "$REQUEST" .json)"
+          WORK="$RUNNER_TEMP/$NAME"
+          PACKAGE="artifacts/$NAME"
+          mkdir -p "$WORK" "$PACKAGE" download_results
+          : > "$PACKAGE/SHA256SUMS.txt"
+
+          runpod_sync() {
+            local payload="$1"
+            curl -sS --fail-with-body \
+              -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/runsync" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              --data-binary "$payload"
+          }
+
+          FILE_COUNT="$(jq '.files | length' "$REQUEST")"
+          for INDEX in $(seq 0 $((FILE_COUNT - 1))); do
+            VOLUME_PATH="$(jq -r ".files[$INDEX].path" "$REQUEST")"
+            FILENAME="$(jq -r ".files[$INDEX].filename" "$REQUEST")"
+            KIND="$(jq -r ".files[$INDEX].kind // \"audio\"" "$REQUEST")"
+            KEEP_WAV="$(jq -r ".files[$INDEX].keep_wav // false" "$REQUEST")"
+
+            INFO_PAYLOAD="$(jq -cn --arg path "$VOLUME_PATH" '{input:{action:"volume_file_info",path:$path}}')"
+            INFO="$(runpod_sync "$INFO_PAYLOAD")"
+            if [ "$(jq -r '.status' <<<"$INFO")" != "COMPLETED" ] || [ "$(jq -r '.output.status' <<<"$INFO")" != "completed" ]; then
+              echo "$INFO" | jq .
+              exit 1
+            fi
+            SIZE="$(jq -r '.output.size_bytes' <<<"$INFO")"
+            EXPECTED_SHA="$(jq -r '.output.sha256' <<<"$INFO")"
+            TARGET="$WORK/$FILENAME"
+            : > "$TARGET"
+
+            OFFSET=0
+            while [ "$OFFSET" -lt "$SIZE" ]; do
+              PAYLOAD="$(jq -cn --arg path "$VOLUME_PATH" --argjson offset "$OFFSET" '{input:{action:"volume_file_chunk",path:$path,offset:$offset,length:4000000}}')"
+              BODY="$(runpod_sync "$PAYLOAD")"
+              if [ "$(jq -r '.status' <<<"$BODY")" != "COMPLETED" ] || [ "$(jq -r '.output.status' <<<"$BODY")" != "completed" ]; then
+                echo "$BODY" | jq .
+                exit 1
+              fi
+              BYTES="$(jq -r '.output.bytes_read' <<<"$BODY")"
+              if [ "$BYTES" -le 0 ]; then
+                echo "RunPod returned an empty chunk before EOF for $FILENAME."
+                exit 1
+              fi
+              jq -r '.output.data_base64' <<<"$BODY" | base64 --decode >> "$TARGET"
+              OFFSET=$((OFFSET + BYTES))
+              echo "$FILENAME: $OFFSET / $SIZE bytes"
+            done
+
+            ACTUAL_SHA="$(sha256sum "$TARGET" | awk '{print $1}')"
+            if [ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]; then
+              echo "SHA-256 mismatch for $FILENAME"
+              exit 1
+            fi
+            printf '%s  %s\n' "$ACTUAL_SHA" "$FILENAME" >> "$PACKAGE/SHA256SUMS.txt"
+
+            if [ "$KIND" = "json" ]; then
+              cp "$TARGET" "$PACKAGE/$FILENAME"
+            else
+              BASE="${FILENAME%.wav}"
+              ffmpeg -v error -y -i "$TARGET" -map_metadata -1 -c:a flac -compression_level 8 "$PACKAGE/${BASE}.flac"
+              if [ "$KEEP_WAV" = "true" ]; then
+                cp "$TARGET" "$PACKAGE/$FILENAME"
+              fi
+            fi
+          done
+
+          cp "$REQUEST" "$PACKAGE/export_request.json"
+          ZIP_PATH="artifacts/${NAME}.zip"
+          (cd artifacts && zip -q -r "${NAME}.zip" "$NAME")
+          ZIP_SHA="$(sha256sum "$ZIP_PATH" | awk '{print $1}')"
+          ARTIFACT_NAME="stemforge-${NAME}"
+
+          jq -n \
+            --arg status "completed" \
+            --arg request "$REQUEST" \
+            --arg artifact_name "$ARTIFACT_NAME" \
+            --arg artifact_path "$ZIP_PATH" \
+            --arg zip_sha256 "$ZIP_SHA" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            '{status:$status,request:$request,artifact_name:$artifact_name,artifact_path:$artifact_path,zip_sha256:$zip_sha256,run_id:($run_id|tonumber)}' \
+            > "download_results/${NAME}.json"
+
+          echo "artifact_name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+          echo "artifact_path=$ZIP_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload verified package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.retrieve.outputs.artifact_name }}
+          path: ${{ steps.retrieve.outputs.artifact_path }}
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Commit retrieval record
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "stemforge-volume-export"
+          git config user.email "stemforge-volume-export@users.noreply.github.com"
+          git add download_results
+          git commit -m "Add StemForge volume export record [skip ci]"
+          git pull --rebase origin main
+          git push
