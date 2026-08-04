@@ -1,0 +1,33 @@
+name: Probe Draft Release Lookup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "status_probe_jobs/draft-release-*.json"
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe draft release endpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p status_probe_results
+          if gh api "repos/${GITHUB_REPOSITORY}/releases/tags/untagged-49553fd444071550b78d" > status_probe_results/draft-release-lookup.json 2> status_probe_results/draft-release-error.txt; then
+            echo success > status_probe_results/draft-release-status.txt
+          else
+            echo failure > status_probe_results/draft-release-status.txt
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add status_probe_results/draft-release-*
+          git commit -m "Record draft release lookup result [skip ci]" || exit 0
+          git push
