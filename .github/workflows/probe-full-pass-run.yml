@@ -19,15 +19,15 @@ jobs:
       - name: Capture workflow status
         env:
           GH_TOKEN: ${{ github.token }}
-          TARGET_SHA: f3471c3200fee2fe5a924fbfea1f3a5787eeabc7
+          TARGET_SHA: a29d03719ce8799c0c2074131c8f3208c3a0e1c6
         run: |
           set -euo pipefail
-          DATA="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/run-stemforge-full-pass-export.yml/runs?per_page=20")"
+          DATA="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/run-stemforge-full-pass-export-v2.yml/runs?per_page=20")"
           MATCH="$(printf '%s' "$DATA" | jq --arg sha "$TARGET_SHA" '[.workflow_runs[] | select(.head_sha == $sha)] | first // {}')"
           mkdir -p status_probe_results
-          printf '%s\n' "$MATCH" > status_probe_results/hypervigilant-full-pass.json
+          printf '%s\n' "$MATCH" > status_probe_results/hypervigilant-full-pass-v2.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add status_probe_results/hypervigilant-full-pass.json
-          git commit -m "Record Hypervigilant full-pass workflow status [skip ci]" || exit 0
+          git add status_probe_results/hypervigilant-full-pass-v2.json
+          git commit -m "Record Hypervigilant full-pass v2 workflow status [skip ci]" || exit 0
           git push
