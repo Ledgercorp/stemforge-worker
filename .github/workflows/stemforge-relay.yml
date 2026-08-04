@@ -27,6 +27,25 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Install pending StemForge v2 source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f source_bundle/stemforge_v2_source.tar.gz.b64 ]; then
+            base64 --decode source_bundle/stemforge_v2_source.tar.gz.b64 > /tmp/stemforge-v2.tar.gz
+            tar -xzf /tmp/stemforge-v2.tar.gz -C .
+            python -m compileall -q app tests handler.py
+            rm -rf source_bundle
+            rm -f .github/workflows/unpack-v2.yml
+            git config user.name "stemforge-v2-installer"
+            git config user.email "stemforge-v2-installer@users.noreply.github.com"
+            git add -A
+            git commit -m "Install StemForge v2 production engine"
+            git push
+          else
+            echo "No pending v2 source bundle."
+          fi
+
       - name: Validate secret
         shell: bash
         run: |
