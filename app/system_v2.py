@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import shutil
 
+from app import numpy_json_patch as _numpy_json_patch
 from app.storage import storage_status
 
 VERSION = "2.1.0"
