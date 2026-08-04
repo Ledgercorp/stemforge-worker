@@ -1,0 +1,20 @@
+{
+  "delayTime": 9519,
+  "executionTime": 191,
+  "id": "7e0d2391-c46d-43a8-baed-123b9ff73328-u2",
+  "output": {
+    "reason": "Unsupported action: aligner_info",
+    "status": "rejected",
+    "supported_actions": [
+      "align_lyrics",
+      "analyze_audio",
+      "compare_audio",
+      "get_memory",
+      "inspect_stems",
+      "mastering_plan",
+      "record_feedback"
+    ]
+  },
+  "status": "COMPLETED",
+  "workerId": "r40ywbcwb5okyf"
+}
