@@ -1,0 +1,74 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Helvetica Neue,52,&H00FFFFFF,&H000000FF,&H66000000,&H00000000,0,0,0,0,100,100,0,0,1,2,0,2,120,120,110,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:06.13,0:00:08.06,Default,,0,0,0,,I remember the feeling,
+Dialogue: 0,0:00:08.28,0:00:10.36,Default,,0,0,0,,warm but uneasy,
+Dialogue: 0,0:00:10.42,0:00:12.48,Default,,0,0,0,,new home, new city,
+Dialogue: 0,0:00:12.98,0:00:14.82,Default,,0,0,0,,low self-esteem.
+Dialogue: 0,0:00:14.84,0:00:28.36,Default,,0,0,0,,I took pill after pill
+Dialogue: 0,0:00:31.29,0:00:43.05,Default,,0,0,0,,just to quiet my head,
+Dialogue: 0,0:00:45.53,0:00:49.26,Default,,0,0,0,,then smoked by the window
+Dialogue: 0,0:00:49.72,0:00:55.11,Default,,0,0,0,,and stayed in my bed.
+Dialogue: 0,0:00:56.44,0:01:01.99,Default,,0,0,0,,Dropped acid alone while
+Dialogue: 0,0:01:02.87,0:01:06.52,Default,,0,0,0,,the ceiling turned strange
+Dialogue: 0,0:01:06.79,0:01:12.54,Default,,0,0,0,,and waited for something
+Dialogue: 0,0:01:13.91,0:01:19.83,Default,,0,0,0,,inside me to change.
+Dialogue: 0,0:01:21.47,0:01:22.76,Default,,0,0,0,,My dealer knew
+Dialogue: 0,0:01:22.82,0:01:24.72,Default,,0,0,0,,when I needed a spark,
+Dialogue: 0,0:01:26.13,0:01:28.59,Default,,0,0,0,,and I called that friendship
+Dialogue: 0,0:01:28.89,0:01:38.31,Default,,0,0,0,,because it was enough.
+Dialogue: 0,0:01:42.37,0:01:52.60,Default,,0,0,0,,At sixteen, I thought
+Dialogue: 0,0:01:52.72,0:01:55.00,Default,,0,0,0,,I had years left to lose.
+Dialogue: 0,0:01:55.14,0:01:55.43,Default,,0,0,0,,At seventeen,
+Dialogue: 0,0:01:55.50,0:01:59.66,Default,,0,0,0,,I had habits to choose.
+Dialogue: 0,0:01:59.69,0:02:01.71,Default,,0,0,0,,I don't miss the fear
+Dialogue: 0,0:02:01.93,0:02:03.95,Default,,0,0,0,,or the things I went through.
+Dialogue: 0,0:02:04.11,0:02:06.31,Default,,0,0,0,,I miss being young enough
+Dialogue: 0,0:02:06.41,0:02:08.12,Default,,0,0,0,,not to know what they'd do.
+Dialogue: 0,0:02:11.94,0:02:13.74,Default,,0,0,0,,My first love came
+Dialogue: 0,0:02:13.86,0:02:16.23,Default,,0,0,0,,through that apartment door.
+Dialogue: 0,0:02:16.67,0:02:18.75,Default,,0,0,0,,I had never let anyone
+Dialogue: 0,0:02:19.01,0:02:20.73,Default,,0,0,0,,that close before.
+Dialogue: 0,0:03:05.94,0:03:43.99,Default,,0,0,0,,I kept the opioids
+Dialogue: 0,0:03:44.01,0:03:46.21,Default,,0,0,0,,hidden where nobody would see,
+Dialogue: 0,0:03:46.23,0:03:48.76,Default,,0,0,0,,took more than I intended
+Dialogue: 0,0:03:48.84,0:03:50.58,Default,,0,0,0,,and kept it all with me.
+Dialogue: 0,0:03:50.60,0:03:53.08,Default,,0,0,0,,I overdosed in silence
+Dialogue: 0,0:03:53.14,0:03:55.10,Default,,0,0,0,,with the bedroom door shut tight,
+Dialogue: 0,0:03:55.60,0:03:57.46,Default,,0,0,0,,then woke up hours later
+Dialogue: 0,0:03:57.56,0:03:59.42,Default,,0,0,0,,and said that I was alright.
+Dialogue: 0,0:04:00.08,0:04:01.94,Default,,0,0,0,,I didn't know what was wrong
+Dialogue: 0,0:04:02.26,0:04:04.08,Default,,0,0,0,,or why I hated my skin.
+Dialogue: 0,0:04:04.48,0:04:06.44,Default,,0,0,0,,I only knew the pills could cut
+Dialogue: 0,0:04:06.50,0:04:08.18,Default,,0,0,0,,the pressure down within.
+Dialogue: 0,0:04:28.33,0:04:53.06,Default,,0,0,0,,I don't call it good,
+Dialogue: 0,0:04:53.28,0:04:55.22,Default,,0,0,0,,and I don't call it bad.
+Dialogue: 0,0:04:55.36,0:04:57.32,Default,,0,0,0,,It held some of the worst
+Dialogue: 0,0:04:57.52,0:04:59.55,Default,,0,0,0,,and the best that I had.
+Dialogue: 0,0:04:59.63,0:05:01.99,Default,,0,0,0,,Now when I remember,
+Dialogue: 0,0:05:02.15,0:05:03.83,Default,,0,0,0,,I can't make it clean.
+Dialogue: 0,0:05:03.95,0:05:05.87,Default,,0,0,0,,I hated those years,
+Dialogue: 0,0:05:05.95,0:05:08.07,Default,,0,0,0,,but I still miss sixteen.
+Dialogue: 0,0:05:08.09,0:05:10.07,Default,,0,0,0,,Newark is traffic
+Dialogue: 0,0:05:10.41,0:05:12.13,Default,,0,0,0,,I pass on the way,
+Dialogue: 0,0:05:12.53,0:05:14.35,Default,,0,0,0,,but part of me stays
+Dialogue: 0,0:05:14.52,0:05:16.44,Default,,0,0,0,,in that bedroom some days.
+Dialogue: 0,0:05:26.16,0:05:27.72,Default,,0,0,0,,I wasn't chasing
+Dialogue: 0,0:05:27.82,0:05:29.78,Default,,0,0,0,,a story to tell.
+Dialogue: 0,0:05:30.42,0:05:46.93,Default,,0,0,0,,I don't miss that bedroom,
+Dialogue: 0,0:05:49.10,0:05:55.46,Default,,0,0,0,,at least not completely,
+Dialogue: 0,0:05:55.53,0:05:57.57,Default,,0,0,0,,but sometimes I miss
+Dialogue: 0,0:05:58.24,0:06:05.47,Default,,0,0,0,,what it meant to be sixteen.
+Dialogue: 0,0:06:06.69,0:06:11.24,Default,,0,0,0,,I remember the feeling,
+Dialogue: 0,0:06:11.30,0:06:12.28,Default,,0,0,0,,warm but uneasy,
+Dialogue: 0,0:06:12.32,0:06:14.32,Default,,0,0,0,,a new home, a new city,
+Dialogue: 0,0:06:14.36,0:06:15.68,Default,,0,0,0,,a life in between.

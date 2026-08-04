@@ -1,0 +1,63 @@
+index,start,end,confidence,anchor_coverage,needs_review,text
+1,6.133,8.056,0.3942,1,True,"I remember the feeling,"
+2,8.276,10.358,0.8617,1,False,"warm but uneasy,"
+3,10.418,12.481,0.8562,1,False,"new home, new city,"
+4,12.982,14.824,0.799,0.6667,False,low self-esteem.
+5,14.844,28.356516666666668,0,0.2,True,I took pill after pill
+6,31.29418333333333,43.0496375,0.56,0.2,True,"just to quiet my head,"
+7,45.533,49.258570000000006,0.541,0.2,True,then smoked by the window
+8,49.715,55.1134125,0.791,0.6,False,and stayed in my bed.
+9,56.4356625,61.994775000000004,0.658,0.25,True,Dropped acid alone while
+10,62.869,66.51835,0.298,0.5,True,the ceiling turned strange
+11,66.794,72.53812500000001,0.74,0.25,True,and waited for something
+12,73.91062500000001,79.828125,0,0,True,inside me to change.
+13,81.474,82.756,0.55,1,False,My dealer knew
+14,82.816,84.719,0.765,1,False,"when I needed a spark,"
+15,86.128,88.591,0.6412,1,False,and I called that friendship
+16,88.891,98.31031,0.4785,0.5,True,because it was enough.
+17,102.37291,112.595,0.9,0.5,True,"At sixteen, I thought"
+18,112.716,114.999,0.7607,1,False,I had years left to lose.
+19,115.14066666666666,115.42733333333334,0,0,True,"At seventeen,"
+20,115.499,119.665,0.663,1,False,I had habits to choose.
+21,119.6905,121.707,0.7352,0.8,False,I don't miss the fear
+22,121.928,123.95,0.6695,1,False,or the things I went through.
+23,124.111,126.313,0.672,1,False,I miss being young enough
+24,126.414,128.116,0.6717,1,False,not to know what they'd do.
+25,131.942,133.744,0.9395,1,False,My first love came
+26,133.864,136.227,0.6305,1,False,through that apartment door.
+27,136.667,138.75,0.8765,0.8,False,I had never let anyone
+28,139.01,140.732,0.8137,1,False,that close before.
+29,185.941,223.993,0.714,1,True,I kept the opioids
+30,224.013,226.214,0.8606,1,False,"hidden where nobody would see,"
+31,226.234,228.756,0.8062,1,False,took more than I intended
+32,228.836,230.577,0.876,1,False,and kept it all with me.
+33,230.597,233.078,0.592,1,False,I overdosed in silence
+34,233.138,235.099,0.7815,1,False,"with the bedroom door shut tight,"
+35,235.6,237.461,0.8938,1,False,then woke up hours later
+36,237.561,239.422,0.8922,1,False,and said that I was alright.
+37,240.082,241.943,0.7112,1,False,I didn't know what was wrong
+38,242.263,244.084,0.762,1,False,or why I hated my skin.
+39,244.484,246.445,0.6654,1,False,I only knew the pills could cut
+40,246.505,248.185,0.7458,1,False,the pressure down within.
+41,268.332,293.063,0.6716,1,True,"I don't call it good,"
+42,293.283,295.224,0.8138,1,False,and I don't call it bad.
+43,295.364,297.325,0.8432,1,False,It held some of the worst
+44,297.525,299.546,0.8715,1,False,and the best that I had.
+45,299.626,301.988,0.889,1,False,"Now when I remember,"
+46,302.148,303.829,0.7862,1,False,I can't make it clean.
+47,303.949,305.87,0.8333,1,False,"I hated those years,"
+48,305.95,308.071,0.853,1,False,but I still miss sixteen.
+49,308.091,310.072,0.418,1,True,Newark is traffic
+50,310.412,312.133,0.7572,1,False,"I pass on the way,"
+51,312.533,314.354,0.7402,1,False,but part of me stays
+52,314.515,316.436,0.6722,1,False,in that bedroom some days.
+53,326.16,327.72,0.6423,1,False,I wasn't chasing
+54,327.82,329.781,0.6747,1,False,a story to tell.
+55,330.421,346.927,0.6064,0.6,True,"I don't miss that bedroom,"
+56,349.1041333333333,355.4595925,0.8,0.25,True,"at least not completely,"
+57,355.5324625,357.57111000000003,0.581,0.25,True,but sometimes I miss
+58,358.23771,365.47228,0.7,0.1667,True,what it meant to be sixteen.
+59,366.69108,371.239,0.779,0.5,False,"I remember the feeling,"
+60,371.299,372.279,0,0,True,"warm but uneasy,"
+61,372.31899999999996,374.319,0,0,True,"a new home, a new city,"
+62,374.359,375.679,0,0,True,a life in between.
