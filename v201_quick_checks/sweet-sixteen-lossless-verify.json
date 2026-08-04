@@ -1,0 +1,9 @@
+{
+  "input": {
+    "action": "analyze_audio_v2",
+    "artist": "sounddecay",
+    "song": "Sweet Sixteen Lossless Verify",
+    "audio_url": "https://drive.google.com/uc?export=download&id=1gezCxh-8nBKn3DdTBp3jHazPQlfzwd9W",
+    "render_plots": false
+  }
+}
