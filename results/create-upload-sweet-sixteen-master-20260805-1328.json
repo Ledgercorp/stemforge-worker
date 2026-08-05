@@ -1,0 +1,20 @@
+{
+  "delayTime": 20763,
+  "executionTime": 366,
+  "id": "5877e7af-aed6-4bb3-be6a-7042663d8023-u2",
+  "output": {
+    "action": "create_upload",
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "expires_in_seconds": 1800,
+    "headers": {
+      "Content-Type": "audio/x-wav"
+    },
+    "method": "PUT",
+    "status": "completed",
+    "stemforge_version": "2.4.0",
+    "storage_key": "incoming/sounddecay/c9f693681f51f888f80c/Sweet_Sixteen_Master.wav",
+    "upload_url": "https://42c18299a775bb51e48215df422cb3bf.r2.cloudflarestorage.com/stemforge/incoming/sounddecay/c9f693681f51f888f80c/Sweet_Sixteen_Master.wav?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=5c5c88e44c292d9a2877590258bb74e3%2F20260805%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260805T173421Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=content-type%3Bhost&X-Amz-Signature=571d55c2547e6c337371946769aec8b1f76ac58b642667a63d4d6dc5ef9582f6"
+  },
+  "status": "COMPLETED",
+  "workerId": "sq8j7y0f4mgnth"
+}

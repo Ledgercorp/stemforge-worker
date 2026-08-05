@@ -1,0 +1,64 @@
+{
+  "artifact_name": "Sweet_Sixteen_v240_FullPass_Delivered",
+  "input": {
+    "action": "full_pass",
+    "artist": "sounddecay",
+    "song": "Sweet Sixteen",
+    "master_storage_key": "incoming/sounddecay/1ab30e0a4842e1b4ecd8/Sweet_Sixteen_Master.wav",
+    "stems": [
+      {
+        "name": "Lead Vocals",
+        "storage_key": "incoming/sounddecay/fed6a3ef761d462a88fa/Lead_Vocals.wav"
+      },
+      {
+        "name": "Drums",
+        "storage_key": "incoming/sounddecay/1eb7c877d0a8cdb0edf1/Drums.wav"
+      },
+      {
+        "name": "Bass",
+        "storage_key": "incoming/sounddecay/10a90fb89a7f006ee79e/Bass.wav"
+      },
+      {
+        "name": "Guitar",
+        "storage_key": "incoming/sounddecay/09e67ca5374afd9ce347/Guitar.wav"
+      },
+      {
+        "name": "Percussion",
+        "storage_key": "incoming/sounddecay/371e98db953e34fde143/Percussion.wav"
+      },
+      {
+        "name": "Synth",
+        "storage_key": "incoming/sounddecay/a4aa7f779964d99e0e79/Synth.wav"
+      },
+      {
+        "name": "Other",
+        "storage_key": "incoming/sounddecay/6903ec67ffa194956299/Other.wav"
+      }
+    ],
+    "midi_zip_storage_key": "incoming/sounddecay/53d81a4b0809a5235b0a/SweetSixteenMIDI.zip",
+    "profiles": [
+      "dynamic",
+      "balanced",
+      "dense"
+    ],
+    "naturalize": {
+      "mode": "auto",
+      "intensity": 1.4,
+      "passes": 1,
+      "vocoder": "auto",
+      "parameters": {
+        "denoise_reduction_db": 3.0,
+        "noise_profile_ms": 200
+      },
+      "retain_original": true,
+      "retain_pre_denoise": true
+    },
+    "minimum_worker_version": "2.4.0",
+    "required_build": "v2.4.0-naturalize-balanced-vocoder",
+    "output_ttl_seconds": 86400
+  },
+  "policy": {
+    "executionTimeout": 5400000,
+    "ttl": 7200000
+  }
+}

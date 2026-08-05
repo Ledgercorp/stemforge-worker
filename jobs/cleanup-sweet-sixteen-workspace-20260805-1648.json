@@ -1,0 +1,13 @@
+{
+  "input": {
+    "action": "volume_delete",
+    "paths": [
+      "/runpod-volume/stemforge/jobs/full_pass",
+      "/runpod-volume/stemforge/jobs/naturalize"
+    ]
+  },
+  "policy": {
+    "executionTimeout": 300000,
+    "ttl": 600000
+  }
+}

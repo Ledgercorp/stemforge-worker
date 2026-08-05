@@ -17,20 +17,29 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Report recent workflow runs
         shell: bash
         run: |
           set -euo pipefail
+          CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+          mapfile -t REQUESTS < <(printf '%s\n' "$CHANGED" | grep -E '^system_probe_status_requests/.+\.txt$' || true)
+          test "${#REQUESTS[@]}" -eq 1
+          NAME="$(basename "${REQUESTS[0]}" .txt)"
           mkdir -p system_probe_status_results
+          RESULT="system_probe_status_results/${NAME}.json"
           gh run list \
             --repo "$GITHUB_REPOSITORY" \
-            --limit 25 \
-            --json databaseId,status,conclusion,headSha,event,displayTitle,createdAt,updatedAt,url \
-            > system_probe_status_results/recent.json
-          ENCODED="$(base64 -w0 system_probe_status_results/recent.json)"
-          gh api --method PUT \
-            "repos/${GITHUB_REPOSITORY}/contents/system_probe_status_results/recent.json" \
-            -f message="Record recent probe workflow status [skip ci]" \
-            -f content="$ENCODED" \
-            -f branch="main" >/dev/null
+            --limit 30 \
+            --json databaseId,workflowName,status,conclusion,headSha,event,displayTitle,createdAt,updatedAt,url \
+            > "$RESULT"
+          git config user.name "stemforge-status"
+          git config user.email "stemforge-status@users.noreply.github.com"
+          git add "$RESULT"
+          git commit -m "Record workflow status for ${NAME} [skip ci]"
+          git push || {
+            git pull --rebase --autostash origin main
+            git push
+          }

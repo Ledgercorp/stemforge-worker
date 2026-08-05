@@ -1,0 +1,15 @@
+{
+  "objects": [
+    {
+      "name": "Sweet_Sixteen_Master.wav",
+      "storage_key": "incoming/sounddecay/1ab30e0a4842e1b4ecd8/Sweet_Sixteen_Master.wav",
+      "size_bytes": 76654252,
+      "sha256": "cd932b4d1f81798766d8db0ddc278eb4eb5646bf3061bdc61b1d241ea576a259",
+      "magic_hex": "52494646a4a6910457415645666d7420",
+      "file_type": "RIFF (little-endian) data, WAVE audio, Microsoft PCM, 16 bit, stereo 48000 Hz ",
+      "ffprobe_readable": false,
+      "ffprobe": null,
+      "error": "/home/runner/work/_temp/d36274b9-20c4-476c-864d-ae5f1394e4e8.sh: line 41: ffprobe: command not found"
+    }
+  ]
+}

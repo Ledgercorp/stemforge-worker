@@ -1,0 +1,53 @@
+{
+  "delayTime": 12266,
+  "executionTime": 344,
+  "id": "81ccc6b7-7c59-49f8-98eb-d53455143034-u2",
+  "output": {
+    "action": "storage_info",
+    "bucket_configured": true,
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "client_ready": true,
+    "configuration": {
+      "STEMFORGE_S3_ACCESS_KEY_ID": {
+        "empty": false,
+        "has_surrounding_whitespace": false,
+        "length": 32,
+        "set": true
+      },
+      "STEMFORGE_S3_BUCKET": {
+        "empty": false,
+        "has_surrounding_whitespace": false,
+        "length": 9,
+        "set": true,
+        "value": "stemforge"
+      },
+      "STEMFORGE_S3_ENDPOINT_URL": {
+        "empty": false,
+        "has_surrounding_whitespace": false,
+        "length": 65,
+        "set": true,
+        "value": "https://42c18299a775bb51e48215df422cb3bf.r2.cloudflarestorage.com"
+      },
+      "STEMFORGE_S3_REGION": {
+        "empty": false,
+        "has_surrounding_whitespace": false,
+        "length": 4,
+        "set": true,
+        "value": "auto"
+      },
+      "STEMFORGE_S3_SECRET_ACCESS_KEY": {
+        "empty": false,
+        "has_surrounding_whitespace": false,
+        "length": 64,
+        "set": true
+      }
+    },
+    "mode": "s3_signed_urls",
+    "note": "Private expiring transfer links are active.",
+    "output_root": "/runpod-volume/stemforge/output",
+    "signed_transfer_ready": true,
+    "stemforge_version": "2.4.0"
+  },
+  "status": "COMPLETED",
+  "workerId": "qwz7ikg8zhwnj5"
+}
