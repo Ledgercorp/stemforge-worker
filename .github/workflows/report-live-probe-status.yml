@@ -29,8 +29,17 @@ jobs:
             --json databaseId,status,conclusion,headSha,event,displayTitle,createdAt,updatedAt,url \
             > system_probe_status_results/recent.json
           ENCODED="$(base64 -w0 system_probe_status_results/recent.json)"
-          gh api --method PUT \
-            "repos/${GITHUB_REPOSITORY}/contents/system_probe_status_results/recent.json" \
-            -f message="Record recent probe workflow status [skip ci]" \
-            -f content="$ENCODED" \
-            -f branch="main" >/dev/null
+          EXISTING_SHA="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/contents/system_probe_status_results/recent.json?ref=main" \
+            --jq '.sha' 2>/dev/null || true)"
+          ARGS=(
+            --method PUT
+            "repos/${GITHUB_REPOSITORY}/contents/system_probe_status_results/recent.json"
+            -f message="Record recent probe workflow status [skip ci]"
+            -f content="$ENCODED"
+            -f branch="main"
+          )
+          if [ -n "$EXISTING_SHA" ]; then
+            ARGS+=( -f sha="$EXISTING_SHA" )
+          fi
+          gh api "${ARGS[@]}" >/dev/null
