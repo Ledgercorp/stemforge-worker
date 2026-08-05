@@ -8,10 +8,8 @@ name: Ingest Audio
 # render can reference the resulting `storage_key` instead.
 #
 # The runner has open internet and the RunPod key, so this works from a phone:
-# paste the URLs into the workflow inputs and read the keys off the summary.
-#
-# Requires S3 storage configured on the endpoint. Without it the run fails
-# saying exactly that.
+# dispatch it manually or commit exactly one validated request under
+# ingest_requests/.
 
 on:
   workflow_dispatch:
@@ -38,6 +36,10 @@ on:
         description: "Optional name to commit the keys under in ingested/"
         required: false
         type: string
+  push:
+    branches: [main]
+    paths:
+      - "ingest_requests/**/*.json"
 
 permissions:
   contents: write
@@ -49,24 +51,68 @@ concurrency:
 jobs:
   ingest:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
       RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Resolve ingest configuration
+        id: config
+        shell: bash
+        env:
+          DISPATCH_URLS: ${{ inputs.urls }}
+          DISPATCH_NAMES: ${{ inputs.names }}
+          DISPATCH_ARTIST: ${{ inputs.artist }}
+          DISPATCH_EXPAND: ${{ inputs.expand_zips }}
+          DISPATCH_RECORD_AS: ${{ inputs.record_as }}
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            URLS="$DISPATCH_URLS"
+            NAMES="${DISPATCH_NAMES:-}"
+            ARTIST="${DISPATCH_ARTIST:-sounddecay}"
+            EXPAND="${DISPATCH_EXPAND:-false}"
+            RECORD_AS="${DISPATCH_RECORD_AS:-}"
+          else
+            CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+            mapfile -t REQUESTS < <(printf '%s\n' "$CHANGED" | grep -E '^ingest_requests/.+\.json$' || true)
+            test "${#REQUESTS[@]}" -eq 1
+            REQUEST="${REQUESTS[0]}"
+            jq -e '(.urls or .source_url) and (.record_as | type == "string" and length > 0)' "$REQUEST" >/dev/null
+            URLS="$(jq -r 'if .urls then (if (.urls|type)=="array" then .urls[] else .urls end) else .source_url end' "$REQUEST")"
+            NAMES="$(jq -r 'if .names then (if (.names|type)=="array" then .names[] else .names end) elif .name then .name else empty end' "$REQUEST")"
+            ARTIST="$(jq -r '.artist // "sounddecay"' "$REQUEST")"
+            EXPAND="$(jq -r '.expand_zips // .expand // false' "$REQUEST")"
+            RECORD_AS="$(jq -r '.record_as' "$REQUEST")"
+          fi
+
+          {
+            echo 'urls<<STEMFORGE_EOF'
+            printf '%s\n' "$URLS"
+            echo 'STEMFORGE_EOF'
+            echo 'names<<STEMFORGE_EOF'
+            printf '%s\n' "$NAMES"
+            echo 'STEMFORGE_EOF'
+            echo "artist=$ARTIST"
+            echo "expand=$EXPAND"
+            echo "record_as=$RECORD_AS"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Ingest each source
         id: ingest
         shell: bash
         env:
-          URLS: ${{ inputs.urls }}
-          NAMES: ${{ inputs.names }}
-          ARTIST: ${{ inputs.artist }}
-          EXPAND: ${{ inputs.expand_zips }}
+          URLS: ${{ steps.config.outputs.urls }}
+          NAMES: ${{ steps.config.outputs.names }}
+          ARTIST: ${{ steps.config.outputs.artist }}
+          EXPAND: ${{ steps.config.outputs.expand }}
         run: |
           set -euo pipefail
           test -n "$RUNPOD_API_KEY"
@@ -79,13 +125,12 @@ jobs:
           echo '{"ingested":[]}' > ingested/records.json
           for INDEX in "${!SOURCES[@]}"; do
             SOURCE="${SOURCES[$INDEX]}"
-            # A line is either a URL or a path already in the repository.
             case "$SOURCE" in
               http://*|https://*) ARGS=(--from-url "$SOURCE") ;;
               *) test -f "$SOURCE"; ARGS=("$SOURCE") ;;
             esac
             ARGS+=(--artist "$ARTIST" --json --quiet)
-            if [ "${EXPAND}" = "true" ]; then
+            if [ "$EXPAND" = "true" ]; then
               ARGS+=(--expand)
             fi
             if [ "$INDEX" -lt "${#LABELS[@]}" ]; then
@@ -104,17 +149,13 @@ jobs:
             echo "| --- | --- | --- |"
             jq -r '.ingested[] | "| `\(.storage_key)` | \(.filename) | \(.size_bytes) |"' \
               ingested/records.json
-            echo ""
-            echo "Use a key as \`audio_storage_key\`, \`master_storage_key\`,"
-            echo "or a stem's \`storage_key\`. Keys do not expire the way a"
-            echo "share link does."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Record the keys
-        if: ${{ inputs.record_as != '' }}
+        if: ${{ steps.config.outputs.record_as != '' }}
         shell: bash
         env:
-          RECORD_AS: ${{ inputs.record_as }}
+          RECORD_AS: ${{ steps.config.outputs.record_as }}
         run: |
           set -euo pipefail
           SAFE="$(printf '%s' "$RECORD_AS" | tr -c 'A-Za-z0-9._-' '-')"
@@ -123,10 +164,7 @@ jobs:
           git config user.email "stemforge-ingest@users.noreply.github.com"
           git add "ingested/${SAFE}.json"
           git commit -m "Record ingested storage keys for ${SAFE} [skip ci]"
-          # Rebase onto the branch this run checked out, not onto main: a run
-          # dispatched from a feature branch would otherwise splice main's
-          # history into it on the first retry.
-          BRANCH="${GITHUB_REF_NAME}"
+          BRANCH="$GITHUB_REF_NAME"
           git push || {
             for attempt in 1 2 3; do
               sleep $((attempt * 5))
