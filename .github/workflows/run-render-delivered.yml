@@ -140,16 +140,36 @@ jobs:
 
           RESULT="delivery/runpod_result.json"
           TERMINAL=0
+          STARTED="$(date +%s)"
+          LAST_STATE=""
+          # Log every state change. A job sitting IN_QUEUE and a job rendering
+          # for an hour look identical from outside, and the difference decides
+          # whether to tune the render or wait for the endpoint to free up.
           for _ in $(seq 1 420); do
             sleep 15
             curl -sS --max-time 60 \
               "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
               -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT" || continue
-            case "$(jq -r '.status // empty' "$RESULT")" in
+            STATE="$(jq -r '.status // empty' "$RESULT")"
+            if [ "$STATE" != "$LAST_STATE" ]; then
+              echo "[$(( ($(date +%s) - STARTED) / 60 ))m] RunPod status: ${STATE:-unknown}"
+              LAST_STATE="$STATE"
+            fi
+            case "$STATE" in
               COMPLETED|FAILED|TIMED_OUT|CANCELLED) TERMINAL=1; break ;;
             esac
           done
-          test "$TERMINAL" -eq 1
+
+          if [ "$TERMINAL" -ne 1 ]; then
+            # This was a bare `test`, so a job that never finished exited 1
+            # saying nothing - indistinguishable from a worker error.
+            echo "RunPod job $JOB_ID never reached a terminal state." >&2
+            echo "  last status: ${LAST_STATE:-never reported}" >&2
+            echo "  waited:      $(( ($(date +%s) - STARTED) / 60 )) minutes" >&2
+            echo "  A job stuck IN_QUEUE means the endpoint has no free worker," >&2
+            echo "  not that this render is slow." >&2
+            exit 1
+          fi
 
           # Report what the worker said before failing on it. These checks were
           # silent `jq -e >/dev/null` assertions, so a render that died after

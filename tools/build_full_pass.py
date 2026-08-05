@@ -121,8 +121,17 @@ def build(
     song: str,
     artist: str = "sounddecay",
     output_ttl_seconds: int = 86_400,
+    profiles: Sequence[str] | None = None,
+    ab_references: bool = True,
 ) -> tuple[dict, list[tuple[str, str]]]:
-    """Return the job payload and the (stem name, role) routing it implies."""
+    """Return the job payload and the (stem name, role) routing it implies.
+
+    `profiles` and `ab_references` are the two levers that change how long a
+    pass takes without touching what Naturalize does to the audio. Each
+    profile is a separate mastering pass, and each A/B reference is another
+    full-length WAV written and uploaded - together they were most of a
+    217 MB delivery. Neither affects the master that comes out.
+    """
     master, midi, stems = classify(records)
 
     stem_specs = []
@@ -132,14 +141,18 @@ def build(
         stem_specs.append({"name": name, "storage_key": record["storage_key"]})
         routing.append((name, _role_of(name)))
 
+    naturalize = dict(NATURALIZE)
+    naturalize["retain_original"] = ab_references
+    naturalize["retain_pre_denoise"] = ab_references
+
     payload = {
         "action": "full_pass",
         "artist": artist,
         "song": song,
         "master_storage_key": master["storage_key"],
         "stems": stem_specs,
-        "profiles": list(PROFILES),
-        "naturalize": dict(NATURALIZE),
+        "profiles": list(profiles) if profiles else list(PROFILES),
+        "naturalize": naturalize,
         "output_ttl_seconds": output_ttl_seconds,
         "required_build": REQUIRED_BUILD,
         "minimum_worker_version": MINIMUM_VERSION,
@@ -164,7 +177,28 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--artist", default="sounddecay")
     parser.add_argument("--out", help="Where to write the job (default: stdout).")
     parser.add_argument("--output-ttl-seconds", type=int, default=86_400)
+    parser.add_argument(
+        "--profiles",
+        help="Comma-separated mastering profiles. Each is a separate pass; "
+        f"default is all of {','.join(PROFILES)}.",
+    )
+    parser.add_argument(
+        "--no-ab-references",
+        action="store_true",
+        help="Skip the original and pre-denoise A/B copies. Each is another "
+        "full-length WAV to write and upload; neither changes the master.",
+    )
     args = parser.parse_args(argv)
+
+    profiles = None
+    if args.profiles:
+        profiles = [p.strip() for p in args.profiles.split(",") if p.strip()]
+        unknown = [p for p in profiles if p not in PROFILES]
+        if unknown:
+            parser.error(
+                f"unknown profile(s): {', '.join(unknown)}; "
+                f"choose from {', '.join(PROFILES)}"
+            )
 
     records: list[dict] = []
     for path in args.record:
@@ -193,6 +227,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             song=args.song,
             artist=args.artist,
             output_ttl_seconds=args.output_ttl_seconds,
+            profiles=profiles,
+            ab_references=not args.no_ab_references,
         )
     except BuildError as exc:
         print(f"{args.record}: {exc}", file=sys.stderr)
