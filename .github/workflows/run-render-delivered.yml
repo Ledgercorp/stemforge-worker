@@ -151,10 +151,35 @@ jobs:
           done
           test "$TERMINAL" -eq 1
 
-          jq -e '.status == "COMPLETED"' "$RESULT" >/dev/null
-          jq -e '.output.status == "completed"' "$RESULT" >/dev/null
-          jq -e '.output.stemforge_version == "2.4.0"' "$RESULT" >/dev/null
-          jq -e '.output.build == "v2.4.0-naturalize-balanced-vocoder"' "$RESULT" >/dev/null
+          # Report what the worker said before failing on it. These checks were
+          # silent `jq -e >/dev/null` assertions, so a render that died after
+          # six minutes of GPU time exited 1 with no message and the only copy
+          # of the reason sat inside an artifact. Three consecutive failures
+          # were diagnosed as "something went wrong" for exactly this reason.
+          # Named fields only - never the whole document, which is one schema
+          # change away from echoing the injected release token into a log.
+          if ! jq -e '.status == "COMPLETED"' "$RESULT" >/dev/null; then
+            echo "RunPod job $JOB_ID did not complete." >&2
+            jq -r '"  status: \(.status // "unknown")\n  error: \(.error // "none")"' \
+              "$RESULT" >&2 || true
+            exit 1
+          fi
+          if ! jq -e '.output.status == "completed"' "$RESULT" >/dev/null; then
+            echo "The worker rejected or failed this render:" >&2
+            for FIELD in status error error_type reason action; do
+              echo "  ${FIELD}: $(jq -r ".output.${FIELD} // \"none\"" "$RESULT")" >&2
+            done
+            exit 1
+          fi
+          for CHECK in "stemforge_version=2.4.0" "build=v2.4.0-naturalize-balanced-vocoder"; do
+            FIELD="${CHECK%%=*}"
+            WANT="${CHECK#*=}"
+            GOT="$(jq -r ".output.${FIELD} // \"none\"" "$RESULT")"
+            if [ "$GOT" != "$WANT" ]; then
+              echo "Wrong ${FIELD}: expected ${WANT}, got ${GOT}" >&2
+              exit 1
+            fi
+          done
 
           # Surface the verdicts that decide whether the render is usable.
           # Every field is optional: this workflow serves several actions and
