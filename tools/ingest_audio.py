@@ -27,13 +27,17 @@ rather than failing obscurely.
 from __future__ import annotations
 
 import argparse
+import html
+import http.cookiejar
 import io
 import json
 import mimetypes
 import os
+import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -108,24 +112,103 @@ def _run(endpoint: str, api_key: str, payload: dict) -> dict:
     return output
 
 
+def _looks_like_html(data: bytes) -> bool:
+    return data[:512].lstrip().lower().startswith((b"<!doctype html", b"<html"))
+
+
+def _filename_from_headers(headers) -> str:
+    """Pull the real filename out of Content-Disposition, if it carries one."""
+    disposition = headers.get("Content-Disposition") or ""
+    match = re.search(r"filename\*?=(?:UTF-8'')?\"?([^\";]+)\"?", disposition)
+    if not match:
+        return ""
+    return Path(urllib.parse.unquote(match.group(1).strip())).name
+
+
+def _drive_confirm_url(page: bytes, source: str) -> str:
+    """Build the follow-up URL for Drive's large-file confirmation page.
+
+    Drive does not serve a file over roughly 100 MB directly: it answers with
+    an interstitial saying it cannot scan the file for viruses, carrying a
+    form that repeats the request with a confirmation token. Small files skip
+    this entirely, which is why a set of 49 MB stems downloads cleanly and a
+    single archive of the same stems does not.
+    """
+    text = page.decode("utf-8", errors="replace")
+
+    # Preferred: replay the form the page actually contains, so the token and
+    # any per-request uuid come from Google rather than from a guess.
+    form = re.search(r'<form[^>]+id="download-form"[^>]+action="([^"]+)"', text)
+    if form:
+        action = html.unescape(form.group(1))
+        fields = dict(
+            (html.unescape(n), html.unescape(v))
+            for n, v in re.findall(
+                r'<input[^>]+type="hidden"[^>]+name="([^"]+)"[^>]+value="([^"]*)"', text
+            )
+        )
+        if fields:
+            return f"{action}?{urllib.parse.urlencode(fields)}"
+
+    # Fallback: the documented direct form, which needs only the file id.
+    file_id = ""
+    query = urllib.parse.parse_qs(urllib.parse.urlparse(source).query)
+    if query.get("id"):
+        file_id = query["id"][0]
+    else:
+        path_match = re.search(r"/file/d/([^/]+)", source)
+        if path_match:
+            file_id = path_match.group(1)
+    if not file_id:
+        return ""
+    return (
+        "https://drive.usercontent.google.com/download?"
+        + urllib.parse.urlencode({"id": file_id, "export": "download", "confirm": "t"})
+    )
+
+
+def _fetch(url: str, opener) -> tuple[bytes, str]:
+    request = urllib.request.Request(url, headers={"User-Agent": "stemforge-ingest"})
+    try:
+        with opener.open(request, timeout=900) as response:
+            return response.read(), _filename_from_headers(response.headers)
+    except urllib.error.HTTPError as exc:
+        raise IngestError(f"could not fetch {url}: HTTP {exc.code}") from exc
+    except urllib.error.URLError as exc:
+        raise IngestError(f"could not fetch {url}: {exc.reason}") from exc
+
+
 def _read_source(source: str, name: str | None) -> tuple[bytes, str]:
     """Return the bytes to ingest and the filename to record."""
     if source.startswith(("http://", "https://")):
-        request = urllib.request.Request(source, headers={"User-Agent": "stemforge-ingest"})
-        try:
-            with urllib.request.urlopen(request, timeout=900) as response:
-                data = response.read()
-        except urllib.error.HTTPError as exc:
-            raise IngestError(f"could not fetch {source}: HTTP {exc.code}") from exc
-        except urllib.error.URLError as exc:
-            raise IngestError(f"could not fetch {source}: {exc.reason}") from exc
-        if data[:15].lstrip().lower().startswith((b"<!doctype html", b"<html")):
+        # Drive sets a cookie on the interstitial and expects it back on the
+        # confirmed request, so both go through one opener.
+        opener = urllib.request.build_opener(
+            urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar())
+        )
+        data, served_name = _fetch(source, opener)
+
+        if _looks_like_html(data):
+            confirm_url = _drive_confirm_url(data, source)
+            if confirm_url:
+                data, confirmed_name = _fetch(confirm_url, opener)
+                served_name = confirmed_name or served_name
+
+        if _looks_like_html(data):
+            lowered = data[:4096].lower()
+            if b"quota" in lowered:
+                reason = "the file is over its download quota"
+            elif b"sign in" in lowered or b"signin" in lowered:
+                reason = "the file is not shared with anyone holding the link"
+            else:
+                reason = (
+                    "the confirmation step did not yield the file; check the "
+                    "link is shared with anyone holding it"
+                )
             raise IngestError(
-                f"{source} returned an HTML page rather than audio. A Google "
-                "Drive link in this state is usually over its quota or not "
-                "shared with anyone holding the link."
+                f"{source} returned an HTML page rather than audio: {reason}."
             )
-        return data, name or "download.bin"
+        return data, name or served_name or "download.bin"
 
     path = Path(source)
     if not path.is_file():
