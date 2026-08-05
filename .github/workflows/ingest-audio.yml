@@ -17,9 +17,14 @@ on:
   workflow_dispatch:
     inputs:
       urls:
-        description: "Source URLs, one per line (Drive links are fine)"
+        description: "Sources, one per line: URLs, or repository paths"
         required: true
         type: string
+      expand_zips:
+        description: "Expand a zip of audio into one object per stem (MIDI zips stay whole)"
+        required: false
+        default: false
+        type: boolean
       names:
         description: "Optional filenames, one per line, matched in order"
         required: false
@@ -61,6 +66,7 @@ jobs:
           URLS: ${{ inputs.urls }}
           NAMES: ${{ inputs.names }}
           ARTIST: ${{ inputs.artist }}
+          EXPAND: ${{ inputs.expand_zips }}
         run: |
           set -euo pipefail
           test -n "$RUNPOD_API_KEY"
@@ -72,7 +78,16 @@ jobs:
 
           echo '{"ingested":[]}' > ingested/records.json
           for INDEX in "${!SOURCES[@]}"; do
-            ARGS=(--from-url "${SOURCES[$INDEX]}" --artist "$ARTIST" --json --quiet)
+            SOURCE="${SOURCES[$INDEX]}"
+            # A line is either a URL or a path already in the repository.
+            case "$SOURCE" in
+              http://*|https://*) ARGS=(--from-url "$SOURCE") ;;
+              *) test -f "$SOURCE"; ARGS=("$SOURCE") ;;
+            esac
+            ARGS+=(--artist "$ARTIST" --json --quiet)
+            if [ "${EXPAND}" = "true" ]; then
+              ARGS+=(--expand)
+            fi
             if [ "$INDEX" -lt "${#LABELS[@]}" ]; then
               ARGS+=(--name "${LABELS[$INDEX]}")
             fi
