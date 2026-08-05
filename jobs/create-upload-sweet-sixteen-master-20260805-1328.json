@@ -1,0 +1,12 @@
+{
+  "input": {
+    "action": "create_upload",
+    "filename": "Sweet_Sixteen_Master.wav",
+    "artist": "sounddecay",
+    "ttl_seconds": 1800
+  },
+  "policy": {
+    "ttl": 600000,
+    "executionTimeout": 300000
+  }
+}
