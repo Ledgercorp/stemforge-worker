@@ -53,9 +53,12 @@ jobs:
     timeout-minutes: 20
     env:
       PYTHONPATH: ${{ github.workspace }}
-      STEMFORGE_WORKSPACE: ${{ runner.temp }}/stemforge
     steps:
       - uses: actions/checkout@v4
+      - name: Point the worker workspace at runner temp
+        # The runner context is not available in job-level env, so export it
+        # here instead of declaring it above.
+        run: echo "STEMFORGE_WORKSPACE=${{ runner.temp }}/stemforge" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"

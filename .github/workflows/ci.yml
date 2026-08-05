@@ -79,6 +79,13 @@ jobs:
           python-version: "3.11"
       - name: Validate relay request files
         run: python tools/validate_jobs.py
+      - name: Lint workflow definitions
+        # A workflow can be valid YAML and still be rejected by GitHub, which
+        # shows up as a run with zero jobs and no logs. actionlint catches
+        # those before they reach main.
+        run: |
+          python -m pip install --quiet actionlint-py==1.7.12.24
+          actionlint
 
   test:
     runs-on: ubuntu-latest
