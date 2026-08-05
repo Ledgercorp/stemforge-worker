@@ -105,10 +105,50 @@ def storage_status() -> dict:
         "client_ready": ready,
         "output_root": str(OUTPUT_DIR),
         "note": note,
+        # Which settings actually reached the worker. Names and lengths only:
+        # enough to find an empty box, a typo or a truncated paste without
+        # ever putting a credential in a job result.
+        "configuration": _configuration_report(),
     }
     if client_error:
         status["client_error"] = client_error
     return status
+
+
+S3_SETTINGS = (
+    "STEMFORGE_S3_BUCKET",
+    "STEMFORGE_S3_ENDPOINT_URL",
+    "STEMFORGE_S3_REGION",
+    "STEMFORGE_S3_ACCESS_KEY_ID",
+    "STEMFORGE_S3_SECRET_ACCESS_KEY",
+)
+
+
+def _configuration_report() -> dict:
+    """Report presence and shape of each storage setting, never its value.
+
+    Diagnosing a misconfigured bucket otherwise means guessing which of five
+    variables is wrong. A name, a length, and for non-secret settings the
+    value itself are enough to spot an empty box, a stray space or a
+    truncated paste - and none of that discloses a credential.
+    """
+    secret = {"STEMFORGE_S3_ACCESS_KEY_ID", "STEMFORGE_S3_SECRET_ACCESS_KEY"}
+    report: dict[str, dict] = {}
+    for name in S3_SETTINGS:
+        raw = os.environ.get(name)
+        entry: dict = {"set": raw is not None, "empty": not (raw or "").strip()}
+        if raw is not None:
+            entry["length"] = len(raw)
+            entry["has_surrounding_whitespace"] = raw != raw.strip()
+            if name not in secret:
+                entry["value"] = raw
+        report[name] = entry
+
+    # A credential landing under the AWS names instead is a common mix-up.
+    for name in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"):
+        if os.environ.get(name):
+            report[name] = {"set": True, "empty": False, "length": len(os.environ[name])}
+    return report
 
 
 def create_upload_job(payload: dict) -> dict:
