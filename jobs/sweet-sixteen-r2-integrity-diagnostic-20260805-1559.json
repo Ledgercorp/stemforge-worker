@@ -1,0 +1,22 @@
+{
+  "input": {
+    "action": "inspect_stems_v2",
+    "artist": "sounddecay",
+    "song": "Sweet Sixteen",
+    "master_storage_key": "incoming/sounddecay/1ab30e0a4842e1b4ecd8/Sweet_Sixteen_Master.wav",
+    "stems": [
+      {"name": "Lead Vocals", "storage_key": "incoming/sounddecay/fed6a3ef761d462a88fa/Lead_Vocals.wav"},
+      {"name": "Drums", "storage_key": "incoming/sounddecay/1eb7c877d0a8cdb0edf1/Drums.wav"},
+      {"name": "Bass", "storage_key": "incoming/sounddecay/10a90fb89a7f006ee79e/Bass.wav"},
+      {"name": "Guitar", "storage_key": "incoming/sounddecay/09e67ca5374afd9ce347/Guitar.wav"},
+      {"name": "Percussion", "storage_key": "incoming/sounddecay/371e98db953e34fde143/Percussion.wav"},
+      {"name": "Synth", "storage_key": "incoming/sounddecay/a4aa7f779964d99e0e79/Synth.wav"},
+      {"name": "Other", "storage_key": "incoming/sounddecay/6903ec67ffa194956299/Other.wav"}
+    ],
+    "output_ttl_seconds": 86400
+  },
+  "policy": {
+    "executionTimeout": 1800000,
+    "ttl": 2400000
+  }
+}
