@@ -1,0 +1,124 @@
+name: Probe R2 Audio Inputs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "storage_audio_probe_requests/*.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stemforge-r2-audio-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve request
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t FILES < <(
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" \
+              | grep -E '^storage_audio_probe_requests/.+\.json$' || true
+          )
+          test "${#FILES[@]}" -eq 1
+          REQUEST="${FILES[0]}"
+          jq -e '.objects | type == "array" and length > 0' "$REQUEST" >/dev/null
+          echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
+          echo "name=$(basename "$REQUEST" .json)" >> "$GITHUB_OUTPUT"
+
+      - name: Download and inspect every object
+        shell: bash
+        env:
+          REQUEST: ${{ steps.request.outputs.request }}
+          RESULT_NAME: ${{ steps.request.outputs.name }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/probe storage_audio_probe_results
+          echo '{"objects":[]}' > /tmp/result.json
+
+          COUNT="$(jq '.objects | length' "$REQUEST")"
+          for INDEX in $(seq 0 $((COUNT - 1))); do
+            NAME="$(jq -r ".objects[$INDEX].name" "$REQUEST")"
+            KEY="$(jq -r ".objects[$INDEX].storage_key" "$REQUEST")"
+            SAFE="$(printf '%s' "$NAME" | tr -c 'A-Za-z0-9._-' '_')"
+
+            PAYLOAD="$(jq -nc --arg key "$KEY" '{input:{action:"create_download",storage_key:$key,ttl_seconds:3600},policy:{ttl:600000,executionTimeout:300000}}')"
+            JOB_ID="$(curl --retry 8 --retry-all-errors --retry-delay 3 -fsS --max-time 120 \
+              -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              -H 'Content-Type: application/json' \
+              --data-binary "$PAYLOAD" | jq -r '.id // empty')"
+            test -n "$JOB_ID"
+
+            STATUS=/tmp/probe/status.json
+            TERMINAL=0
+            for _ in $(seq 1 240); do
+              sleep 3
+              curl --retry 5 --retry-all-errors --retry-delay 2 -fsS --max-time 60 \
+                "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+                -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$STATUS" || continue
+              case "$(jq -r '.status // empty' "$STATUS")" in
+                COMPLETED|FAILED|TIMED_OUT|CANCELLED) TERMINAL=1; break ;;
+              esac
+            done
+            test "$TERMINAL" -eq 1
+            jq -e '.status == "COMPLETED" and .output.status == "completed"' "$STATUS" >/dev/null
+            URL="$(jq -r '.output.download_url' "$STATUS")"
+            test -n "$URL"
+
+            FILE="/tmp/probe/${SAFE}"
+            curl --retry 8 --retry-all-errors --retry-delay 3 -fsSL --max-time 1800 "$URL" -o "$FILE"
+            SIZE="$(stat -c '%s' "$FILE")"
+            SHA="$(sha256sum "$FILE" | awk '{print $1}')"
+            MAGIC="$(xxd -p -l 16 "$FILE")"
+            TYPE="$(file -b "$FILE" | tr '\n' ' ')"
+            if ffprobe -v error -show_entries format=duration:stream=codec_name,sample_rate,channels,sample_fmt -of json "$FILE" > /tmp/probe/ffprobe.json 2>/tmp/probe/ffprobe.err; then
+              READABLE=true
+              FFPROBE="$(cat /tmp/probe/ffprobe.json)"
+              ERROR=''
+            else
+              READABLE=false
+              FFPROBE='null'
+              ERROR="$(cat /tmp/probe/ffprobe.err)"
+            fi
+
+            jq --arg name "$NAME" --arg key "$KEY" --argjson size "$SIZE" \
+              --arg sha "$SHA" --arg magic "$MAGIC" --arg type "$TYPE" \
+              --argjson readable "$READABLE" --argjson ffprobe "$FFPROBE" --arg error "$ERROR" \
+              '.objects += [{name:$name,storage_key:$key,size_bytes:$size,sha256:$sha,magic_hex:$magic,file_type:$type,ffprobe_readable:$readable,ffprobe:$ffprobe,error:$error}]' \
+              /tmp/result.json > /tmp/next.json
+            mv /tmp/next.json /tmp/result.json
+          done
+
+          cp /tmp/result.json "storage_audio_probe_results/${RESULT_NAME}.json"
+
+      - name: Record probe result
+        shell: bash
+        env:
+          RESULT_NAME: ${{ steps.request.outputs.name }}
+        run: |
+          set -euo pipefail
+          git config user.name "stemforge-probe"
+          git config user.email "stemforge-probe@users.noreply.github.com"
+          git add "storage_audio_probe_results/${RESULT_NAME}.json"
+          git commit -m "Record R2 audio probe for ${RESULT_NAME} [skip ci]"
+          git push || {
+            for attempt in 1 2 3; do
+              sleep $((attempt * 5))
+              git pull --rebase --autostash origin main && git push && break
+            done
+          }
