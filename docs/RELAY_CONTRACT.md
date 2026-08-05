@@ -46,8 +46,24 @@ will probably run but something about it is fragile.
 
 ## Getting your music to the worker
 
-S3 is not configured (`storage.bucket_configured` is `false`) and this
-endpoint has **no shared network volume**, so there are two reliable ways in:
+How you get audio in depends on whether S3 storage is configured. Check with
+`system_info`: `storage.bucket_configured`.
+
+**With S3 configured** - ingest once, reference forever:
+
+```bash
+export RUNPOD_API_KEY=...
+python tools/ingest_audio.py ~/Music/master.wav
+python tools/ingest_audio.py --from-url "https://drive.google.com/uc?..." --name master.wav
+```
+
+Each file prints a `storage_key`. Use it as `audio_storage_key`,
+`master_storage_key`, or a stem's `storage_key`. Keys do not expire the way a
+share link does, and the tool refuses to store an HTML quota page. The
+**Ingest Audio** workflow does the same from a phone: paste URLs into its
+inputs and read the keys off the run summary.
+
+**Without S3** there are two options:
 
 | Situation | Use |
 | --- | --- |
@@ -55,9 +71,8 @@ endpoint has **no shared network volume**, so there are two reliable ways in:
 | A few seconds of audio | `audio_base64` inline, under ~1 MB encoded |
 
 Google Drive links work but are fragile: they expire and can serve an HTML
-quota page instead of audio. Prefer a stable host where you have one.
-
-Uploading to the volume is **not** a third option here. See the caveat below.
+quota page instead of audio. Uploading to the volume is **not** a third
+option on this endpoint - see the caveat below.
 
 ### Direct upload
 
