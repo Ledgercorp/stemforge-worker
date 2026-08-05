@@ -1,0 +1,27 @@
+{
+  "artifact_name": "Hypervigilant_v2.4.0_Naturalize_MinDenoise",
+  "input": {
+    "action": "naturalize",
+    "artist": "sounddecay",
+    "song": "Hypervigilant",
+    "audio_url": "https://drive.google.com/uc?export=download&id=1gezCxh-8nBKn3DdTBp3jHazPQlfzwd9W",
+    "mode": "quick",
+    "intensity": 1.4,
+    "passes": 1,
+    "vocoder": "off",
+    "parameters": {
+      "denoise_reduction_db": 3.0,
+      "noise_profile_ms": 200,
+      "multiband_compression": false
+    },
+    "retain_original": true,
+    "retain_pre_denoise": true,
+    "minimum_worker_version": "2.4.0",
+    "required_build": "v2.4.0-naturalize-balanced-vocoder",
+    "output_ttl_seconds": 86400
+  },
+  "policy": {
+    "executionTimeout": 3600000,
+    "ttl": 7200000
+  }
+}
