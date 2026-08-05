@@ -1,0 +1,66 @@
+{
+  "input": {
+    "action": "naturalize",
+    "artist": "sounddecay",
+    "song": "Sweet Sixteen",
+    "audio_storage_key": "incoming/sounddecay/1ab30e0a4842e1b4ecd8/Sweet_Sixteen_Master.wav",
+    "stems": [
+      {"name": "Lead Vocals", "role": "vocal", "storage_key": "incoming/sounddecay/fed6a3ef761d462a88fa/Lead_Vocals.wav"},
+      {"name": "Drums", "role": "percussion", "storage_key": "incoming/sounddecay/1eb7c877d0a8cdb0edf1/Drums.wav"},
+      {"name": "Bass", "role": "harmonic", "storage_key": "incoming/sounddecay/10a90fb89a7f006ee79e/Bass.wav"},
+      {"name": "Guitar", "role": "harmonic", "storage_key": "incoming/sounddecay/09e67ca5374afd9ce347/Guitar.wav"},
+      {"name": "Percussion", "role": "percussion", "storage_key": "incoming/sounddecay/371e98db953e34fde143/Percussion.wav"},
+      {"name": "Synth", "role": "harmonic", "storage_key": "incoming/sounddecay/a4aa7f779964d99e0e79/Synth.wav"},
+      {"name": "Other", "role": "harmonic", "storage_key": "incoming/sounddecay/6903ec67ffa194956299/Other.wav"}
+    ],
+    "mode": "surgical",
+    "intensity": 0.7,
+    "passes": 1,
+    "vocoder": {
+      "backend": "vocos",
+      "required": false,
+      "feature_perturbation": 0.001,
+      "wet_by_role": {
+        "vocal": 0.7,
+        "harmonic": 0.3,
+        "percussion": 0.0,
+        "other": 0.2,
+        "full_mix": 0.0
+      }
+    },
+    "parameters": {
+      "primary_vibrato_rate_hz": 15.0,
+      "primary_vibrato_depth_cents": 8.0,
+      "tremolo_rate_hz": 15.0,
+      "tremolo_depth_percent": 6.0,
+      "tremolo_waveform": "sine",
+      "secondary_vibrato_rate_hz": 10.0,
+      "secondary_vibrato_depth_cents": 6.0,
+      "flanger_delay_ms": 1.0,
+      "flanger_modulation_rate_hz": 0.9,
+      "flanger_depth": 7.0,
+      "flanger_feedback": 0.03,
+      "flanger_wet_mix": 0.2,
+      "denoise_reduction_db": 3.0,
+      "noise_profile_ms": 200,
+      "noise_floor_dbfs": -72.0,
+      "noise_floor_shape": "pink",
+      "timing_jitter_ms": 1.5,
+      "saturation_drive": 0.05,
+      "multiband_compression": false,
+      "noise_floor_enabled": true,
+      "timing_jitter_enabled": true,
+      "saturation_enabled": true
+    },
+    "retain_original": true,
+    "retain_pre_denoise": true,
+    "publish_outputs": true,
+    "output_ttl_seconds": 86400,
+    "minimum_worker_version": "2.4.0",
+    "required_build": "v2.4.0-naturalize-balanced-vocoder"
+  },
+  "policy": {
+    "executionTimeout": 5400000,
+    "ttl": 7200000
+  }
+}
