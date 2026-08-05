@@ -154,24 +154,38 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Build a full_pass request from an ingest record."
     )
-    parser.add_argument("record", help="Path to ingested/<song>.json")
+    parser.add_argument(
+        "record",
+        nargs="+",
+        help="Path(s) to ingested/<song>.json. Several may be given, since a "
+        "song's files can be recorded one per stem rather than all together.",
+    )
     parser.add_argument("--song", required=True, help="Song name for the job.")
     parser.add_argument("--artist", default="sounddecay")
     parser.add_argument("--out", help="Where to write the job (default: stdout).")
     parser.add_argument("--output-ttl-seconds", type=int, default=86_400)
     args = parser.parse_args(argv)
 
-    try:
-        record_path = Path(args.record)
-        loaded = json.loads(record_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        print(f"could not read {args.record}: {exc}", file=sys.stderr)
-        return 1
+    records: list[dict] = []
+    for path in args.record:
+        try:
+            loaded = json.loads(Path(path).read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            print(f"could not read {path}: {exc}", file=sys.stderr)
+            return 1
+        found = loaded.get("ingested") if isinstance(loaded, dict) else loaded
+        if not found:
+            print(f"{path} lists no ingested files.", file=sys.stderr)
+            return 1
+        records.extend(found)
 
-    records = loaded.get("ingested") if isinstance(loaded, dict) else loaded
-    if not records:
-        print(f"{args.record} lists no ingested files.", file=sys.stderr)
-        return 1
+    seen: set[str] = set()
+    for record in records:
+        key = record.get("storage_key", "")
+        if key in seen:
+            print(f"{key} appears in more than one record.", file=sys.stderr)
+            return 1
+        seen.add(key)
 
     try:
         job, routing = build(

@@ -192,17 +192,113 @@ def test_a_failed_verification_still_reports_the_key(tmp_path, worker, monkeypat
         ingest_audio.ingest(str(source), endpoint="test", api_key="test", quiet=True)
 
 
+DRIVE_URL = "https://drive.google.com/uc?export=download&id=FILEID"
+
+# What Drive actually answers with for a file over roughly 100 MB.
+CONFIRM_PAGE = b"""<!DOCTYPE html><html><body>
+<p>Google Drive can't scan this file for viruses.</p>
+<form id="download-form" action="https://drive.usercontent.google.com/download" method="get">
+<input type="hidden" name="id" value="FILEID">
+<input type="hidden" name="export" value="download">
+<input type="hidden" name="confirm" value="t">
+<input type="hidden" name="uuid" value="abc-123">
+</form></body></html>"""
+
+
+def _patch_opener(monkeypatch, handler):
+    """Route the module's opener through `handler(url) -> _FakeResponse`."""
+    class _Opener:
+        def open(self, request, timeout=None):
+            return handler(request.full_url)
+
+    monkeypatch.setattr(
+        ingest_audio.urllib.request, "build_opener", lambda *a, **k: _Opener()
+    )
+
+
 def test_html_quota_page_is_rejected_not_uploaded(worker, monkeypatch):
     """A Drive link over quota serves HTML; that must never reach the bucket."""
-    def html(request, timeout=None):
-        return _FakeResponse(b"<!DOCTYPE html><html><body>Quota exceeded")
-
-    monkeypatch.setattr(ingest_audio.urllib.request, "urlopen", html)
-    with pytest.raises(ingest_audio.IngestError, match="HTML page"):
+    _patch_opener(
+        monkeypatch,
+        lambda url: _FakeResponse(b"<!DOCTYPE html><html><body>Quota exceeded"),
+    )
+    with pytest.raises(ingest_audio.IngestError, match="over its download quota"):
         ingest_audio.ingest(
-            "https://drive.google.com/uc?export=download&id=x",
-            endpoint="test", api_key="test", name="master.wav", quiet=True,
+            DRIVE_URL, endpoint="test", api_key="test", name="master.wav", quiet=True,
         )
+    assert worker["objects"] == {}
+
+
+def test_a_large_file_confirmation_is_followed(worker, monkeypatch):
+    """The defect: Sweet Sixteen's stems archive never downloaded.
+
+    Drive will not serve a file over ~100 MB directly - it answers with a
+    virus-scan interstitial carrying a confirmation form. The 49 MB stems
+    downloaded fine and the archive of the same stems did not, which read as
+    a broken link and was not one.
+    """
+    seen = []
+    audio = b"RIFF" + b"\x00" * 4096
+
+    def handler(url):
+        seen.append(url)
+        if url == DRIVE_URL:
+            return _FakeResponse(CONFIRM_PAGE)
+        return _FakeResponse(audio, headers={"Content-Disposition": 'attachment; filename="Stems.zip"'})
+
+    _patch_opener(monkeypatch, handler)
+    record = ingest_audio.ingest(
+        DRIVE_URL, endpoint="test", api_key="test", quiet=True
+    )
+
+    assert record["size_bytes"] == len(audio)
+    # The follow-up replays Google's own form, token and all.
+    assert "drive.usercontent.google.com/download" in seen[1]
+    assert "confirm=t" in seen[1] and "uuid=abc-123" in seen[1]
+    # And the real filename is recovered rather than "download.bin".
+    assert record["filename"] == "Stems.zip"
+
+
+def test_confirmation_falls_back_to_the_file_id(worker, monkeypatch):
+    """An interstitial without a parsable form must still be followed."""
+    audio = b"RIFF" + b"\x00" * 64
+    seen = []
+
+    def handler(url):
+        seen.append(url)
+        if url == DRIVE_URL:
+            return _FakeResponse(b"<!DOCTYPE html><html><body>needs confirming</body></html>")
+        return _FakeResponse(audio)
+
+    _patch_opener(monkeypatch, handler)
+    ingest_audio.ingest(DRIVE_URL, endpoint="test", api_key="test",
+                        name="stems.zip", quiet=True)
+
+    assert "id=FILEID" in seen[1] and "confirm=t" in seen[1]
+
+
+def test_an_explicit_name_still_wins_over_the_served_one(worker, monkeypatch):
+    _patch_opener(
+        monkeypatch,
+        lambda url: _FakeResponse(
+            b"RIFF", headers={"Content-Disposition": 'attachment; filename="wrong.wav"'}
+        ),
+    )
+    record = ingest_audio.ingest(
+        DRIVE_URL, endpoint="test", api_key="test", name="Master.wav", quiet=True
+    )
+    assert record["filename"] == "Master.wav"
+
+
+def test_a_page_that_never_resolves_is_reported_not_stored(worker, monkeypatch):
+    """Following the confirmation must not turn a failure into a stored page."""
+    _patch_opener(
+        monkeypatch,
+        lambda url: _FakeResponse(b"<!DOCTYPE html><html><body>Sign in to continue"),
+    )
+    with pytest.raises(ingest_audio.IngestError, match="not shared"):
+        ingest_audio.ingest(DRIVE_URL, endpoint="test", api_key="test",
+                            name="x.wav", quiet=True)
     assert worker["objects"] == {}
 
 
