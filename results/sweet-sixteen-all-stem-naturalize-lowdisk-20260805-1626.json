@@ -1,0 +1,14 @@
+{
+  "delayTime": 2941,
+  "error": "[Errno 28] No space left on device: '/runpod-volume/stemforge/jobs/sweet-sixteen-all-stem-naturalize-1626'",
+  "executionTime": 349,
+  "id": "ce4806a8-f3c4-4b92-8120-439677419df3-u2",
+  "output": {
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "error_type": "OSError",
+    "status": "error",
+    "stemforge_version": "2.4.0"
+  },
+  "status": "FAILED",
+  "workerId": "ous2pkw4kyist4"
+}
