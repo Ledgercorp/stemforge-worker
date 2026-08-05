@@ -396,7 +396,21 @@ def _envelope_metrics(reference: np.ndarray, candidate: np.ndarray, sr: int) -> 
     ro = np.maximum(np.diff(ref, prepend=ref[0]), 0); co = np.maximum(np.diff(can, prepend=can[0]), 0)
     active = ro >= max(float(np.quantile(ro, 0.9)), 1e-10)
     retention = float(np.median(co[active] / np.maximum(ro[active], 1e-10))) if np.any(active) else 1.0
-    pumping = float(np.std(signal.detrend(can / np.maximum(ref, 1e-8))))
+    # The candidate/reference gain ratio is only meaningful where the reference
+    # carries real energy. Naturalize adds a shaped noise floor between -72 and
+    # -60 dBFS by design, so across a silent passage the reference approaches
+    # zero while the candidate does not and the ratio diverges: with a 1e-8
+    # divisor, a transparent render measured in the tens of thousands against a
+    # 0.20 threshold, and no intensity reduction could help because the noise
+    # floor is added regardless of intensity. Restrict the statistic to frames
+    # above -60 dBFS relative to the reference peak. The quantity, its scale and
+    # the threshold are unchanged; only the conditioning is fixed.
+    level_floor = max(float(np.max(ref)) * 1e-3, 1e-8)
+    measurable = ref >= level_floor
+    if int(np.count_nonzero(measurable)) >= 2:
+        pumping = float(np.std(signal.detrend(can[measurable] / ref[measurable])))
+    else:
+        pumping = 0.0
     return {"correlation": round(corr, 6), "transient_retention": round(float(np.clip(retention, 0, 2)), 6), "pumping_index": round(pumping, 6)}
 
 
