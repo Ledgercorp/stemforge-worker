@@ -1,0 +1,14 @@
+{
+  "delayTime": 632430,
+  "error": "Input 'audio' failed: [Errno 28] No space left on device: '/tmp/stemforge_mastering_v2/.source.part.E3fEb325'",
+  "executionTime": 1244,
+  "id": "650ee805-663e-4bb3-b4b2-48cc96abcc25-u1",
+  "output": {
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "error_type": "InputTransferError",
+    "status": "error",
+    "stemforge_version": "2.4.0"
+  },
+  "status": "FAILED",
+  "workerId": "tv7zc35gyvn8z5"
+}
