@@ -9,6 +9,7 @@ songs produced.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -183,6 +184,35 @@ def test_roles_are_reported_when_run_as_a_script(tmp_path):
     assert result.returncode == 0
     assert "Lead Vocals" in result.stderr and "vocal" in result.stderr
     assert "Drums" in result.stderr and "percussion" in result.stderr
+
+
+def test_cli_merges_one_record_per_stem(tmp_path):
+    """Sweet Sixteen's keys were recorded as a file per stem, not one file."""
+    paths = []
+    for record in HYPERVIGILANT:
+        path = tmp_path / f"{Path(record['filename']).stem.lower()}.json"
+        path.write_text(json.dumps({"ingested": [record]}), encoding="utf-8")
+        paths.append(str(path))
+    out = tmp_path / "job.json"
+
+    assert build_full_pass.main(
+        [*paths, "--song", "Hypervigilant", "--out", str(out)]
+    ) == 0
+    written = json.loads(out.read_text(encoding="utf-8"))
+    assert len(written["input"]["stems"]) == 8
+    assert written["input"]["master_storage_key"].endswith("Hypervigilant_Master.wav")
+
+
+def test_cli_refuses_a_key_listed_twice(tmp_path):
+    """Passing the same record twice would render a stem against itself."""
+    record = tmp_path / "a.json"
+    record.write_text(json.dumps({"ingested": HYPERVIGILANT}), encoding="utf-8")
+    out = tmp_path / "job.json"
+
+    assert build_full_pass.main(
+        [str(record), str(record), "--song", "X", "--out", str(out)]
+    ) == 1
+    assert not out.exists()
 
 
 def test_cli_reports_a_bad_record_without_writing(tmp_path):
