@@ -46,18 +46,18 @@ will probably run but something about it is fragile.
 
 ## Getting your music to the worker
 
-S3 is not configured (`storage.bucket_configured` is `false`), so there are
-three ways in. Pick by file size:
+S3 is not configured (`storage.bucket_configured` is `false`) and this
+endpoint has **no shared network volume**, so there are two reliable ways in:
 
 | Situation | Use |
 | --- | --- |
-| The file has a stable HTTPS URL | `audio_url`. Nothing to upload. |
-| A real song from your machine | **Upload it to the volume** (below). |
-| A few seconds of audio | `audio_base64` inline, under ~1 MB encoded. |
+| Anything of real length | `audio_url` - any stable HTTPS source |
+| A few seconds of audio | `audio_base64` inline, under ~1 MB encoded |
 
-Google Drive links count as a URL but are the fragile option: they expire and
-can serve an HTML quota page instead of audio. For anything you will render
-more than once, upload it instead.
+Google Drive links work but are fragile: they expire and can serve an HTML
+quota page instead of audio. Prefer a stable host where you have one.
+
+Uploading to the volume is **not** a third option here. See the caveat below.
 
 ### Direct upload
 
@@ -82,8 +82,7 @@ That path then goes into any job as `audio_path`, `master_path`, or a stem's
            "audio_path": "/runpod-volume/stemforge/transfers/mysong-9f0e8aa1/mysong.wav"}}
 ```
 
-The upload persists on the network volume, so one upload serves every later
-render of that song. To go straight from a file to a submittable request:
+To go straight from a file to a submittable request:
 
 ```bash
 python tools/upload_audio.py ~/Music/mysong.wav \
@@ -93,6 +92,14 @@ python tools/upload_audio.py ~/Music/mysong.wav \
 
 Uploading several stems at once works too — pass multiple files and each
 prints its path, in order.
+
+**This does not work on the current endpoint.** Each chunk is a separate job
+and may land on a different worker, and `/runpod-volume` is container-local
+here, so the chunks never accumulate in one place and a later render cannot
+read the assembled file. The tool and the worker actions are correct; the
+prerequisite is a RunPod **network volume** attached to the endpoint. Attach
+one and this becomes the best path for large inputs, since a single upload
+then serves every later render. Until then, use a URL.
 
 ## Supplying audio
 
@@ -175,6 +182,31 @@ rerun distinguishable from the run it replaces.
 
 The relay submits **every** job file changed in a push. Commit one request at
 a time unless a batch is genuinely intended.
+
+## Getting rendered audio back
+
+This endpoint has **no shared network volume**: `/runpod-volume` is
+container-local and dies with the worker. A render's own report will list
+volume paths and they are real, but a later job runs on a different worker and
+cannot read them - `volume_file_info` returns `FileNotFoundError` minutes
+later. Do not plan on fetching output after the fact.
+
+Instead, put the request in `delivery_requests/` and let
+`run-render-delivered.yml` handle it. The worker uploads to a temporary
+private release while it is still alive; the workflow collects the assets into
+a 90-day artifact and deletes the release. The release token is injected at run
+time and never appears in a committed file.
+
+Supported actions: `full_pass`, `naturalize`, `stem_remix`, `master_audio`,
+`master_audio_github_delivery`.
+
+Download from the workflow run's **Artifacts** section. The run summary also
+carries the naturalize verdict, safety metrics and a per-profile candidate
+table.
+
+Configuring `STEMFORGE_S3_BUCKET` and S3 credentials would remove the need for
+this: every job would return signed download links directly. Until then,
+delivery is the only path that survives worker shutdown.
 
 ## Where requests go
 

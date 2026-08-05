@@ -1,4 +1,4 @@
-name: Run Full Pass With Delivery
+name: Run Render With Delivery
 
 # Renders a full pass and gets the audio off the worker before it shuts down.
 #
@@ -16,19 +16,20 @@ on:
   workflow_dispatch:
     inputs:
       request_path:
-        description: Repository path to one full-pass request JSON
+        description: Repository path to one render request JSON
         required: true
         type: string
   push:
     branches: [main]
     paths:
+      - "delivery_requests/**/*.json"
       - "full_pass_delivery_requests/**/*.json"
 
 permissions:
   contents: write
 
 concurrency:
-  group: stemforge-full-pass-delivered
+  group: stemforge-delivered
   cancel-in-progress: false
 
 jobs:
@@ -56,14 +57,20 @@ jobs:
           else
             mapfile -t REQUESTS < <(
               git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" \
-                | grep -E '^full_pass_delivery_requests/.+\.json$' || true
+                | grep -E '^(full_pass_)?delivery_requests/.+\.json$' || true
             )
             test "${#REQUESTS[@]}" -eq 1
             REQUEST="${REQUESTS[0]}"
           fi
 
           test -f "$REQUEST"
-          jq -e '.input.action == "full_pass"' "$REQUEST" >/dev/null
+          # Any action the worker can export from; full_pass, naturalize,
+          # stem_remix and master_audio all support github_release_export.
+          ACTION="$(jq -r '.input.action' "$REQUEST")"
+          case "$ACTION" in
+            full_pass|naturalize|stem_remix|master_audio|master_audio_github_delivery) ;;
+            *) echo "Action '$ACTION' has no delivery path." >&2; exit 1 ;;
+          esac
           # Contract check before a release is created or GPU time is spent.
           python3 tools/validate_jobs.py "$REQUEST"
 
@@ -133,19 +140,24 @@ jobs:
           jq -e '.output.build == "v2.4.0-naturalize-balanced-vocoder"' "$RESULT" >/dev/null
 
           # Surface the verdicts that decide whether the render is usable.
+          # Every field is optional: this workflow serves several actions and
+          # a missing key must not fail the run after the render succeeded.
           {
-            echo "### Full pass"
+            echo "### ${ACTION}"
             echo ""
-            echo "- naturalize accepted: $(jq -r '.output.naturalize.safety.accepted' "$RESULT")"
-            echo "- resolved mode: $(jq -r '.output.naturalize.resolved_mode' "$RESULT")"
-            echo "- intensity: $(jq -r '.output.naturalize.intensity' "$RESULT")"
-            echo "- pumping index: $(jq -r '.output.naturalize.safety.envelope.pumping_index' "$RESULT")"
-            echo "- MIDI files: $(jq -r '.output.input_summary.midi_file_count' "$RESULT")"
-            echo "- tempo overrides: $(jq -c '.output.tempo_linked_mastering_overrides' "$RESULT")"
-            echo ""
-            echo "| profile | LUFS | peak dBFS | crest dB | release ms | safe |"
-            echo "| --- | --- | --- | --- | --- | --- |"
-            jq -r '.output.candidates[] | "| \(.profile) | \(.metrics.integrated_lufs) | \(.metrics.sample_peak_dbfs) | \(.metrics.crest_factor_db) | \(.chain.release_ms) | \(.safety.accepted) |"' "$RESULT"
+            echo "- worker: $(jq -r '.output.stemforge_version // "?"' "$RESULT") / $(jq -r '.output.build // "?"' "$RESULT")"
+            echo "- naturalize accepted: $(jq -r '(.output.naturalize.safety.accepted // .output.safety.accepted) // "n/a"' "$RESULT")"
+            echo "- resolved mode: $(jq -r '(.output.naturalize.resolved_mode // .output.resolved_mode) // "n/a"' "$RESULT")"
+            echo "- intensity: $(jq -r '(.output.naturalize.intensity // .output.intensity) // "n/a"' "$RESULT")"
+            echo "- pumping index: $(jq -r '(.output.naturalize.safety.envelope.pumping_index // .output.safety.envelope.pumping_index) // "n/a"' "$RESULT")"
+            echo "- MIDI files: $(jq -r '.output.input_summary.midi_file_count // "n/a"' "$RESULT")"
+            echo "- tempo overrides: $(jq -c '.output.tempo_linked_mastering_overrides // {}' "$RESULT")"
+            if [ "$(jq -r '(.output.candidates // []) | length' "$RESULT")" -gt 0 ]; then
+              echo ""
+              echo "| profile | LUFS | peak dBFS | crest dB | release ms | safe |"
+              echo "| --- | --- | --- | --- | --- | --- |"
+              jq -r '(.output.candidates // [])[] | "| \(.profile) | \(.metrics.integrated_lufs) | \(.metrics.sample_peak_dbfs) | \(.metrics.crest_factor_db) | \(.chain.release_ms) | \(.safety.accepted) |"' "$RESULT"
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Collect the delivered assets
@@ -173,7 +185,7 @@ jobs:
         with:
           name: full-pass-${{ steps.meta.outputs.name }}-${{ github.run_id }}
           path: delivery/
-          retention-days: 14
+          retention-days: 90
 
       - name: Remove the temporary release
         if: always()
