@@ -3,32 +3,46 @@
 
 from __future__ import annotations
 
+import http.client
+import socket
 import ssl
 import time
 import urllib.error
 
 import ingest_audio
 
-# The endpoint can take more than five minutes to return a lightweight
-# create_upload/create_download result during a cold or congested period.
-ingest_audio.POLL_ATTEMPTS = 300
+# Cold or congested serverless workers can take a while even for the small
+# create_upload/create_download signing actions.
+ingest_audio.POLL_ATTEMPTS = 600
 
-# GitHub-hosted runners occasionally see a transient TLS EOF while polling
-# api.runpod.ai. A single dropped status request must not abandon a valid
-# worker job or create a duplicate upload authorization.
+# GitHub-hosted runners occasionally lose the TLS connection while polling
+# api.runpod.ai. The RunPod job itself is still alive, so abandoning the poll
+# would strand a valid upload authorization and cause duplicate jobs on retry.
 _real_urlopen = ingest_audio.urllib.request.urlopen
+_TRANSIENT = (
+    urllib.error.URLError,
+    ssl.SSLError,
+    socket.timeout,
+    TimeoutError,
+    ConnectionError,
+    ConnectionResetError,
+    http.client.RemoteDisconnected,
+)
 
 
 def _resilient_urlopen(*args, **kwargs):
-    last_error = None
-    for attempt in range(6):
+    last_error: BaseException | None = None
+    for attempt in range(30):
         try:
             return _real_urlopen(*args, **kwargs)
-        except (urllib.error.URLError, ssl.SSLError) as exc:
+        except _TRANSIENT as exc:
             last_error = exc
-            if attempt == 5:
+            if attempt == 29:
                 raise
-            time.sleep(2 + attempt * 2)
+            # Cap the delay so one unstable status endpoint gets several
+            # minutes to recover without making healthy calls unnecessarily slow.
+            time.sleep(min(3 + attempt * 2, 20))
+    assert last_error is not None
     raise last_error  # pragma: no cover
 
 
