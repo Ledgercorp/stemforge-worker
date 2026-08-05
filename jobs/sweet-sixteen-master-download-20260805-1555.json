@@ -1,0 +1,11 @@
+{
+  "input": {
+    "action": "create_download",
+    "storage_key": "incoming/sounddecay/1ab30e0a4842e1b4ecd8/Sweet_Sixteen_Master.wav",
+    "ttl_seconds": 86400
+  },
+  "policy": {
+    "executionTimeout": 3600000,
+    "ttl": 7200000
+  }
+}
