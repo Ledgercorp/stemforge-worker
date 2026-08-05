@@ -55,7 +55,7 @@ jobs:
           if [ "$EXPAND" = "true" ]; then
             ARGS+=(--expand)
           fi
-          python tools/ingest_audio.py "${ARGS[@]}" > "ingested/${RECORD_AS}.json"
+          python tools/ingest_audio_long.py "${ARGS[@]}" > "ingested/${RECORD_AS}.json"
           jq -e '.ingested | length > 0' "ingested/${RECORD_AS}.json" >/dev/null
 
       - name: Record stable storage keys
