@@ -61,13 +61,45 @@ def _materialize_stems(specs: list[dict], job_root: Path) -> list[tuple[str, Pat
     return outputs
 
 
+def _validate_midi_archive(archive: zipfile.ZipFile, archive_bytes: int) -> None:
+    """Reject a truncated archive before any member is read.
+
+    A zip's central directory sits at the end of the file, so a front-truncated
+    archive still lists its members correctly and looks intact. Reading one
+    then seeks to an offset that does not exist and raises a bare
+    OSError(Errno 22) carrying no message, filename or cause - which surfaces
+    as an expensive job dying thirty seconds in for no stated reason. Check the
+    offsets the directory declares against the bytes actually present.
+    """
+    for item in archive.infolist():
+        if item.header_offset < 0 or item.header_offset >= archive_bytes:
+            declared = sum(entry.compress_size for entry in archive.infolist())
+            raise ValueError(
+                "MIDI archive is truncated or corrupt: its directory lists "
+                f"{len(archive.infolist())} member(s) totalling {declared} "
+                f"compressed bytes, but the archive is only {archive_bytes} "
+                f"bytes and '{item.filename}' is declared at offset "
+                f"{item.header_offset}. Re-upload the archive."
+            )
+
+
 def _safe_extract_midi(archive_path: Path, destination: Path) -> list[Path]:
     destination = destination.resolve()
     destination.mkdir(parents=True, exist_ok=True)
     extracted: list[Path] = []
     total = 0
+    archive_bytes = archive_path.stat().st_size
 
-    with zipfile.ZipFile(archive_path) as archive:
+    try:
+        opened = zipfile.ZipFile(archive_path)
+    except zipfile.BadZipFile as exc:
+        raise ValueError(
+            f"MIDI input is not a readable zip archive ({exc}). Supply a zip "
+            "of .mid files."
+        ) from exc
+
+    with opened as archive:
+        _validate_midi_archive(archive, archive_bytes)
         members = [
             item
             for item in archive.infolist()
@@ -88,8 +120,17 @@ def _safe_extract_midi(archive_path: Path, destination: Path) -> list[Path]:
             if destination != target and destination not in target.parents:
                 raise ValueError(f"Unsafe MIDI archive path: {item.filename}")
 
-            with archive.open(item) as source, target.open("wb") as output:
-                shutil.copyfileobj(source, output, length=1024 * 1024)
+            try:
+                with archive.open(item) as source, target.open("wb") as output:
+                    shutil.copyfileobj(source, output, length=1024 * 1024)
+            except (OSError, zipfile.BadZipFile) as exc:
+                # Last line of defence: any read failure names the member and
+                # the cause rather than propagating a bare errno.
+                raise ValueError(
+                    f"MIDI archive member '{item.filename}' could not be read "
+                    f"({type(exc).__name__}: {exc or 'no detail'}). The archive "
+                    "is corrupt; re-upload it."
+                ) from exc
             extracted.append(target)
 
     return sorted(extracted)
