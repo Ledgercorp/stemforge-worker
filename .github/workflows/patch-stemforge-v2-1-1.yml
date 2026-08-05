@@ -47,4 +47,12 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app/stems_v2.py app/system_v2.py .github/workflows/stemforge-full-pass-direct-fetch.yml
           git commit -m "Fix stem safety serialization and bump v2.1.1"
-          git push
+          git push || {
+            # Another push landed on main first; rebase onto it and retry
+            # rather than discarding this run's work: the commit already
+            # exists locally and dies with the runner.
+            for attempt in 1 2 3; do
+              sleep $((attempt * 5))
+              git pull --rebase --autostash origin main && git push && break
+            done
+          }

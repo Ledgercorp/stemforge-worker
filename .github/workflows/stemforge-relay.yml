@@ -41,7 +41,15 @@ jobs:
             git config user.email "stemforge-v2-installer@users.noreply.github.com"
             git add -A
             git commit -m "Install StemForge v2 production engine"
-            git push
+            git push || {
+              # Another push landed on main first; rebase onto it and retry
+              # rather than discarding this run's work: the commit already
+              # exists locally and dies with the runner.
+              for attempt in 1 2 3; do
+                sleep $((attempt * 5))
+                git pull --rebase --autostash origin main && git push && break
+              done
+            }
           else
             echo "No pending v2 source bundle."
           fi
@@ -183,7 +191,15 @@ jobs:
             git config user.email "stemforge-relay@users.noreply.github.com"
             git add results
             git commit -m "Add StemForge relay results [skip ci]"
-            git push
+            git push || {
+              # Another push landed on main first; rebase onto it and retry
+              # rather than discarding this run's work: the commit already
+              # exists locally and dies with the runner.
+              for attempt in 1 2 3; do
+                sleep $((attempt * 5))
+                git pull --rebase --autostash origin main && git push && break
+              done
+            }
           else
             echo "No result changes to commit."
           fi
