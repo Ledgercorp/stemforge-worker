@@ -55,11 +55,28 @@ jobs:
           if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
             REQUEST='${{ inputs.request_path }}'
           else
+            # Diff against the first parent explicitly. `git diff-tree <sha>`
+            # prints nothing at all for a merge commit, so a request arriving
+            # by pull request resolved to no files and the run died here with
+            # an empty name and no reason. `-m --first-parent` is not the fix
+            # either: it splits the merge and also reports files that differ
+            # against the second parent, which are not part of this push.
+            BASE="$(git rev-parse --verify --quiet "${GITHUB_SHA}^1" || true)"
+            if [ -z "$BASE" ]; then
+              echo "Cannot resolve ${GITHUB_SHA}^1 - the checkout has no parent commit." >&2
+              echo "Raise fetch-depth, or dispatch with request_path instead." >&2
+              exit 1
+            fi
             mapfile -t REQUESTS < <(
-              git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" \
+              git diff --name-only "$BASE" "$GITHUB_SHA" \
                 | grep -E '^(full_pass_)?delivery_requests/.+\.json$' || true
             )
-            test "${#REQUESTS[@]}" -eq 1
+            if [ "${#REQUESTS[@]}" -ne 1 ]; then
+              echo "Expected exactly one request file in $GITHUB_SHA, found ${#REQUESTS[@]}:" >&2
+              printf '  %s\n' "${REQUESTS[@]:-(none)}" >&2
+              echo "Dispatch this workflow with request_path to render one directly." >&2
+              exit 1
+            fi
             REQUEST="${REQUESTS[0]}"
           fi
 
@@ -132,10 +149,35 @@ jobs:
           done
           test "$TERMINAL" -eq 1
 
-          jq -e '.status == "COMPLETED"' "$RESULT" >/dev/null
-          jq -e '.output.status == "completed"' "$RESULT" >/dev/null
-          jq -e '.output.stemforge_version == "2.4.0"' "$RESULT" >/dev/null
-          jq -e '.output.build == "v2.4.0-naturalize-balanced-vocoder"' "$RESULT" >/dev/null
+          # Report what the worker said before failing on it. These checks were
+          # silent `jq -e >/dev/null` assertions, so a render that died after
+          # six minutes of GPU time exited 1 with no message and the only copy
+          # of the reason sat inside an artifact. Three consecutive failures
+          # were diagnosed as "something went wrong" for exactly this reason.
+          # Named fields only - never the whole document, which is one schema
+          # change away from echoing the injected release token into a log.
+          if ! jq -e '.status == "COMPLETED"' "$RESULT" >/dev/null; then
+            echo "RunPod job $JOB_ID did not complete." >&2
+            jq -r '"  status: \(.status // "unknown")\n  error: \(.error // "none")"' \
+              "$RESULT" >&2 || true
+            exit 1
+          fi
+          if ! jq -e '.output.status == "completed"' "$RESULT" >/dev/null; then
+            echo "The worker rejected or failed this render:" >&2
+            for FIELD in status error error_type reason action; do
+              echo "  ${FIELD}: $(jq -r ".output.${FIELD} // \"none\"" "$RESULT")" >&2
+            done
+            exit 1
+          fi
+          for CHECK in "stemforge_version=2.4.0" "build=v2.4.0-naturalize-balanced-vocoder"; do
+            FIELD="${CHECK%%=*}"
+            WANT="${CHECK#*=}"
+            GOT="$(jq -r ".output.${FIELD} // \"none\"" "$RESULT")"
+            if [ "$GOT" != "$WANT" ]; then
+              echo "Wrong ${FIELD}: expected ${WANT}, got ${GOT}" >&2
+              exit 1
+            fi
+          done
 
           {
             echo "### ${ACTION}"
