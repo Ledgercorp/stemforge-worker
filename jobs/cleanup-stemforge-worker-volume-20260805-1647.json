@@ -1,0 +1,14 @@
+{
+  "input": {
+    "action": "volume_delete",
+    "paths": [
+      "/runpod-volume/stemforge/jobs",
+      "/runpod-volume/stemforge/output",
+      "/runpod-volume/stemforge/transfers"
+    ]
+  },
+  "policy": {
+    "executionTimeout": 300000,
+    "ttl": 600000
+  }
+}
