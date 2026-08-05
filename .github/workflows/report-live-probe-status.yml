@@ -28,18 +28,30 @@ jobs:
             --limit 25 \
             --json databaseId,status,conclusion,headSha,event,displayTitle,createdAt,updatedAt,url \
             > system_probe_status_results/recent.json
-          ENCODED="$(base64 -w0 system_probe_status_results/recent.json)"
-          EXISTING_SHA="$(gh api \
-            "repos/${GITHUB_REPOSITORY}/contents/system_probe_status_results/recent.json?ref=main" \
-            --jq '.sha' 2>/dev/null || true)"
-          ARGS=(
-            --method PUT
-            "repos/${GITHUB_REPOSITORY}/contents/system_probe_status_results/recent.json"
-            -f message="Record recent probe workflow status [skip ci]"
-            -f content="$ENCODED"
-            -f branch="main"
-          )
-          if [ -n "$EXISTING_SHA" ]; then
-            ARGS+=( -f sha="$EXISTING_SHA" )
-          fi
-          gh api "${ARGS[@]}" >/dev/null
+          gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows?per_page=100" \
+            --jq '[.workflows[] | {id,name,path,state}]' \
+            > system_probe_status_results/workflows.json
+
+          publish_file() {
+            local path="$1"
+            local encoded existing_sha
+            encoded="$(base64 -w0 "$path")"
+            existing_sha="$(gh api \
+              "repos/${GITHUB_REPOSITORY}/contents/${path}?ref=main" \
+              --jq '.sha' 2>/dev/null || true)"
+            local args=(
+              --method PUT
+              "repos/${GITHUB_REPOSITORY}/contents/${path}"
+              -f message="Record recent probe workflow status [skip ci]"
+              -f content="$encoded"
+              -f branch="main"
+            )
+            if [ -n "$existing_sha" ]; then
+              args+=( -f sha="$existing_sha" )
+            fi
+            gh api "${args[@]}" >/dev/null
+          }
+
+          publish_file system_probe_status_results/recent.json
+          publish_file system_probe_status_results/workflows.json
