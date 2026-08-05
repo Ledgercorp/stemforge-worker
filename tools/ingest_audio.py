@@ -210,12 +210,7 @@ def _ingest_bytes(
         download_url = readback.get("download_url")
         if not download_url:
             raise IngestError(f"create_download returned no URL: {readback}")
-        head = urllib.request.Request(download_url, method="HEAD")
-        try:
-            with urllib.request.urlopen(head, timeout=120) as response:
-                length = int(response.headers.get("Content-Length") or 0)
-        except urllib.error.HTTPError as exc:
-            raise IngestError(f"stored object is not readable: HTTP {exc.code}") from exc
+        length = _stored_size(download_url)
         if length and length != len(data):
             raise IngestError(
                 f"stored object is {length} bytes, expected {len(data)}"
@@ -223,6 +218,33 @@ def _ingest_bytes(
         log("  verified readable")
 
     return {"storage_key": storage_key, "filename": filename, "size_bytes": len(data)}
+
+
+def _stored_size(download_url: str) -> int:
+    """Return the size of a stored object, reading one byte to find out.
+
+    The probe has to be a GET. A presigned URL signs the HTTP method into the
+    signature, so sending HEAD to a URL signed for `get_object` is a signature
+    mismatch - Cloudflare R2 answers 403, which reads exactly like a missing
+    object and is not one. A `Range: bytes=0-0` request uses the signed method
+    and comes back as a 206 whose Content-Range carries the full length, so
+    the object is proven readable without downloading it.
+    """
+    probe = urllib.request.Request(download_url, headers={"Range": "bytes=0-0"})
+    try:
+        with urllib.request.urlopen(probe, timeout=120) as response:
+            content_range = response.headers.get("Content-Range") or ""
+            length_header = response.headers.get("Content-Length") or "0"
+    except urllib.error.HTTPError as exc:
+        raise IngestError(f"stored object is not readable: HTTP {exc.code}") from exc
+
+    if content_range:
+        total = content_range.rsplit("/", 1)[-1].strip()
+        # A server may answer `bytes 0-0/*` when it will not state the total.
+        return int(total) if total.isdigit() else 0
+    # No Content-Range means the range was ignored and this is the whole body.
+    # The object is readable either way, which is what the probe is for.
+    return int(length_header) if length_header.isdigit() else 0
 
 
 def _archive_members(data: bytes, filename: str = "") -> list[tuple[str, bytes]]:
