@@ -96,16 +96,46 @@ jobs:
           ENDPOINT_RAW="diagnostics/endpoint-raw.json"
           TEMPLATE_RAW="diagnostics/template-raw.json"
 
-          curl --fail --silent --show-error --max-time 120 \
+          # Deployment metadata is a bonus, not the point of this probe. It
+          # needs a key with template scope on rest.runpod.io/v1; the stored
+          # RUNPOD_API_KEY is run-scoped and returns 401 there. Record that
+          # and carry on rather than failing a probe whose actual job - the
+          # live system_info assertion above - already succeeded.
+          record_unavailable() {
+            jq -n --arg reason "$1" \
+              '{available:false, reason:$reason,
+                note:"Needs a RunPod key with template scope (RUNPOD_API_KEY_ADMIN)."}' \
+              > probe_output/deployment-metadata.json
+            # The publish step slurps both files, so they must exist even when
+            # the lookup was refused.
+            echo null > probe_output/endpoint-safe.json
+            echo null > probe_output/template-safe.json
+            echo "Deployment metadata unavailable: $1"
+          }
+
+          STATUS="$(curl --silent --show-error --max-time 120 -o "$ENDPOINT_RAW" -w '%{http_code}' \
             "https://rest.runpod.io/v1/endpoints/${RUNPOD_ENDPOINT_ID}" \
-            -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$ENDPOINT_RAW"
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" || echo 000)"
+
+          if [ "$STATUS" != "200" ]; then
+            record_unavailable "endpoint lookup returned HTTP ${STATUS}"
+            exit 0
+          fi
 
           TEMPLATE_ID="$(jq -r '.templateId // .template.id // empty' "$ENDPOINT_RAW")"
-          test -n "$TEMPLATE_ID"
+          if [ -z "$TEMPLATE_ID" ]; then
+            record_unavailable "endpoint response carried no template id"
+            exit 0
+          fi
 
-          curl --fail --silent --show-error --max-time 120 \
+          TEMPLATE_STATUS="$(curl --silent --show-error --max-time 120 -o "$TEMPLATE_RAW" -w '%{http_code}' \
             "https://rest.runpod.io/v1/templates/${TEMPLATE_ID}?includeEndpointBoundTemplates=true" \
-            -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$TEMPLATE_RAW"
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" || echo 000)"
+
+          if [ "$TEMPLATE_STATUS" != "200" ]; then
+            record_unavailable "template lookup returned HTTP ${TEMPLATE_STATUS}"
+            exit 0
+          fi
 
           jq '{id,name,templateId,version,workersMin,workersMax,idleTimeout,executionTimeoutMs,scalerType,scalerValue,gpuTypeIds,gpuCount,flashboot}' \
             "$ENDPOINT_RAW" > probe_output/endpoint-safe.json

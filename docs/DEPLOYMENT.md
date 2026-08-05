@@ -65,10 +65,16 @@ Two different RunPod scopes are involved, and the repository only holds one.
 | `rest.runpod.io/v1/endpoints`, `/templates` | reading or changing endpoint and template config | **401** with the stored key |
 
 `probe-live-stemforge.yml` and `probe-runpod-template.yml` query
-`rest.runpod.io/v1` and fail for this reason. The verify workflow deliberately
-uses only the `v2` job API. Adding a template-scoped key as a separate secret
-would let automation read the deployment configuration, but it is not needed to
-deploy or verify a GitHub-source endpoint.
+`rest.runpod.io/v1`. Both now treat a non-200 there as missing configuration
+rather than a failure: the live probe records `deployment-metadata.json` with
+the status code and still publishes its `system_info` result, and the template
+probe writes an explanatory job summary and exits cleanly. Neither emails a
+failure for a credential that was never provisioned.
+
+The verify workflow deliberately uses only the `v2` job API. Adding a
+template-scoped key as `RUNPOD_API_KEY_ADMIN` would restore full deployment
+metadata in both probes, but it is not needed to deploy or verify a
+GitHub-source endpoint.
 
 ## Release record
 
@@ -87,6 +93,7 @@ deploy or verify a GitHub-source endpoint.
 | Backend availability | Vocos **available** (`charactr/vocos-mel-24khz`); BigVGAN unavailable (modules absent); DisCoder unavailable (env not configured) |
 | Cold start | 12.5 s delay, 194 ms execution, no startup failure |
 | Rollback target | the preceding entry in the RunPod Builds history |
+| Live smoke test | passed — job `11f975bf-7d0c-4143-aca3-d57d70cde0e1-u1`, worker `1wd54iklb7zduo`, naturalize quick @ 0.6, vocoder off, one pass on a synthetic fixture: accepted by all gates, 0 non-finite, 0 clipped, original and pre-denoise references retained |
 
 Note: `storage.bucket_configured` is `false`, so outputs persist to the RunPod
 volume rather than signed S3 links. That is pre-existing configuration, not a

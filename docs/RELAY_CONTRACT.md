@@ -44,6 +44,56 @@ will probably run but something about it is fragile.
   humans, not by the worker. Any other top-level key is ignored by RunPod and
   is almost always a mistake — most often a payload written as `inputs`.
 
+## Getting your music to the worker
+
+S3 is not configured (`storage.bucket_configured` is `false`), so there are
+three ways in. Pick by file size:
+
+| Situation | Use |
+| --- | --- |
+| The file has a stable HTTPS URL | `audio_url`. Nothing to upload. |
+| A real song from your machine | **Upload it to the volume** (below). |
+| A few seconds of audio | `audio_base64` inline, under ~1 MB encoded. |
+
+Google Drive links count as a URL but are the fragile option: they expire and
+can serve an HTML quota page instead of audio. For anything you will render
+more than once, upload it instead.
+
+### Direct upload
+
+`tools/upload_audio.py` pushes a local file straight to the RunPod volume
+using the worker's own `volume_upload_*` actions. It needs only a run-scoped
+key — the same one the relay uses:
+
+```bash
+export RUNPOD_API_KEY=...
+python tools/upload_audio.py ~/Music/mysong.wav
+```
+
+It prints the volume path. Chunks are 5 MB (the worker's ceiling is 7 MB),
+and size plus SHA-256 are verified on both ends — a mismatch deletes the
+assembled file rather than leaving a corrupt input in place.
+
+That path then goes into any job as `audio_path`, `master_path`, or a stem's
+`path`:
+
+```json
+{"input": {"action": "naturalize", "mode": "auto",
+           "audio_path": "/runpod-volume/stemforge/transfers/mysong-9f0e8aa1/mysong.wav"}}
+```
+
+The upload persists on the network volume, so one upload serves every later
+render of that song. To go straight from a file to a submittable request:
+
+```bash
+python tools/upload_audio.py ~/Music/mysong.wav \
+  --emit-job jobs/mysong-naturalize-20260805-1200.json \
+  --action naturalize --mode auto --song "My Song"
+```
+
+Uploading several stems at once works too — pass multiple files and each
+prints its path, in order.
+
 ## Supplying audio
 
 Every file input follows the same four-suffix convention, resolved by

@@ -37,10 +37,31 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p template_probe_output diagnostics
-          curl --fail --silent --show-error --max-time 120 \
+
+          # This probe exists only to read template metadata, which requires a
+          # RunPod key with template scope. The stored RUNPOD_API_KEY is
+          # run-scoped and returns 401 here. Report that as a clear, actionable
+          # conclusion instead of a bare curl exit code, and do not fail the
+          # run: nothing is broken, a credential is simply absent.
+          STATUS="$(curl --silent --show-error --max-time 120 \
+            -o diagnostics/endpoints-raw.json -w '%{http_code}' \
             "https://rest.runpod.io/v1/endpoints?includeTemplate=true" \
-            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
-            > diagnostics/endpoints-raw.json
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" || echo 000)"
+
+          if [ "$STATUS" != "200" ]; then
+            {
+              echo "### RunPod template probe skipped"
+              echo ""
+              echo "\`rest.runpod.io/v1/endpoints\` returned HTTP **${STATUS}**."
+              echo ""
+              echo "This endpoint requires a RunPod API key with template scope."
+              echo "Add one as the \`RUNPOD_API_KEY_ADMIN\` secret and switch this"
+              echo "workflow to it; the run-scoped \`RUNPOD_API_KEY\` cannot read"
+              echo "templates. See docs/DEPLOYMENT.md."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "Template metadata unavailable: HTTP ${STATUS}. Skipping."
+            exit 0
+          fi
 
           jq -e --arg id "$RUNPOD_ENDPOINT_ID" '.[] | select(.id == $id)' \
             diagnostics/endpoints-raw.json > diagnostics/endpoint-selected.json
@@ -56,6 +77,10 @@ jobs:
         run: |
           set -euo pipefail
           NAME='${{ steps.meta.outputs.name }}'
+          if [ ! -f template_probe_output/result.json ]; then
+            echo "No metadata was retrieved; nothing to publish."
+            exit 0
+          fi
           ENCODED="$(base64 -w0 template_probe_output/result.json)"
           gh api --method PUT \
             "repos/${GITHUB_REPOSITORY}/contents/template_probe_results/${NAME}.json" \

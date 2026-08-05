@@ -19,7 +19,7 @@ from app.stem_processing import inspect_stems_job
 from app.stem_remix_v2 import stem_remix_job
 from app.stems_v2 import inspect_stems_v2_job
 from app.storage import create_download_job, create_upload_job, delete_storage_objects, storage_status
-from app.system_v2 import VERSION, system_info_job
+from app.system_v2 import BUILD, VERSION, system_info_job
 from app.video_v2 import render_lyric_video_job
 from app.volume_transfer import (
     volume_delete_job,
@@ -57,6 +57,7 @@ def handle_job(payload: dict) -> dict:
             "status": "rejected",
             "reason": f"Unsupported action: {action}",
             "stemforge_version": VERSION,
+            "build": BUILD,
             "supported_actions": sorted(SUPPORTED_ACTIONS),
         }
 
@@ -103,6 +104,10 @@ def handle_job(payload: dict) -> dict:
     }
     result = dispatch[action]()
     if isinstance(result, dict):
+        # Every response self-identifies. Without the build string, a render
+        # result cannot be tied to the exact deployed image on its own, and
+        # confirming it needs a separate system_info round trip.
         result.setdefault("stemforge_version", VERSION)
+        result.setdefault("build", BUILD)
         result.setdefault("action", action)
     return result
