@@ -1,0 +1,14 @@
+{
+  "delayTime": 488759,
+  "error": "[Errno 28] No space left on device: '/tmp/stemforge_naturalize_v2'",
+  "executionTime": 121,
+  "id": "38b94a79-6ea1-49cb-98b6-d0085a6c7a0c-u2",
+  "output": {
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "error_type": "OSError",
+    "status": "error",
+    "stemforge_version": "2.4.0"
+  },
+  "status": "FAILED",
+  "workerId": "089ei07o6fswud"
+}
