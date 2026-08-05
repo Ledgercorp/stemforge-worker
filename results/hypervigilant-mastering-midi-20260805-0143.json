@@ -1,0 +1,14 @@
+{
+  "delayTime": 10306,
+  "error": "[Errno 22] Invalid argument",
+  "executionTime": 39281,
+  "id": "0b99a45c-150a-42b6-abf6-d7664ea5b7ef-u1",
+  "output": {
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "error_type": "OSError",
+    "status": "error",
+    "stemforge_version": "2.4.0"
+  },
+  "status": "FAILED",
+  "workerId": "a0xvewcjjb08jh"
+}
