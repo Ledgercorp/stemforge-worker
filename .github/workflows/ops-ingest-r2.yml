@@ -1,0 +1,82 @@
+name: Ops Ingest R2
+
+on:
+  push:
+    branches:
+      - ops/sweet-sixteen-r2-full-pass
+    paths:
+      - "ops_ingest_requests/*.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stemforge-ops-ingest-r2
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ops/sweet-sixteen-r2-full-pass
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve request
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHANGED="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")"
+          mapfile -t FILES < <(printf '%s\n' "$CHANGED" | grep -E '^ops_ingest_requests/.+\.json$' || true)
+          test "${#FILES[@]}" -eq 1
+          REQUEST="${FILES[0]}"
+          jq -e '.source_url and .name and .record_as' "$REQUEST" >/dev/null
+          echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
+
+      - name: Ingest source into R2
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST='${{ steps.request.outputs.request }}'
+          SOURCE_URL="$(jq -r '.source_url' "$REQUEST")"
+          NAME="$(jq -r '.name' "$REQUEST")"
+          ARTIST="$(jq -r '.artist // "sounddecay"' "$REQUEST")"
+          RECORD_AS="$(jq -r '.record_as' "$REQUEST")"
+          EXPAND="$(jq -r '.expand // false' "$REQUEST")"
+          mkdir -p ingested
+          ARGS=(--from-url "$SOURCE_URL" --artist "$ARTIST" --name "$NAME" --json --quiet)
+          if [ "$EXPAND" = "true" ]; then
+            ARGS+=(--expand)
+          fi
+          python tools/ingest_audio.py "${ARGS[@]}" > "ingested/${RECORD_AS}.json"
+          jq -e '.ingested | length > 0' "ingested/${RECORD_AS}.json" >/dev/null
+
+      - name: Record stable storage keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST='${{ steps.request.outputs.request }}'
+          RECORD_AS="$(jq -r '.record_as' "$REQUEST")"
+          git config user.name "stemforge-ingest"
+          git config user.email "stemforge-ingest@users.noreply.github.com"
+          git add "ingested/${RECORD_AS}.json"
+          git commit -m "Record ingested storage keys for ${RECORD_AS} [skip ci]"
+          git push origin HEAD:ops/sweet-sixteen-r2-full-pass
+
+      - name: Upload ingest record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ops-ingested-${{ github.run_id }}
+          path: ingested/
+          if-no-files-found: ignore
+          retention-days: 7
