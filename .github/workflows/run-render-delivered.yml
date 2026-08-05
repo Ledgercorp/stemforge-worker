@@ -64,19 +64,17 @@ jobs:
           fi
 
           test -f "$REQUEST"
-          # Any action the worker can export from; full_pass, naturalize,
-          # stem_remix and master_audio all support github_release_export.
           ACTION="$(jq -r '.input.action' "$REQUEST")"
           case "$ACTION" in
             full_pass|naturalize|stem_remix|master_audio|master_audio_github_delivery) ;;
             *) echo "Action '$ACTION' has no delivery path." >&2; exit 1 ;;
           esac
-          # Contract check before a release is created or GPU time is spent.
           python3 tools/validate_jobs.py "$REQUEST"
 
           NAME="$(basename "$REQUEST" .json)"
           echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "action=$ACTION" >> "$GITHUB_OUTPUT"
 
       - name: Create a temporary private release
         id: release
@@ -101,9 +99,9 @@ jobs:
           set -euo pipefail
           mkdir -p delivery
           REQUEST='${{ steps.meta.outputs.request }}'
+          ACTION='${{ steps.meta.outputs.action }}'
           PAYLOAD="$(mktemp)"
 
-          # The token reaches the worker only here, never in a committed file.
           jq \
             --arg repository "$GITHUB_REPOSITORY" \
             --argjson release_id ${{ steps.release.outputs.id }} \
@@ -139,9 +137,6 @@ jobs:
           jq -e '.output.stemforge_version == "2.4.0"' "$RESULT" >/dev/null
           jq -e '.output.build == "v2.4.0-naturalize-balanced-vocoder"' "$RESULT" >/dev/null
 
-          # Surface the verdicts that decide whether the render is usable.
-          # Every field is optional: this workflow serves several actions and
-          # a missing key must not fail the run after the render succeeded.
           {
             echo "### ${ACTION}"
             echo ""
