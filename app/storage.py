@@ -65,18 +65,90 @@ def _s3_client():
 
 
 def storage_status() -> dict:
+    """Report storage readiness, including whether a client can be built.
+
+    Checking only that STEMFORGE_S3_BUCKET is set reports success while the
+    credentials are absent or incomplete, so an operator sees
+    signed_transfer_ready and every later upload still fails with
+    PartialCredentialsError. Construct the client here: it signs URLs locally
+    and makes no network call, so this stays cheap while proving the
+    configuration is usable rather than merely present.
+    """
     configured = bool(os.environ.get("STEMFORGE_S3_BUCKET"))
-    return {
-        "mode": "s3_signed_urls" if configured else "runpod_volume",
-        "signed_transfer_ready": configured,
+    client_error: str | None = None
+    if configured:
+        try:
+            _s3_client()
+        except Exception as exc:  # boto3 absent, or credentials incomplete
+            client_error = f"{type(exc).__name__}: {exc}"
+
+    ready = configured and client_error is None
+    if not configured:
+        note = (
+            "Set STEMFORGE_S3_BUCKET and S3-compatible credentials to activate "
+            "private expiring upload and download links."
+        )
+    elif client_error:
+        note = (
+            "STEMFORGE_S3_BUCKET is set but no S3 client could be built, so "
+            "uploads and downloads will fail. Check "
+            "STEMFORGE_S3_ACCESS_KEY_ID, STEMFORGE_S3_SECRET_ACCESS_KEY and "
+            "STEMFORGE_S3_ENDPOINT_URL."
+        )
+    else:
+        note = "Private expiring transfer links are active."
+
+    status = {
+        "mode": "s3_signed_urls" if ready else "runpod_volume",
+        "signed_transfer_ready": ready,
         "bucket_configured": configured,
+        "client_ready": ready,
         "output_root": str(OUTPUT_DIR),
-        "note": (
-            "Set STEMFORGE_S3_BUCKET and S3-compatible credentials to activate private expiring upload and download links."
-            if not configured
-            else "Private expiring transfer links are active."
-        ),
+        "note": note,
+        # Which settings actually reached the worker. Names and lengths only:
+        # enough to find an empty box, a typo or a truncated paste without
+        # ever putting a credential in a job result.
+        "configuration": _configuration_report(),
     }
+    if client_error:
+        status["client_error"] = client_error
+    return status
+
+
+S3_SETTINGS = (
+    "STEMFORGE_S3_BUCKET",
+    "STEMFORGE_S3_ENDPOINT_URL",
+    "STEMFORGE_S3_REGION",
+    "STEMFORGE_S3_ACCESS_KEY_ID",
+    "STEMFORGE_S3_SECRET_ACCESS_KEY",
+)
+
+
+def _configuration_report() -> dict:
+    """Report presence and shape of each storage setting, never its value.
+
+    Diagnosing a misconfigured bucket otherwise means guessing which of five
+    variables is wrong. A name, a length, and for non-secret settings the
+    value itself are enough to spot an empty box, a stray space or a
+    truncated paste - and none of that discloses a credential.
+    """
+    secret = {"STEMFORGE_S3_ACCESS_KEY_ID", "STEMFORGE_S3_SECRET_ACCESS_KEY"}
+    report: dict[str, dict] = {}
+    for name in S3_SETTINGS:
+        raw = os.environ.get(name)
+        entry: dict = {"set": raw is not None, "empty": not (raw or "").strip()}
+        if raw is not None:
+            entry["length"] = len(raw)
+            entry["has_surrounding_whitespace"] = raw != raw.strip()
+            if name not in secret:
+                entry["value"] = raw
+        report[name] = entry
+
+    # A credential landing under the AWS names instead is a common mix-up.
+    for name in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"):
+        if os.environ.get(name):
+            report[name] = {"set": True, "empty": False, "length": len(os.environ[name])}
+    return report
 
 
 def create_upload_job(payload: dict) -> dict:

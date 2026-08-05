@@ -202,3 +202,67 @@ def test_ingested_key_is_usable_as_a_job_input(tmp_path, worker):
 
     errors = [i for i in validate_jobs.validate_file(path) if i.level == validate_jobs.ERROR]
     assert errors == []
+
+
+def _zip_bytes(names: dict[str, bytes]) -> bytes:
+    import zipfile
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name, payload in names.items():
+            archive.writestr(name, payload)
+    return buffer.getvalue()
+
+
+def test_expand_stores_one_object_per_stem(tmp_path, worker):
+    """A single stems archive becomes one storage key per stem."""
+    source = tmp_path / "stems.zip"
+    source.write_bytes(
+        _zip_bytes({
+            "Lead Vocals.wav": b"RIFF" + b"\x01" * 64,
+            "Drums.wav": b"RIFF" + b"\x02" * 64,
+            "Bass.wav": b"RIFF" + b"\x03" * 64,
+            "notes.txt": b"ignore me",
+        })
+    )
+
+    records = ingest_audio.ingest_many(
+        str(source), endpoint="test", api_key="test", expand=True, quiet=True
+    )
+
+    assert len(records) == 3
+    assert {r["filename"] for r in records} == {"Lead Vocals.wav", "Drums.wav", "Bass.wav"}
+    # Each stem is a distinct object, not the archive.
+    assert len({r["storage_key"] for r in records}) == 3
+
+
+def test_expand_leaves_a_non_archive_alone(tmp_path, worker):
+    source = tmp_path / "master.wav"
+    source.write_bytes(b"RIFF" + b"\x00" * 32)
+    records = ingest_audio.ingest_many(
+        str(source), endpoint="test", api_key="test", expand=True, quiet=True
+    )
+    assert len(records) == 1
+    assert records[0]["filename"] == "master.wav"
+
+
+def test_without_expand_an_archive_is_stored_whole(tmp_path, worker):
+    """MIDI archives must stay zipped: the worker wants midi_zip intact."""
+    source = tmp_path / "midi.zip"
+    source.write_bytes(_zip_bytes({"Drums.mid": b"MThd", "Bass.mid": b"MThd"}))
+    records = ingest_audio.ingest_many(
+        str(source), endpoint="test", api_key="test", expand=False, quiet=True
+    )
+    assert len(records) == 1
+    assert records[0]["filename"] == "midi.zip"
+
+
+def test_expand_rejects_a_truncated_archive(tmp_path, worker):
+    source = tmp_path / "stems.zip"
+    raw = _zip_bytes({"A.wav": b"RIFF" * 40, "B.wav": b"RIFF" * 40, "C.wav": b"RIFF" * 40})
+    source.write_bytes(raw[150:])
+    with pytest.raises(ingest_audio.IngestError, match="corrupt"):
+        ingest_audio.ingest_many(
+            str(source), endpoint="test", api_key="test", expand=True, quiet=True
+        )
+    assert worker["objects"] == {}

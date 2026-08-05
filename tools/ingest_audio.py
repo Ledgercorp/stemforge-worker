@@ -27,6 +27,7 @@ rather than failing obscurely.
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import mimetypes
 import os
@@ -34,8 +35,11 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import zipfile
 from pathlib import Path
 from typing import Sequence
+
+AUDIO_SUFFIXES = {".wav", ".flac", ".aif", ".aiff", ".mp3", ".m4a", ".ogg", ".opus"}
 
 DEFAULT_ENDPOINT = "dyup1dztjr4u15"
 API_ROOT = "https://api.runpod.ai/v2"
@@ -146,6 +150,28 @@ def ingest(
             print(message, file=sys.stderr, flush=True)
 
     data, filename = _read_source(source, name)
+    return _ingest_bytes(
+        data, filename, endpoint=endpoint, api_key=api_key,
+        artist=artist, verify=verify, quiet=quiet,
+    )
+
+
+def _ingest_bytes(
+    data: bytes,
+    filename: str,
+    *,
+    endpoint: str,
+    api_key: str,
+    artist: str = "sounddecay",
+    verify: bool = True,
+    quiet: bool = False,
+) -> dict:
+    """Store bytes already in hand and return the upload record."""
+
+    def log(message: str) -> None:
+        if not quiet:
+            print(message, file=sys.stderr, flush=True)
+
     log(f"{filename}: {len(data):,} bytes")
 
     created = _run(
@@ -199,6 +225,85 @@ def ingest(
     return {"storage_key": storage_key, "filename": filename, "size_bytes": len(data)}
 
 
+def _archive_members(data: bytes, filename: str = "") -> list[tuple[str, bytes]]:
+    """Return the audio members of a zip, or [] when this is not one.
+
+    Detection uses the magic bytes *and* the filename: an archive truncated
+    from the front no longer starts with PK, and gating on magic alone would
+    quietly store the damaged bytes as a single object instead of reporting
+    them.
+    """
+    if data[:2] != b"PK" and not filename.lower().endswith(".zip"):
+        return []
+    try:
+        archive = zipfile.ZipFile(io.BytesIO(data))
+    except zipfile.BadZipFile as exc:
+        label = filename or "input"
+        raise IngestError(
+            f"'{label}' is a corrupt or truncated zip archive ({exc}). "
+            "Re-upload it."
+        )
+    # A front-truncated archive lists members but cannot read them; catch that
+    # here rather than storing a set of empty objects.
+    for item in archive.infolist():
+        if item.header_offset < 0 or item.header_offset >= len(data):
+            raise IngestError(
+                "archive is truncated or corrupt: "
+                f"'{item.filename}' is declared at offset {item.header_offset} "
+                f"in a {len(data)} byte file. Re-upload it."
+            )
+    members = [
+        item
+        for item in archive.infolist()
+        if not item.is_dir()
+        and Path(item.filename).suffix.lower() in AUDIO_SUFFIXES
+        and not Path(item.filename).name.startswith("._")
+    ]
+    return [(Path(item.filename).name, archive.read(item)) for item in members]
+
+
+def ingest_many(
+    source: str,
+    *,
+    endpoint: str,
+    api_key: str,
+    name: str | None = None,
+    artist: str = "sounddecay",
+    verify: bool = True,
+    expand: bool = False,
+    quiet: bool = False,
+) -> list[dict]:
+    """Ingest one source, expanding an archive of audio when asked."""
+    if not expand:
+        return [
+            ingest(
+                source, endpoint=endpoint, api_key=api_key, name=name,
+                artist=artist, verify=verify, quiet=quiet,
+            )
+        ]
+
+    data, filename = _read_source(source, name)
+    members = _archive_members(data, filename)
+    if not members:
+        # Not an archive, or an archive with no audio: treat it as one file.
+        return [
+            _ingest_bytes(
+                data, filename, endpoint=endpoint, api_key=api_key,
+                artist=artist, verify=verify, quiet=quiet,
+            )
+        ]
+
+    if not quiet:
+        print(f"{filename}: expanding {len(members)} audio member(s)", file=sys.stderr)
+    return [
+        _ingest_bytes(
+            member_bytes, member_name, endpoint=endpoint, api_key=api_key,
+            artist=artist, verify=verify, quiet=quiet,
+        )
+        for member_name, member_bytes in members
+    ]
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Ingest audio into StemForge storage and print stable keys."
@@ -209,6 +314,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--artist", default="sounddecay")
     parser.add_argument("--endpoint", default=os.environ.get("RUNPOD_ENDPOINT_ID", DEFAULT_ENDPOINT))
     parser.add_argument("--no-verify", action="store_true", help="Skip the readback check.")
+    parser.add_argument(
+        "--expand",
+        action="store_true",
+        help="Expand a zip of audio into one stored object per member.",
+    )
     parser.add_argument("--json", dest="as_json", action="store_true", help="Emit a JSON record.")
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args(argv)
@@ -227,14 +337,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     records = []
     for source in sources:
         try:
-            records.append(
-                ingest(
+            records.extend(
+                ingest_many(
                     source,
                     endpoint=args.endpoint,
                     api_key=api_key,
                     name=args.name,
                     artist=args.artist,
                     verify=not args.no_verify,
+                    expand=args.expand,
                     quiet=args.quiet,
                 )
             )
