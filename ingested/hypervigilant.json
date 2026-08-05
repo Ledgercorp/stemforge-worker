@@ -1,0 +1,49 @@
+{
+  "ingested": [
+    {
+      "storage_key": "incoming/sounddecay/1c8803b819e5fbde1431/Hypervigilant_Master.wav",
+      "filename": "Hypervigilant_Master.wav",
+      "size_bytes": 49290412
+    },
+    {
+      "storage_key": "incoming/sounddecay/a505d1481b36fc0e1a49/Lead_Vocals.wav",
+      "filename": "Lead_Vocals.wav",
+      "size_bytes": 49290360
+    },
+    {
+      "storage_key": "incoming/sounddecay/7497060f815ad65f4830/Backing_Vocals.wav",
+      "filename": "Backing_Vocals.wav",
+      "size_bytes": 49290360
+    },
+    {
+      "storage_key": "incoming/sounddecay/59bc766f25c1f2f2dd0c/Other.wav",
+      "filename": "Other.wav",
+      "size_bytes": 49290360
+    },
+    {
+      "storage_key": "incoming/sounddecay/6536466922f3396c7cc7/Percussion.wav",
+      "filename": "Percussion.wav",
+      "size_bytes": 49290360
+    },
+    {
+      "storage_key": "incoming/sounddecay/48fe9f887e60ce99de59/Drums.wav",
+      "filename": "Drums.wav",
+      "size_bytes": 49290360
+    },
+    {
+      "storage_key": "incoming/sounddecay/14b6edb0230d0666b2af/Synth.wav",
+      "filename": "Synth.wav",
+      "size_bytes": 49290360
+    },
+    {
+      "storage_key": "incoming/sounddecay/68e0424ddaca8a4b5668/Bass.wav",
+      "filename": "Bass.wav",
+      "size_bytes": 49290360
+    },
+    {
+      "storage_key": "incoming/sounddecay/9159bfb1d8aa851aea10/Guitar.wav",
+      "filename": "Guitar.wav",
+      "size_bytes": 49290360
+    }
+  ]
+}

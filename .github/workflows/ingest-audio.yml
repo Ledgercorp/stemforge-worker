@@ -123,10 +123,14 @@ jobs:
           git config user.email "stemforge-ingest@users.noreply.github.com"
           git add "ingested/${SAFE}.json"
           git commit -m "Record ingested storage keys for ${SAFE} [skip ci]"
+          # Rebase onto the branch this run checked out, not onto main: a run
+          # dispatched from a feature branch would otherwise splice main's
+          # history into it on the first retry.
+          BRANCH="${GITHUB_REF_NAME}"
           git push || {
             for attempt in 1 2 3; do
               sleep $((attempt * 5))
-              git pull --rebase --autostash origin main && git push && break
+              git pull --rebase --autostash origin "$BRANCH" && git push && break
             done
           }
 

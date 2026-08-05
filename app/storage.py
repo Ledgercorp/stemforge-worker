@@ -78,8 +78,18 @@ def storage_status() -> dict:
     client_error: str | None = None
     if configured:
         try:
-            _s3_client()
-        except Exception as exc:  # boto3 absent, or credentials incomplete
+            # Constructing the client proves nothing: boto3 resolves
+            # credentials lazily, so client() succeeds with none present and
+            # only signing raises NoCredentialsError. Sign a throwaway URL
+            # instead - still local, still no network call, but it exercises
+            # the credential path the real upload will take.
+            client, bucket = _s3_client()
+            client.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": bucket, "Key": "__readiness_probe__"},
+                ExpiresIn=60,
+            )
+        except Exception as exc:  # boto3 absent, or credentials missing
             client_error = f"{type(exc).__name__}: {exc}"
 
     ready = configured and client_error is None

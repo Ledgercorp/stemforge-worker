@@ -63,11 +63,21 @@ def worker(monkeypatch):
             state["objects"][key] = request.data
             state["put_headers"] = dict(request.header_items())
             return _FakeResponse(status=200)
-        if request.get_method() == "HEAD":
+        if request.get_method() == "GET":
+            # A presigned URL signs the method, so R2 answers 403 to anything
+            # but the GET it was signed for. Model that: only a GET is served.
             key = url.split("https://bucket.example/")[1].split("?")[0]
             body = state["objects"][key]
-            return _FakeResponse(headers={"Content-Length": str(len(body))})
-        raise AssertionError(f"unexpected request {request.get_method()} {url}")
+            state["probe_headers"] = dict(request.header_items())
+            return _FakeResponse(
+                body[:1],
+                status=206,
+                headers={
+                    "Content-Range": f"bytes 0-0/{len(body)}",
+                    "Content-Length": "1",
+                },
+            )
+        raise urllib.error.HTTPError(url, 403, "Forbidden", {}, None)
 
     monkeypatch.setattr(ingest_audio, "_run", fake_run)
     monkeypatch.setattr(ingest_audio.urllib.request, "urlopen", fake_urlopen)
@@ -114,12 +124,71 @@ def test_size_mismatch_on_readback_is_reported(tmp_path, worker, monkeypatch):
     real_urlopen = ingest_audio.urllib.request.urlopen
 
     def truncated(request, timeout=None):
-        if request.get_method() == "HEAD":
-            return _FakeResponse(headers={"Content-Length": "1"})
+        if request.get_method() == "GET":
+            return _FakeResponse(
+                b"R", status=206, headers={"Content-Range": "bytes 0-0/1"}
+            )
         return real_urlopen(request, timeout=timeout)
 
     monkeypatch.setattr(ingest_audio.urllib.request, "urlopen", truncated)
     with pytest.raises(ingest_audio.IngestError, match="expected"):
+        ingest_audio.ingest(str(source), endpoint="test", api_key="test", quiet=True)
+
+
+def test_readback_probes_with_the_method_the_url_was_signed_for(tmp_path, worker):
+    """The defect: a HEAD against a GET-presigned URL is a signature mismatch.
+
+    R2 answered 403, which reads like a missing object and was not one - the
+    bytes were already stored. The probe must use the signed method.
+    """
+    source = tmp_path / "master.wav"
+    source.write_bytes(b"RIFF" + b"\x00" * 4096)
+
+    ingest_audio.ingest(str(source), endpoint="test", api_key="test", quiet=True)
+
+    headers = {k.lower(): v for k, v in worker["probe_headers"].items()}
+    # One byte, not the whole 4 KB object, and certainly not a 200 MB master.
+    assert headers["range"] == "bytes=0-0"
+
+
+def test_readback_reports_a_genuinely_missing_object(tmp_path, worker, monkeypatch):
+    """Fixing the false 403 must not stop a real 403 from being reported."""
+    source = tmp_path / "master.wav"
+    source.write_bytes(b"RIFF")
+
+    real_urlopen = ingest_audio.urllib.request.urlopen
+
+    def forbidden(request, timeout=None):
+        if request.get_method() == "GET":
+            raise urllib.error.HTTPError(request.full_url, 403, "Forbidden", {}, None)
+        return real_urlopen(request, timeout=timeout)
+
+    monkeypatch.setattr(ingest_audio.urllib.request, "urlopen", forbidden)
+    with pytest.raises(ingest_audio.IngestError, match="not readable: HTTP 403"):
+        ingest_audio.ingest(str(source), endpoint="test", api_key="test", quiet=True)
+
+
+def test_a_failed_verification_still_reports_the_key(tmp_path, worker, monkeypatch):
+    """The bytes are already stored; losing the key orphans them for good.
+
+    Nothing can list bucket objects through the worker API, so a key that is
+    never reported cannot be rendered from, retried, or deleted. Two objects
+    were stranded exactly this way before the readback was fixed.
+    """
+    source = tmp_path / "master.wav"
+    source.write_bytes(b"RIFF" * 100)
+
+    real_urlopen = ingest_audio.urllib.request.urlopen
+
+    def truncated(request, timeout=None):
+        if request.get_method() == "GET":
+            return _FakeResponse(
+                b"R", status=206, headers={"Content-Range": "bytes 0-0/1"}
+            )
+        return real_urlopen(request, timeout=timeout)
+
+    monkeypatch.setattr(ingest_audio.urllib.request, "urlopen", truncated)
+    with pytest.raises(ingest_audio.IngestError, match=r"already stored at .*master\.wav"):
         ingest_audio.ingest(str(source), endpoint="test", api_key="test", quiet=True)
 
 

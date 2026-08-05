@@ -16,6 +16,20 @@ import pytest
 from app import storage
 
 
+class _signing_client:
+    """A client whose presign succeeds, as boto3's does with credentials."""
+
+    def generate_presigned_url(self, *args, **kwargs):
+        return "https://bucket.example/signed"
+
+
+class _unsigned_client:
+    """A client that builds but cannot sign - boto3 without credentials."""
+
+    def generate_presigned_url(self, *args, **kwargs):
+        raise RuntimeError("NoCredentialsError: Unable to locate credentials")
+
+
 @pytest.fixture(autouse=True)
 def clean_environment(monkeypatch):
     for name in (
@@ -69,7 +83,7 @@ def test_bucket_without_credentials_is_not_ready(monkeypatch):
 
 def test_working_client_reports_ready(monkeypatch):
     monkeypatch.setenv("STEMFORGE_S3_BUCKET", "stemforge")
-    monkeypatch.setattr(storage, "_s3_client", lambda: (object(), "stemforge"))
+    monkeypatch.setattr(storage, "_s3_client", lambda: (_signing_client(), "stemforge"))
 
     status = storage.storage_status()
     assert status["signed_transfer_ready"] is True
@@ -111,7 +125,7 @@ def test_configuration_report_never_discloses_a_credential(monkeypatch):
     monkeypatch.setenv("STEMFORGE_S3_BUCKET", "stemforge")
     monkeypatch.setenv("STEMFORGE_S3_ACCESS_KEY_ID", "AKIAsecretvalue123")
     monkeypatch.setenv("STEMFORGE_S3_SECRET_ACCESS_KEY", "supersecretvalue456")
-    monkeypatch.setattr(storage, "_s3_client", lambda: (object(), "stemforge"))
+    monkeypatch.setattr(storage, "_s3_client", lambda: (_signing_client(), "stemforge"))
 
     status = storage.storage_status()
     serialized = json.dumps(status)
@@ -127,7 +141,7 @@ def test_configuration_report_shows_non_secret_values(monkeypatch):
     """A wrong endpoint URL is only findable if you can see it."""
     monkeypatch.setenv("STEMFORGE_S3_BUCKET", "stemforge")
     monkeypatch.setenv("STEMFORGE_S3_ENDPOINT_URL", "https://acct.r2.cloudflarestorage.com/stemforge")
-    monkeypatch.setattr(storage, "_s3_client", lambda: (object(), "stemforge"))
+    monkeypatch.setattr(storage, "_s3_client", lambda: (_signing_client(), "stemforge"))
 
     report = storage.storage_status()["configuration"]
     # The trailing bucket path is the classic mistake; it must be visible.
@@ -137,7 +151,7 @@ def test_configuration_report_shows_non_secret_values(monkeypatch):
 def test_configuration_report_flags_stray_whitespace(monkeypatch):
     monkeypatch.setenv("STEMFORGE_S3_BUCKET", "stemforge")
     monkeypatch.setenv("STEMFORGE_S3_ACCESS_KEY_ID", "abc123 ")
-    monkeypatch.setattr(storage, "_s3_client", lambda: (object(), "stemforge"))
+    monkeypatch.setattr(storage, "_s3_client", lambda: (_signing_client(), "stemforge"))
 
     report = storage.storage_status()["configuration"]
     assert report["STEMFORGE_S3_ACCESS_KEY_ID"]["has_surrounding_whitespace"] is True
@@ -147,7 +161,19 @@ def test_configuration_report_notices_aws_named_credentials(monkeypatch):
     """Pasting into AWS_* instead of STEMFORGE_S3_* is an easy mix-up."""
     monkeypatch.setenv("STEMFORGE_S3_BUCKET", "stemforge")
     monkeypatch.setenv("AWS_ACCESS_KEY_ID", "abc123")
-    monkeypatch.setattr(storage, "_s3_client", lambda: (object(), "stemforge"))
+    monkeypatch.setattr(storage, "_s3_client", lambda: (_signing_client(), "stemforge"))
 
     report = storage.storage_status()["configuration"]
     assert report["AWS_ACCESS_KEY_ID"]["set"] is True
+
+
+def test_a_client_that_cannot_sign_is_not_ready(monkeypatch):
+    """boto3 builds a client without credentials and only fails at signing."""
+    monkeypatch.setenv("STEMFORGE_S3_BUCKET", "stemforge")
+    monkeypatch.setattr(storage, "_s3_client", lambda: (_unsigned_client(), "stemforge"))
+
+    status = storage.storage_status()
+    assert status["client_ready"] is False
+    assert status["signed_transfer_ready"] is False
+    assert status["mode"] == "runpod_volume"
+    assert "NoCredentialsError" in status["client_error"]
