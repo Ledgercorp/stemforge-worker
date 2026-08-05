@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: stemforge-r2-audio-probe
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   probe:
