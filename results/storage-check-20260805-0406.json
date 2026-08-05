@@ -1,0 +1,17 @@
+{
+  "delayTime": 90847,
+  "executionTime": 208,
+  "id": "143dca3c-d8fb-42ec-9027-093ca18341ed-u2",
+  "output": {
+    "action": "storage_info",
+    "bucket_configured": true,
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "mode": "s3_signed_urls",
+    "note": "Private expiring transfer links are active.",
+    "output_root": "/runpod-volume/stemforge/output",
+    "signed_transfer_ready": true,
+    "stemforge_version": "2.4.0"
+  },
+  "status": "COMPLETED",
+  "workerId": "og974w31a5e53t"
+}
