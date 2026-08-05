@@ -159,6 +159,32 @@ def test_cli_writes_a_job_from_a_record_file(tmp_path, capsys):
     assert len(written["input"]["stems"]) == 8
 
 
+def test_roles_are_reported_when_run_as_a_script(tmp_path):
+    """pytest puts the repo on sys.path; `python tools/...` does not.
+
+    Under the documented invocation the role import failed, every stem
+    reported nothing, and the absence looked like there was nothing to
+    report - so this runs the file the way the docs say to.
+    """
+    import subprocess
+    import sys as _sys
+
+    record = tmp_path / "hypervigilant.json"
+    record.write_text(json.dumps({"ingested": HYPERVIGILANT}), encoding="utf-8")
+
+    result = subprocess.run(
+        [_sys.executable, "tools/build_full_pass.py", str(record),
+         "--song", "Hypervigilant"],
+        cwd=build_full_pass.REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert "Lead Vocals" in result.stderr and "vocal" in result.stderr
+    assert "Drums" in result.stderr and "percussion" in result.stderr
+
+
 def test_cli_reports_a_bad_record_without_writing(tmp_path):
     record = tmp_path / "broken.json"
     record.write_text(json.dumps({"ingested": [_record("Drums.wav")]}), encoding="utf-8")

@@ -25,6 +25,8 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
 # The settings the delivered Hypervigilant pass ran with. Naturalize is a
 # fidelity enhancement; the worker's quality gates decide what survives, and
 # nothing here weakens them.
@@ -58,8 +60,13 @@ def _role_of(name: str) -> str:
     """The role the worker will assign, or "" when it cannot be checked here.
 
     Imported rather than restated: a second copy of the vocabulary would drift
-    from the one that actually runs, and silently mis-report roles.
+    from the one that actually runs, and silently mis-report roles. Running
+    this file directly puts `tools/` on the path rather than the repo, so the
+    root goes on explicitly - otherwise the import fails and every stem
+    reports no role at all, which looks like "nothing to see here".
     """
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
     try:
         from app.naturalize_dsp_v2 import role_from_name
     except ImportError:  # numpy absent - the job is still correct without this
