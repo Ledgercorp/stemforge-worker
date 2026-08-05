@@ -61,7 +61,20 @@ Each file prints a `storage_key`. Use it as `audio_storage_key`,
 `master_storage_key`, or a stem's `storage_key`. Keys do not expire the way a
 share link does, and the tool refuses to store an HTML quota page. The
 **Ingest Audio** workflow does the same from a phone: paste URLs into its
-inputs and read the keys off the run summary.
+inputs and read the keys off the run summary. Give it a `record_as` name and
+it commits the keys to `ingested/<name>.json`.
+
+From that record, build the render without copying a key by hand:
+
+```bash
+python tools/build_full_pass.py ingested/sweet-sixteen.json \
+    --song "Sweet Sixteen" --out full_pass_direct_requests/sweet-sixteen.json
+```
+
+It classifies each stored file as the master, the MIDI archive or a stem, and
+prints the Naturalize role each stem will route to. A name matching no role
+keyword falls to `other` and is processed at a different strength — the point
+of printing it is to catch that before an hour of render, not after.
 
 **Without S3** there are two options:
 
