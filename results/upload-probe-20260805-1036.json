@@ -1,0 +1,14 @@
+{
+  "delayTime": 33854,
+  "error": "Partial credentials found in explicit, missing: aws_access_key_id",
+  "executionTime": 458,
+  "id": "b00ab6a3-8c81-46dd-95df-f156ab882ff2-u2",
+  "output": {
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "error_type": "PartialCredentialsError",
+    "status": "error",
+    "stemforge_version": "2.4.0"
+  },
+  "status": "FAILED",
+  "workerId": "1tg8qko2vjegxg"
+}
