@@ -1,0 +1,11 @@
+{
+  "input": {
+    "action": "create_download",
+    "storage_key": "naturalized/sounddecay/8fa63c11031f0791/Sweet_Sixteen_Naturalized.wav",
+    "ttl_seconds": 604800
+  },
+  "policy": {
+    "executionTimeout": 300000,
+    "ttl": 600000
+  }
+}
