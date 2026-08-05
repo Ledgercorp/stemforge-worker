@@ -1,0 +1,17 @@
+{
+  "delayTime": 1113,
+  "executionTime": 207,
+  "id": "d646cae0-c53b-4bfa-802a-ecc89d09567b-u2",
+  "output": {
+    "action": "volume_delete",
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "deleted": [
+      "/runpod-volume/stemforge/output",
+      "/runpod-volume/stemforge/transfers"
+    ],
+    "status": "completed",
+    "stemforge_version": "2.4.0"
+  },
+  "status": "COMPLETED",
+  "workerId": "o1ir4y81whjsnq"
+}

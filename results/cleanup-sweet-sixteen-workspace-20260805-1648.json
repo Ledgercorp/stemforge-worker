@@ -1,0 +1,14 @@
+{
+  "delayTime": 203648,
+  "executionTime": 182,
+  "id": "8f807eda-03e6-438c-bf44-fdab5057a036-u1",
+  "output": {
+    "action": "volume_delete",
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "deleted": [],
+    "status": "completed",
+    "stemforge_version": "2.4.0"
+  },
+  "status": "COMPLETED",
+  "workerId": "o1ir4y81whjsnq"
+}
