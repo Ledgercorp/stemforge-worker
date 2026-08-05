@@ -202,19 +202,25 @@ def _ingest_bytes(
 
     if verify:
         # Prove the object is readable before anyone builds a render on it.
-        readback = _run(
-            endpoint,
-            api_key,
-            {"action": "create_download", "storage_key": storage_key, "ttl_seconds": 600},
-        )
-        download_url = readback.get("download_url")
-        if not download_url:
-            raise IngestError(f"create_download returned no URL: {readback}")
-        length = _stored_size(download_url)
-        if length and length != len(data):
-            raise IngestError(
-                f"stored object is {length} bytes, expected {len(data)}"
+        # Any failure past this point must still name the key: the bytes are
+        # already in the bucket, and a key nobody recorded cannot be rendered
+        # from, retried, or deleted - the API has no way to list objects.
+        try:
+            readback = _run(
+                endpoint,
+                api_key,
+                {"action": "create_download", "storage_key": storage_key, "ttl_seconds": 600},
             )
+            download_url = readback.get("download_url")
+            if not download_url:
+                raise IngestError(f"create_download returned no URL: {readback}")
+            length = _stored_size(download_url)
+            if length and length != len(data):
+                raise IngestError(
+                    f"stored object is {length} bytes, expected {len(data)}"
+                )
+        except IngestError as exc:
+            raise IngestError(f"{exc} (already stored at {storage_key})") from exc
         log("  verified readable")
 
     return {"storage_key": storage_key, "filename": filename, "size_bytes": len(data)}

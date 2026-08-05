@@ -168,6 +168,30 @@ def test_readback_reports_a_genuinely_missing_object(tmp_path, worker, monkeypat
         ingest_audio.ingest(str(source), endpoint="test", api_key="test", quiet=True)
 
 
+def test_a_failed_verification_still_reports_the_key(tmp_path, worker, monkeypatch):
+    """The bytes are already stored; losing the key orphans them for good.
+
+    Nothing can list bucket objects through the worker API, so a key that is
+    never reported cannot be rendered from, retried, or deleted. Two objects
+    were stranded exactly this way before the readback was fixed.
+    """
+    source = tmp_path / "master.wav"
+    source.write_bytes(b"RIFF" * 100)
+
+    real_urlopen = ingest_audio.urllib.request.urlopen
+
+    def truncated(request, timeout=None):
+        if request.get_method() == "GET":
+            return _FakeResponse(
+                b"R", status=206, headers={"Content-Range": "bytes 0-0/1"}
+            )
+        return real_urlopen(request, timeout=timeout)
+
+    monkeypatch.setattr(ingest_audio.urllib.request, "urlopen", truncated)
+    with pytest.raises(ingest_audio.IngestError, match=r"already stored at .*master\.wav"):
+        ingest_audio.ingest(str(source), endpoint="test", api_key="test", quiet=True)
+
+
 def test_html_quota_page_is_rejected_not_uploaded(worker, monkeypatch):
     """A Drive link over quota serves HTML; that must never reach the bucket."""
     def html(request, timeout=None):
