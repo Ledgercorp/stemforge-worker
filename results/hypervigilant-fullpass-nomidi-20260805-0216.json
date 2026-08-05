@@ -1,0 +1,5013 @@
+{
+  "delayTime": 9331,
+  "executionTime": 604204,
+  "id": "1181c7f8-ed0a-4b09-8982-3abd16191fa2-u2",
+  "output": {
+    "action": "full_pass",
+    "anchor_decision": {
+      "reason": "The stems did not pass the reconstruction threshold, so the supplied stereo master was retained as the coherence anchor.",
+      "selected_anchor": "stereo_master",
+      "stem_sum_safe_for_remix": false
+    },
+    "artist": "sounddecay",
+    "build": "v2.4.0-naturalize-balanced-vocoder",
+    "candidates": [
+      {
+        "chain": {
+          "attack_ms": 35,
+          "ceiling_dbfs": -1,
+          "gain_db": -0.117,
+          "limiter_reduction_db": 0,
+          "measured_lufs": -13.883,
+          "ratio": 1.35,
+          "release_ms": 240,
+          "target_lufs": -14,
+          "threshold_db": -10,
+          "width": 0.99
+        },
+        "metrics": {
+          "channels": 2,
+          "clipped_sample_count": 0,
+          "crest_factor_db": 14.55,
+          "dc_offset": [
+            4.8E-7,
+            3.7E-7
+          ],
+          "duration_seconds": 256.72,
+          "integrated_lufs": -14,
+          "rms_dbfs": -16.548,
+          "sample_peak_dbfs": -1.998,
+          "sample_rate": 48000,
+          "silence_regions": [],
+          "spectral_energy_distribution": {
+            "air": 0.0037213,
+            "bass": 0.3571695,
+            "high": 0.0320884,
+            "low_mid": 0.064365,
+            "mid": 0.1275198,
+            "presence": 0.0614721,
+            "sub": 0.3428695
+          },
+          "stereo_correlation": 0.752652,
+          "timeline_10s": [
+            {
+              "crest_factor_db": 17.287,
+              "end_seconds": 10,
+              "peak_dbfs": -6.583,
+              "rms_dbfs": -23.87,
+              "start_seconds": 0,
+              "stereo_correlation": 0.15177
+            },
+            {
+              "crest_factor_db": 14.92,
+              "end_seconds": 20,
+              "peak_dbfs": -4.036,
+              "rms_dbfs": -18.956,
+              "start_seconds": 10,
+              "stereo_correlation": 0.64751
+            },
+            {
+              "crest_factor_db": 14.198,
+              "end_seconds": 30,
+              "peak_dbfs": -2.79,
+              "rms_dbfs": -16.988,
+              "start_seconds": 20,
+              "stereo_correlation": 0.66627
+            },
+            {
+              "crest_factor_db": 14.193,
+              "end_seconds": 40,
+              "peak_dbfs": -4.144,
+              "rms_dbfs": -18.336,
+              "start_seconds": 30,
+              "stereo_correlation": 0.78386
+            },
+            {
+              "crest_factor_db": 14.311,
+              "end_seconds": 50,
+              "peak_dbfs": -4.283,
+              "rms_dbfs": -18.593,
+              "start_seconds": 40,
+              "stereo_correlation": 0.82957
+            },
+            {
+              "crest_factor_db": 13.859,
+              "end_seconds": 60,
+              "peak_dbfs": -4.371,
+              "rms_dbfs": -18.231,
+              "start_seconds": 50,
+              "stereo_correlation": 0.78739
+            },
+            {
+              "crest_factor_db": 13.59,
+              "end_seconds": 70,
+              "peak_dbfs": -4.388,
+              "rms_dbfs": -17.979,
+              "start_seconds": 60,
+              "stereo_correlation": 0.77453
+            },
+            {
+              "crest_factor_db": 12.867,
+              "end_seconds": 80,
+              "peak_dbfs": -4.701,
+              "rms_dbfs": -17.568,
+              "start_seconds": 70,
+              "stereo_correlation": 0.74857
+            },
+            {
+              "crest_factor_db": 12.461,
+              "end_seconds": 90,
+              "peak_dbfs": -5.068,
+              "rms_dbfs": -17.529,
+              "start_seconds": 80,
+              "stereo_correlation": 0.72816
+            },
+            {
+              "crest_factor_db": 12.79,
+              "end_seconds": 100,
+              "peak_dbfs": -4.356,
+              "rms_dbfs": -17.146,
+              "start_seconds": 90,
+              "stereo_correlation": 0.83736
+            },
+            {
+              "crest_factor_db": 14.245,
+              "end_seconds": 110,
+              "peak_dbfs": -4.302,
+              "rms_dbfs": -18.547,
+              "start_seconds": 100,
+              "stereo_correlation": 0.92103
+            },
+            {
+              "crest_factor_db": 13.562,
+              "end_seconds": 120,
+              "peak_dbfs": -3.646,
+              "rms_dbfs": -17.208,
+              "start_seconds": 110,
+              "stereo_correlation": 0.89788
+            },
+            {
+              "crest_factor_db": 12.784,
+              "end_seconds": 130,
+              "peak_dbfs": -3.835,
+              "rms_dbfs": -16.618,
+              "start_seconds": 120,
+              "stereo_correlation": 0.7747
+            },
+            {
+              "crest_factor_db": 13.518,
+              "end_seconds": 140,
+              "peak_dbfs": -3.792,
+              "rms_dbfs": -17.31,
+              "start_seconds": 130,
+              "stereo_correlation": 0.83361
+            },
+            {
+              "crest_factor_db": 12.141,
+              "end_seconds": 150,
+              "peak_dbfs": -2.791,
+              "rms_dbfs": -14.931,
+              "start_seconds": 140,
+              "stereo_correlation": 0.6927
+            },
+            {
+              "crest_factor_db": 12.251,
+              "end_seconds": 160,
+              "peak_dbfs": -3.239,
+              "rms_dbfs": -15.49,
+              "start_seconds": 150,
+              "stereo_correlation": 0.75383
+            },
+            {
+              "crest_factor_db": 11.788,
+              "end_seconds": 170,
+              "peak_dbfs": -3.455,
+              "rms_dbfs": -15.243,
+              "start_seconds": 160,
+              "stereo_correlation": 0.83828
+            },
+            {
+              "crest_factor_db": 12.527,
+              "end_seconds": 180,
+              "peak_dbfs": -3.186,
+              "rms_dbfs": -15.713,
+              "start_seconds": 170,
+              "stereo_correlation": 0.77986
+            },
+            {
+              "crest_factor_db": 12.66,
+              "end_seconds": 190,
+              "peak_dbfs": -2.785,
+              "rms_dbfs": -15.445,
+              "start_seconds": 180,
+              "stereo_correlation": 0.70417
+            },
+            {
+              "crest_factor_db": 11.594,
+              "end_seconds": 200,
+              "peak_dbfs": -3.859,
+              "rms_dbfs": -15.453,
+              "start_seconds": 190,
+              "stereo_correlation": 0.66778
+            },
+            {
+              "crest_factor_db": 12.433,
+              "end_seconds": 210,
+              "peak_dbfs": -2.699,
+              "rms_dbfs": -15.132,
+              "start_seconds": 200,
+              "stereo_correlation": 0.72981
+            },
+            {
+              "crest_factor_db": 11.486,
+              "end_seconds": 220,
+              "peak_dbfs": -3.228,
+              "rms_dbfs": -14.714,
+              "start_seconds": 210,
+              "stereo_correlation": 0.74543
+            },
+            {
+              "crest_factor_db": 12.988,
+              "end_seconds": 230,
+              "peak_dbfs": -3.013,
+              "rms_dbfs": -16.001,
+              "start_seconds": 220,
+              "stereo_correlation": 0.78325
+            },
+            {
+              "crest_factor_db": 13.746,
+              "end_seconds": 240,
+              "peak_dbfs": -1.998,
+              "rms_dbfs": -15.744,
+              "start_seconds": 230,
+              "stereo_correlation": 0.66063
+            },
+            {
+              "crest_factor_db": 11.955,
+              "end_seconds": 250,
+              "peak_dbfs": -2.867,
+              "rms_dbfs": -14.822,
+              "start_seconds": 240,
+              "stereo_correlation": 0.74279
+            },
+            {
+              "crest_factor_db": 12.053,
+              "end_seconds": 256.72,
+              "peak_dbfs": -2.987,
+              "rms_dbfs": -15.04,
+              "start_seconds": 250,
+              "stereo_correlation": 0.76991
+            }
+          ],
+          "transient_density_per_second": 15.10595,
+          "true_peak_dbtp": -1.904,
+          "waveform_discontinuity_count": 0
+        },
+        "output": {
+          "download_url": null,
+          "filename": "Hypervigilant_dynamic_master.wav",
+          "local_path": "/runpod-volume/stemforge/output/masters/sounddecay/9bf0191d6e3f0344/Hypervigilant_dynamic_master.wav",
+          "sha256": "2775036a1bb2a7d7058f150e6290e26042bcedad2673fe28b161b61fef09c871",
+          "size_bytes": 73935404,
+          "storage_mode": "runpod_volume",
+          "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
+          "volume_path": "/runpod-volume/stemforge/output/masters/sounddecay/9bf0191d6e3f0344/Hypervigilant_dynamic_master.wav"
+        },
+        "profile": "dynamic",
+        "safety": {
+          "accepted": true,
+          "crest_change_db": -0.198,
+          "reasons": [],
+          "stereo_correlation_change": 0.00067
+        }
+      },
+      {
+        "chain": {
+          "attack_ms": 25,
+          "ceiling_dbfs": -1,
+          "gain_db": 2.388,
+          "limiter_reduction_db": 0,
+          "measured_lufs": -14.888,
+          "ratio": 1.8,
+          "release_ms": 190,
+          "target_lufs": -12.5,
+          "threshold_db": -14,
+          "width": 0.98
+        },
+        "metrics": {
+          "channels": 2,
+          "clipped_sample_count": 0,
+          "crest_factor_db": 13.926,
+          "dc_offset": [
+            0.00000341,
+            0.00000285
+          ],
+          "duration_seconds": 256.72,
+          "integrated_lufs": -12.5,
+          "rms_dbfs": -15.089,
+          "sample_peak_dbfs": -1.162,
+          "sample_rate": 48000,
+          "silence_regions": [],
+          "spectral_energy_distribution": {
+            "air": 0.0039146,
+            "bass": 0.3632427,
+            "high": 0.0337554,
+            "low_mid": 0.067686,
+            "mid": 0.1313868,
+            "presence": 0.0629319,
+            "sub": 0.3265678
+          },
+          "stereo_correlation": 0.755554,
+          "timeline_10s": [
+            {
+              "crest_factor_db": 17.303,
+              "end_seconds": 10,
+              "peak_dbfs": -4.142,
+              "rms_dbfs": -21.445,
+              "start_seconds": 0,
+              "stereo_correlation": 0.16274
+            },
+            {
+              "crest_factor_db": 15.224,
+              "end_seconds": 20,
+              "peak_dbfs": -1.836,
+              "rms_dbfs": -17.06,
+              "start_seconds": 10,
+              "stereo_correlation": 0.64691
+            },
+            {
+              "crest_factor_db": 14.176,
+              "end_seconds": 30,
+              "peak_dbfs": -1.162,
+              "rms_dbfs": -15.339,
+              "start_seconds": 20,
+              "stereo_correlation": 0.671
+            },
+            {
+              "crest_factor_db": 13.971,
+              "end_seconds": 40,
+              "peak_dbfs": -2.41,
+              "rms_dbfs": -16.382,
+              "start_seconds": 30,
+              "stereo_correlation": 0.78929
+            },
+            {
+              "crest_factor_db": 14.449,
+              "end_seconds": 50,
+              "peak_dbfs": -2.119,
+              "rms_dbfs": -16.568,
+              "start_seconds": 40,
+              "stereo_correlation": 0.83284
+            },
+            {
+              "crest_factor_db": 13.896,
+              "end_seconds": 60,
+              "peak_dbfs": -2.381,
+              "rms_dbfs": -16.277,
+              "start_seconds": 50,
+              "stereo_correlation": 0.7923
+            },
+            {
+              "crest_factor_db": 13.784,
+              "end_seconds": 70,
+              "peak_dbfs": -2.301,
+              "rms_dbfs": -16.085,
+              "start_seconds": 60,
+              "stereo_correlation": 0.77755
+            },
+            {
+              "crest_factor_db": 13.199,
+              "end_seconds": 80,
+              "peak_dbfs": -2.567,
+              "rms_dbfs": -15.765,
+              "start_seconds": 70,
+              "stereo_correlation": 0.75356
+            },
+            {
+              "crest_factor_db": 12.594,
+              "end_seconds": 90,
+              "peak_dbfs": -3.14,
+              "rms_dbfs": -15.734,
+              "start_seconds": 80,
+              "stereo_correlation": 0.73197
+            },
+            {
+              "crest_factor_db": 12.774,
+              "end_seconds": 100,
+              "peak_dbfs": -2.626,
+              "rms_dbfs": -15.4,
+              "start_seconds": 90,
+              "stereo_correlation": 0.83959
+            },
+            {
+              "crest_factor_db": 14.56,
+              "end_seconds": 110,
+              "peak_dbfs": -2.083,
+              "rms_dbfs": -16.643,
+              "start_seconds": 100,
+              "stereo_correlation": 0.9245
+            },
+            {
+              "crest_factor_db": 14.198,
+              "end_seconds": 120,
+              "peak_dbfs": -1.276,
+              "rms_dbfs": -15.474,
+              "start_seconds": 110,
+              "stereo_correlation": 0.89992
+            },
+            {
+              "crest_factor_db": 13.052,
+              "end_seconds": 130,
+              "peak_dbfs": -1.978,
+              "rms_dbfs": -15.03,
+              "start_seconds": 120,
+              "stereo_correlation": 0.77731
+            },
+            {
+              "crest_factor_db": 13.791,
+              "end_seconds": 140,
+              "peak_dbfs": -1.901,
+              "rms_dbfs": -15.692,
+              "start_seconds": 130,
+              "stereo_correlation": 0.83693
+            },
+            {
+              "crest_factor_db": 12.419,
+              "end_seconds": 150,
+              "peak_dbfs": -1.352,
+              "rms_dbfs": -13.771,
+              "start_seconds": 140,
+              "stereo_correlation": 0.69584
+            },
+            {
+              "crest_factor_db": 12.302,
+              "end_seconds": 160,
+              "peak_dbfs": -1.882,
+              "rms_dbfs": -14.184,
+              "start_seconds": 150,
+              "stereo_correlation": 0.7531
+            },
+            {
+              "crest_factor_db": 11.659,
+              "end_seconds": 170,
+              "peak_dbfs": -2.266,
+              "rms_dbfs": -13.925,
+              "start_seconds": 160,
+              "stereo_correlation": 0.83945
+            },
+            {
+              "crest_factor_db": 12.521,
+              "end_seconds": 180,
+              "peak_dbfs": -1.782,
+              "rms_dbfs": -14.302,
+              "start_seconds": 170,
+              "stereo_correlation": 0.78184
+            },
+            {
+              "crest_factor_db": 12.721,
+              "end_seconds": 190,
+              "peak_dbfs": -1.416,
+              "rms_dbfs": -14.137,
+              "start_seconds": 180,
+              "stereo_correlation": 0.70764
+            },
+            {
+              "crest_factor_db": 11.574,
+              "end_seconds": 200,
+              "peak_dbfs": -2.574,
+              "rms_dbfs": -14.147,
+              "start_seconds": 190,
+              "stereo_correlation": 0.67278
+            },
+            {
+              "crest_factor_db": 12.53,
+              "end_seconds": 210,
+              "peak_dbfs": -1.36,
+              "rms_dbfs": -13.89,
+              "start_seconds": 200,
+              "stereo_correlation": 0.73295
+            },
+            {
+              "crest_factor_db": 11.325,
+              "end_seconds": 220,
+              "peak_dbfs": -2.242,
+              "rms_dbfs": -13.567,
+              "start_seconds": 210,
+              "stereo_correlation": 0.74808
+            },
+            {
+              "crest_factor_db": 12.633,
+              "end_seconds": 230,
+              "peak_dbfs": -1.987,
+              "rms_dbfs": -14.62,
+              "start_seconds": 220,
+              "stereo_correlation": 0.78578
+            },
+            {
+              "crest_factor_db": 13.407,
+              "end_seconds": 240,
+              "peak_dbfs": -1.246,
+              "rms_dbfs": -14.653,
+              "start_seconds": 230,
+              "stereo_correlation": 0.65979
+            },
+            {
+              "crest_factor_db": 12.575,
+              "end_seconds": 250,
+              "peak_dbfs": -1.231,
+              "rms_dbfs": -13.806,
+              "start_seconds": 240,
+              "stereo_correlation": 0.73556
+            },
+            {
+              "crest_factor_db": 12.687,
+              "end_seconds": 256.72,
+              "peak_dbfs": -1.504,
+              "rms_dbfs": -14.192,
+              "start_seconds": 250,
+              "stereo_correlation": 0.76826
+            }
+          ],
+          "transient_density_per_second": 15.13322,
+          "true_peak_dbtp": -1.013,
+          "waveform_discontinuity_count": 0
+        },
+        "output": {
+          "download_url": null,
+          "filename": "Hypervigilant_balanced_master.wav",
+          "local_path": "/runpod-volume/stemforge/output/masters/sounddecay/46bb5d72a611616a/Hypervigilant_balanced_master.wav",
+          "sha256": "93ca89f858fb8a0e8c95531e473e267c9c5bce6db39c14ec53e862a853a46821",
+          "size_bytes": 73935404,
+          "storage_mode": "runpod_volume",
+          "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
+          "volume_path": "/runpod-volume/stemforge/output/masters/sounddecay/46bb5d72a611616a/Hypervigilant_balanced_master.wav"
+        },
+        "profile": "balanced",
+        "safety": {
+          "accepted": true,
+          "crest_change_db": -0.822,
+          "reasons": [],
+          "stereo_correlation_change": 0.00357
+        }
+      },
+      {
+        "chain": {
+          "attack_ms": 18,
+          "ceiling_dbfs": -0.9,
+          "gain_db": 5.807,
+          "limiter_reduction_db": -2.684,
+          "measured_lufs": -16.607,
+          "ratio": 2.5,
+          "release_ms": 150,
+          "target_lufs": -10.8,
+          "threshold_db": -17,
+          "width": 0.96
+        },
+        "metrics": {
+          "channels": 2,
+          "clipped_sample_count": 0,
+          "crest_factor_db": 15.223,
+          "dc_offset": [
+            0.00000804,
+            0.00000681
+          ],
+          "duration_seconds": 256.72,
+          "integrated_lufs": -13.484,
+          "rms_dbfs": -16.123,
+          "sample_peak_dbfs": -0.9,
+          "sample_rate": 48000,
+          "silence_regions": [],
+          "spectral_energy_distribution": {
+            "air": 0.0041656,
+            "bass": 0.3696063,
+            "high": 0.0359597,
+            "low_mid": 0.07156,
+            "mid": 0.1355961,
+            "presence": 0.0647643,
+            "sub": 0.3082711
+          },
+          "stereo_correlation": 0.760671,
+          "timeline_10s": [
+            {
+              "crest_factor_db": 17.423,
+              "end_seconds": 10,
+              "peak_dbfs": -3.71,
+              "rms_dbfs": -21.133,
+              "start_seconds": 0,
+              "stereo_correlation": 0.19012
+            },
+            {
+              "crest_factor_db": 15.748,
+              "end_seconds": 20,
+              "peak_dbfs": -1.879,
+              "rms_dbfs": -17.627,
+              "start_seconds": 10,
+              "stereo_correlation": 0.64642
+            },
+            {
+              "crest_factor_db": 14.087,
+              "end_seconds": 30,
+              "peak_dbfs": -2.19,
+              "rms_dbfs": -16.276,
+              "start_seconds": 20,
+              "stereo_correlation": 0.68055
+            },
+            {
+              "crest_factor_db": 13.901,
+              "end_seconds": 40,
+              "peak_dbfs": -3.073,
+              "rms_dbfs": -16.974,
+              "start_seconds": 30,
+              "stereo_correlation": 0.7983
+            },
+            {
+              "crest_factor_db": 14.739,
+              "end_seconds": 50,
+              "peak_dbfs": -2.35,
+              "rms_dbfs": -17.088,
+              "start_seconds": 40,
+              "stereo_correlation": 0.83942
+            },
+            {
+              "crest_factor_db": 13.895,
+              "end_seconds": 60,
+              "peak_dbfs": -2.991,
+              "rms_dbfs": -16.887,
+              "start_seconds": 50,
+              "stereo_correlation": 0.80078
+            },
+            {
+              "crest_factor_db": 14.057,
+              "end_seconds": 70,
+              "peak_dbfs": -2.708,
+              "rms_dbfs": -16.765,
+              "start_seconds": 60,
+              "stereo_correlation": 0.78356
+            },
+            {
+              "crest_factor_db": 13.708,
+              "end_seconds": 80,
+              "peak_dbfs": -2.828,
+              "rms_dbfs": -16.536,
+              "start_seconds": 70,
+              "stereo_correlation": 0.76257
+            },
+            {
+              "crest_factor_db": 12.703,
+              "end_seconds": 90,
+              "peak_dbfs": -3.818,
+              "rms_dbfs": -16.521,
+              "start_seconds": 80,
+              "stereo_correlation": 0.74057
+            },
+            {
+              "crest_factor_db": 12.859,
+              "end_seconds": 100,
+              "peak_dbfs": -3.364,
+              "rms_dbfs": -16.224,
+              "start_seconds": 90,
+              "stereo_correlation": 0.8442
+            },
+            {
+              "crest_factor_db": 15.297,
+              "end_seconds": 110,
+              "peak_dbfs": -1.855,
+              "rms_dbfs": -17.152,
+              "start_seconds": 100,
+              "stereo_correlation": 0.93008
+            },
+            {
+              "crest_factor_db": 15.245,
+              "end_seconds": 120,
+              "peak_dbfs": -1.018,
+              "rms_dbfs": -16.263,
+              "start_seconds": 110,
+              "stereo_correlation": 0.9039
+            },
+            {
+              "crest_factor_db": 13.524,
+              "end_seconds": 130,
+              "peak_dbfs": -2.464,
+              "rms_dbfs": -15.988,
+              "start_seconds": 120,
+              "stereo_correlation": 0.78448
+            },
+            {
+              "crest_factor_db": 14.547,
+              "end_seconds": 140,
+              "peak_dbfs": -2.016,
+              "rms_dbfs": -16.562,
+              "start_seconds": 130,
+              "stereo_correlation": 0.84319
+            },
+            {
+              "crest_factor_db": 12.816,
+              "end_seconds": 150,
+              "peak_dbfs": -2.297,
+              "rms_dbfs": -15.114,
+              "start_seconds": 140,
+              "stereo_correlation": 0.70227
+            },
+            {
+              "crest_factor_db": 12.772,
+              "end_seconds": 160,
+              "peak_dbfs": -2.629,
+              "rms_dbfs": -15.401,
+              "start_seconds": 150,
+              "stereo_correlation": 0.75471
+            },
+            {
+              "crest_factor_db": 11.525,
+              "end_seconds": 170,
+              "peak_dbfs": -3.623,
+              "rms_dbfs": -15.148,
+              "start_seconds": 160,
+              "stereo_correlation": 0.84315
+            },
+            {
+              "crest_factor_db": 12.513,
+              "end_seconds": 180,
+              "peak_dbfs": -2.937,
+              "rms_dbfs": -15.45,
+              "start_seconds": 170,
+              "stereo_correlation": 0.78707
+            },
+            {
+              "crest_factor_db": 12.722,
+              "end_seconds": 190,
+              "peak_dbfs": -2.652,
+              "rms_dbfs": -15.373,
+              "start_seconds": 180,
+              "stereo_correlation": 0.71609
+            },
+            {
+              "crest_factor_db": 11.582,
+              "end_seconds": 200,
+              "peak_dbfs": -3.808,
+              "rms_dbfs": -15.39,
+              "start_seconds": 190,
+              "stereo_correlation": 0.68321
+            },
+            {
+              "crest_factor_db": 12.636,
+              "end_seconds": 210,
+              "peak_dbfs": -2.546,
+              "rms_dbfs": -15.182,
+              "start_seconds": 200,
+              "stereo_correlation": 0.7405
+            },
+            {
+              "crest_factor_db": 11.143,
+              "end_seconds": 220,
+              "peak_dbfs": -3.798,
+              "rms_dbfs": -14.941,
+              "start_seconds": 210,
+              "stereo_correlation": 0.75465
+            },
+            {
+              "crest_factor_db": 12.638,
+              "end_seconds": 230,
+              "peak_dbfs": -3.132,
+              "rms_dbfs": -15.77,
+              "start_seconds": 220,
+              "stereo_correlation": 0.78975
+            },
+            {
+              "crest_factor_db": 13.693,
+              "end_seconds": 240,
+              "peak_dbfs": -2.253,
+              "rms_dbfs": -15.946,
+              "start_seconds": 230,
+              "stereo_correlation": 0.65915
+            },
+            {
+              "crest_factor_db": 14.342,
+              "end_seconds": 250,
+              "peak_dbfs": -0.9,
+              "rms_dbfs": -15.242,
+              "start_seconds": 240,
+              "stereo_correlation": 0.72456
+            },
+            {
+              "crest_factor_db": 13.138,
+              "end_seconds": 256.72,
+              "peak_dbfs": -2.633,
+              "rms_dbfs": -15.771,
+              "start_seconds": 250,
+              "stereo_correlation": 0.76333
+            }
+          ],
+          "transient_density_per_second": 15.14101,
+          "true_peak_dbtp": -0.894,
+          "waveform_discontinuity_count": 0
+        },
+        "output": {
+          "download_url": null,
+          "filename": "Hypervigilant_dense_master.wav",
+          "local_path": "/runpod-volume/stemforge/output/masters/sounddecay/8ba5111d18af8ce7/Hypervigilant_dense_master.wav",
+          "sha256": "46567be01d893f961a1012f682b7ffcd3c5b68c4eb9868005c8469433c9decea",
+          "size_bytes": 73935404,
+          "storage_mode": "runpod_volume",
+          "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
+          "volume_path": "/runpod-volume/stemforge/output/masters/sounddecay/8ba5111d18af8ce7/Hypervigilant_dense_master.wav"
+        },
+        "profile": "dense",
+        "safety": {
+          "accepted": true,
+          "crest_change_db": 0.475,
+          "reasons": [],
+          "stereo_correlation_change": 0.00869
+        }
+      }
+    ],
+    "engine": "StemForge full-pass engine v2.2",
+    "full_pass_report_output": {
+      "download_url": null,
+      "filename": "Hypervigilant_FullPass_Report.json",
+      "local_path": "/runpod-volume/stemforge/output/full_pass_reports/sounddecay/548c7fbf33d496c5/Hypervigilant_FullPass_Report.json",
+      "sha256": "983955dff6ac1f59a3c91a4b7bb3c1eaeff71445543811b47df4941b44cc8454",
+      "size_bytes": 162303,
+      "storage_mode": "runpod_volume",
+      "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
+      "volume_path": "/runpod-volume/stemforge/output/full_pass_reports/sounddecay/548c7fbf33d496c5/Hypervigilant_FullPass_Report.json"
+    },
+    "honesty_note": "The stems and MIDI informed integrity checks, tempo-linked compressor release timing, and the coherence-anchor decision. When Naturalize was requested, the complete v2.4 configuration was forwarded and only its non-destructive safety-approved render became the mastering source. Optional neural resynthesis occurs only after the modulation and constrained denoise stages and falls back to DSP when unsafe. Naturalize is a fidelity and authenticity enhancement, not an audio-origin detector, concealment system, or detection-evasion tool.",
+    "input_summary": {
+      "master_filename": "master_source.wav",
+      "midi_file_count": 0,
+      "midi_filenames": [],
+      "stem_count": 8,
+      "stem_names": [
+        "Lead Vocals",
+        "Backing Vocals",
+        "Other",
+        "Percussion",
+        "Drums",
+        "Synth",
+        "Bass",
+        "Guitar"
+      ]
+    },
+    "mastering_candidates": [
+      {
+        "chain": {
+          "attack_ms": 35,
+          "ceiling_dbfs": -1,
+          "gain_db": -0.117,
+          "limiter_reduction_db": 0,
+          "measured_lufs": -13.883,
+          "ratio": 1.35,
+          "release_ms": 240,
+          "target_lufs": -14,
+          "threshold_db": -10,
+          "width": 0.99
+        },
+        "metrics": {
+          "channels": 2,
+          "clipped_sample_count": 0,
+          "crest_factor_db": 14.55,
+          "dc_offset": [
+            4.8E-7,
+            3.7E-7
+          ],
+          "duration_seconds": 256.72,
+          "integrated_lufs": -14,
+          "rms_dbfs": -16.548,
+          "sample_peak_dbfs": -1.998,
+          "sample_rate": 48000,
+          "silence_regions": [],
+          "spectral_energy_distribution": {
+            "air": 0.0037213,
+            "bass": 0.3571695,
+            "high": 0.0320884,
+            "low_mid": 0.064365,
+            "mid": 0.1275198,
+            "presence": 0.0614721,
+            "sub": 0.3428695
+          },
+          "stereo_correlation": 0.752652,
+          "timeline_10s": [
+            {
+              "crest_factor_db": 17.287,
+              "end_seconds": 10,
+              "peak_dbfs": -6.583,
+              "rms_dbfs": -23.87,
+              "start_seconds": 0,
+              "stereo_correlation": 0.15177
+            },
+            {
+              "crest_factor_db": 14.92,
+              "end_seconds": 20,
+              "peak_dbfs": -4.036,
+              "rms_dbfs": -18.956,
+              "start_seconds": 10,
+              "stereo_correlation": 0.64751
+            },
+            {
+              "crest_factor_db": 14.198,
+              "end_seconds": 30,
+              "peak_dbfs": -2.79,
+              "rms_dbfs": -16.988,
+              "start_seconds": 20,
+              "stereo_correlation": 0.66627
+            },
+            {
+              "crest_factor_db": 14.193,
+              "end_seconds": 40,
+              "peak_dbfs": -4.144,
+              "rms_dbfs": -18.336,
+              "start_seconds": 30,
+              "stereo_correlation": 0.78386
+            },
+            {
+              "crest_factor_db": 14.311,
+              "end_seconds": 50,
+              "peak_dbfs": -4.283,
+              "rms_dbfs": -18.593,
+              "start_seconds": 40,
+              "stereo_correlation": 0.82957
+            },
+            {
+              "crest_factor_db": 13.859,
+              "end_seconds": 60,
+              "peak_dbfs": -4.371,
+              "rms_dbfs": -18.231,
+              "start_seconds": 50,
+              "stereo_correlation": 0.78739
+            },
+            {
+              "crest_factor_db": 13.59,
+              "end_seconds": 70,
+              "peak_dbfs": -4.388,
+              "rms_dbfs": -17.979,
+              "start_seconds": 60,
+              "stereo_correlation": 0.77453
+            },
+            {
+              "crest_factor_db": 12.867,
+              "end_seconds": 80,
+              "peak_dbfs": -4.701,
+              "rms_dbfs": -17.568,
+              "start_seconds": 70,
+              "stereo_correlation": 0.74857
+            },
+            {
+              "crest_factor_db": 12.461,
+              "end_seconds": 90,
+              "peak_dbfs": -5.068,
+              "rms_dbfs": -17.529,
+              "start_seconds": 80,
+              "stereo_correlation": 0.72816
+            },
+            {
+              "crest_factor_db": 12.79,
+              "end_seconds": 100,
+              "peak_dbfs": -4.356,
+              "rms_dbfs": -17.146,
+              "start_seconds": 90,
+              "stereo_correlation": 0.83736
+            },
+            {
+              "crest_factor_db": 14.245,
+              "end_seconds": 110,
+              "peak_dbfs": -4.302,
+              "rms_dbfs": -18.547,
+              "start_seconds": 100,
+              "stereo_correlation": 0.92103
+            },
+            {
+              "crest_factor_db": 13.562,
+              "end_seconds": 120,
+              "peak_dbfs": -3.646,
+              "rms_dbfs": -17.208,
+              "start_seconds": 110,
+              "stereo_correlation": 0.89788
+            },
+            {
+              "crest_factor_db": 12.784,
+              "end_seconds": 130,
+              "peak_dbfs": -3.835,
+              "rms_dbfs": -16.618,
+              "start_seconds": 120,
+              "stereo_correlation": 0.7747
+            },
+            {
+              "crest_factor_db": 13.518,
+              "end_seconds": 140,
+              "peak_dbfs": -3.792,
+              "rms_dbfs": -17.31,
+              "start_seconds": 130,
+              "stereo_correlation": 0.83361
+            },
+            {
+              "crest_factor_db": 12.141,
+              "end_seconds": 150,
+              "peak_dbfs": -2.791,
+              "rms_dbfs": -14.931,
+              "start_seconds": 140,
+              "stereo_correlation": 0.6927
+            },
+            {
+              "crest_factor_db": 12.251,
+              "end_seconds": 160,
+              "peak_dbfs": -3.239,
+              "rms_dbfs": -15.49,
+              "start_seconds": 150,
+              "stereo_correlation": 0.75383
+            },
+            {
+              "crest_factor_db": 11.788,
+              "end_seconds": 170,
+              "peak_dbfs": -3.455,
+              "rms_dbfs": -15.243,
+              "start_seconds": 160,
+              "stereo_correlation": 0.83828
+            },
+            {
+              "crest_factor_db": 12.527,
+              "end_seconds": 180,
+              "peak_dbfs": -3.186,
+              "rms_dbfs": -15.713,
+              "start_seconds": 170,
+              "stereo_correlation": 0.77986
+            },
+            {
+              "crest_factor_db": 12.66,
+              "end_seconds": 190,
+              "peak_dbfs": -2.785,
+              "rms_dbfs": -15.445,
+              "start_seconds": 180,
+              "stereo_correlation": 0.70417
+            },
+            {
+              "crest_factor_db": 11.594,
+              "end_seconds": 200,
+              "peak_dbfs": -3.859,
+              "rms_dbfs": -15.453,
+              "start_seconds": 190,
+              "stereo_correlation": 0.66778
+            },
+            {
+              "crest_factor_db": 12.433,
+              "end_seconds": 210,
+              "peak_dbfs": -2.699,
+              "rms_dbfs": -15.132,
+              "start_seconds": 200,
+              "stereo_correlation": 0.72981
+            },
+            {
+              "crest_factor_db": 11.486,
+              "end_seconds": 220,
+              "peak_dbfs": -3.228,
+              "rms_dbfs": -14.714,
+              "start_seconds": 210,
+              "stereo_correlation": 0.74543
+            },
+            {
+              "crest_factor_db": 12.988,
+              "end_seconds": 230,
+              "peak_dbfs": -3.013,
+              "rms_dbfs": -16.001,
+              "start_seconds": 220,
+              "stereo_correlation": 0.78325
+            },
+            {
+              "crest_factor_db": 13.746,
+              "end_seconds": 240,
+              "peak_dbfs": -1.998,
+              "rms_dbfs": -15.744,
+              "start_seconds": 230,
+              "stereo_correlation": 0.66063
+            },
+            {
+              "crest_factor_db": 11.955,
+              "end_seconds": 250,
+              "peak_dbfs": -2.867,
+              "rms_dbfs": -14.822,
+              "start_seconds": 240,
+              "stereo_correlation": 0.74279
+            },
+            {
+              "crest_factor_db": 12.053,
+              "end_seconds": 256.72,
+              "peak_dbfs": -2.987,
+              "rms_dbfs": -15.04,
+              "start_seconds": 250,
+              "stereo_correlation": 0.76991
+            }
+          ],
+          "transient_density_per_second": 15.10595,
+          "true_peak_dbtp": -1.904,
+          "waveform_discontinuity_count": 0
+        },
+        "output": {
+          "download_url": null,
+          "filename": "Hypervigilant_dynamic_master.wav",
+          "local_path": "/runpod-volume/stemforge/output/masters/sounddecay/9bf0191d6e3f0344/Hypervigilant_dynamic_master.wav",
+          "sha256": "2775036a1bb2a7d7058f150e6290e26042bcedad2673fe28b161b61fef09c871",
+          "size_bytes": 73935404,
+          "storage_mode": "runpod_volume",
+          "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
+          "volume_path": "/runpod-volume/stemforge/output/masters/sounddecay/9bf0191d6e3f0344/Hypervigilant_dynamic_master.wav"
+        },
+        "profile": "dynamic",
+        "safety": {
+          "accepted": true,
+          "crest_change_db": -0.198,
+          "reasons": [],
+          "stereo_correlation_change": 0.00067
+        }
+      },
+      {
+        "chain": {
+          "attack_ms": 25,
+          "ceiling_dbfs": -1,
+          "gain_db": 2.388,
+          "limiter_reduction_db": 0,
+          "measured_lufs": -14.888,
+          "ratio": 1.8,
+          "release_ms": 190,
+          "target_lufs": -12.5,
+          "threshold_db": -14,
+          "width": 0.98
+        },
+        "metrics": {
+          "channels": 2,
+          "clipped_sample_count": 0,
+          "crest_factor_db": 13.926,
+          "dc_offset": [
+            0.00000341,
+            0.00000285
+          ],
+          "duration_seconds": 256.72,
+          "integrated_lufs": -12.5,
+          "rms_dbfs": -15.089,
+          "sample_peak_dbfs": -1.162,
+          "sample_rate": 48000,
+          "silence_regions": [],
+          "spectral_energy_distribution": {
+            "air": 0.0039146,
+            "bass": 0.3632427,
+            "high": 0.0337554,
+            "low_mid": 0.067686,
+            "mid": 0.1313868,
+            "presence": 0.0629319,
+            "sub": 0.3265678
+          },
+          "stereo_correlation": 0.755554,
+          "timeline_10s": [
+            {
+              "crest_factor_db": 17.303,
+              "end_seconds": 10,
+              "peak_dbfs": -4.142,
+              "rms_dbfs": -21.445,
+              "start_seconds": 0,
+              "stereo_correlation": 0.16274
+            },
+            {
+              "crest_factor_db": 15.224,
+              "end_seconds": 20,
+              "peak_dbfs": -1.836,
+              "rms_dbfs": -17.06,
+              "start_seconds": 10,
+              "stereo_correlation": 0.64691
+            },
+            {
+              "crest_factor_db": 14.176,
+              "end_seconds": 30,
+              "peak_dbfs": -1.162,
+              "rms_dbfs": -15.339,
+              "start_seconds": 20,
+              "stereo_correlation": 0.671
+            },
+            {
+              "crest_factor_db": 13.971,
+              "end_seconds": 40,
+              "peak_dbfs": -2.41,
+              "rms_dbfs": -16.382,
+              "start_seconds": 30,
+              "stereo_correlation": 0.78929
+            },
+            {
+              "crest_factor_db": 14.449,
+              "end_seconds": 50,
+              "peak_dbfs": -2.119,
+              "rms_dbfs": -16.568,
+              "start_seconds": 40,
+              "stereo_correlation": 0.83284
+            },
+            {
+              "crest_factor_db": 13.896,
+              "end_seconds": 60,
+              "peak_dbfs": -2.381,
+              "rms_dbfs": -16.277,
+              "start_seconds": 50,
+              "stereo_correlation": 0.7923
+            },
+            {
+              "crest_factor_db": 13.784,
+              "end_seconds": 70,
+              "peak_dbfs": -2.301,
+              "rms_dbfs": -16.085,
+              "start_seconds": 60,
+              "stereo_correlation": 0.77755
+            },
+            {
+              "crest_factor_db": 13.199,
+              "end_seconds": 80,
+              "peak_dbfs": -2.567,
+              "rms_dbfs": -15.765,
+              "start_seconds": 70,
+              "stereo_correlation": 0.75356
+            },
+            {
+              "crest_factor_db": 12.594,
+              "end_seconds": 90,
+              "peak_dbfs": -3.14,
+              "rms_dbfs": -15.734,
+              "start_seconds": 80,
+              "stereo_correlation": 0.73197
+            },
+            {
+              "crest_factor_db": 12.774,
+              "end_seconds": 100,
+              "peak_dbfs": -2.626,
+              "rms_dbfs": -15.4,
+              "start_seconds": 90,
+              "stereo_correlation": 0.83959
+            },
+            {
+              "crest_factor_db": 14.56,
+              "end_seconds": 110,
+              "peak_dbfs": -2.083,
+              "rms_dbfs": -16.643,
+              "start_seconds": 100,
+              "stereo_correlation": 0.9245
+            },
+            {
+              "crest_factor_db": 14.198,
+              "end_seconds": 120,
+              "peak_dbfs": -1.276,
+              "rms_dbfs": -15.474,
+              "start_seconds": 110,
+              "stereo_correlation": 0.89992
+            },
+            {
+              "crest_factor_db": 13.052,
+              "end_seconds": 130,
+              "peak_dbfs": -1.978,
+              "rms_dbfs": -15.03,
+              "start_seconds": 120,
+              "stereo_correlation": 0.77731
+            },
+            {
+              "crest_factor_db": 13.791,
+              "end_seconds": 140,
+              "peak_dbfs": -1.901,
+              "rms_dbfs": -15.692,
+              "start_seconds": 130,
+              "stereo_correlation": 0.83693
+            },
+            {
+              "crest_factor_db": 12.419,
+              "end_seconds": 150,
+              "peak_dbfs": -1.352,
+              "rms_dbfs": -13.771,
+              "start_seconds": 140,
+              "stereo_correlation": 0.69584
+            },
+            {
+              "crest_factor_db": 12.302,
+              "end_seconds": 160,
+              "peak_dbfs": -1.882,
+              "rms_dbfs": -14.184,
+              "start_seconds": 150,
+              "stereo_correlation": 0.7531
+            },
+            {
+              "crest_factor_db": 11.659,
+              "end_seconds": 170,
+              "peak_dbfs": -2.266,
+              "rms_dbfs": -13.925,
+              "start_seconds": 160,
+              "stereo_correlation": 0.83945
+            },
+            {
+              "crest_factor_db": 12.521,
+              "end_seconds": 180,
+              "peak_dbfs": -1.782,
+              "rms_dbfs": -14.302,
+              "start_seconds": 170,
+              "stereo_correlation": 0.78184
+            },
+            {
+              "crest_factor_db": 12.721,
+              "end_seconds": 190,
+              "peak_dbfs": -1.416,
+              "rms_dbfs": -14.137,
+              "start_seconds": 180,
+              "stereo_correlation": 0.70764
+            },
+            {
+              "crest_factor_db": 11.574,
+              "end_seconds": 200,
+              "peak_dbfs": -2.574,
+              "rms_dbfs": -14.147,
+              "start_seconds": 190,
+              "stereo_correlation": 0.67278
+            },
+            {
+              "crest_factor_db": 12.53,
+              "end_seconds": 210,
+              "peak_dbfs": -1.36,
+              "rms_dbfs": -13.89,
+              "start_seconds": 200,
+              "stereo_correlation": 0.73295
+            },
+            {
+              "crest_factor_db": 11.325,
+              "end_seconds": 220,
+              "peak_dbfs": -2.242,
+              "rms_dbfs": -13.567,
+              "start_seconds": 210,
+              "stereo_correlation": 0.74808
+            },
+            {
+              "crest_factor_db": 12.633,
+              "end_seconds": 230,
+              "peak_dbfs": -1.987,
+              "rms_dbfs": -14.62,
+              "start_seconds": 220,
+              "stereo_correlation": 0.78578
+            },
+            {
+              "crest_factor_db": 13.407,
+              "end_seconds": 240,
+              "peak_dbfs": -1.246,
+              "rms_dbfs": -14.653,
+              "start_seconds": 230,
+              "stereo_correlation": 0.65979
+            },
+            {
+              "crest_factor_db": 12.575,
+              "end_seconds": 250,
+              "peak_dbfs": -1.231,
+              "rms_dbfs": -13.806,
+              "start_seconds": 240,
+              "stereo_correlation": 0.73556
+            },
+            {
+              "crest_factor_db": 12.687,
+              "end_seconds": 256.72,
+              "peak_dbfs": -1.504,
+              "rms_dbfs": -14.192,
+              "start_seconds": 250,
+              "stereo_correlation": 0.76826
+            }
+          ],
+          "transient_density_per_second": 15.13322,
+          "true_peak_dbtp": -1.013,
+          "waveform_discontinuity_count": 0
+        },
+        "output": {
+          "download_url": null,
+          "filename": "Hypervigilant_balanced_master.wav",
+          "local_path": "/runpod-volume/stemforge/output/masters/sounddecay/46bb5d72a611616a/Hypervigilant_balanced_master.wav",
+          "sha256": "93ca89f858fb8a0e8c95531e473e267c9c5bce6db39c14ec53e862a853a46821",
+          "size_bytes": 73935404,
+          "storage_mode": "runpod_volume",
+          "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
+          "volume_path": "/runpod-volume/stemforge/output/masters/sounddecay/46bb5d72a611616a/Hypervigilant_balanced_master.wav"
+        },
+        "profile": "balanced",
+        "safety": {
+          "accepted": true,
+          "crest_change_db": -0.822,
+          "reasons": [],
+          "stereo_correlation_change": 0.00357
+        }
+      },
+      {
+        "chain": {
+          "attack_ms": 18,
+          "ceiling_dbfs": -0.9,
+          "gain_db": 5.807,
+          "limiter_reduction_db": -2.684,
+          "measured_lufs": -16.607,
+          "ratio": 2.5,
+          "release_ms": 150,
+          "target_lufs": -10.8,
+          "threshold_db": -17,
+          "width": 0.96
+        },
+        "metrics": {
+          "channels": 2,
+          "clipped_sample_count": 0,
+          "crest_factor_db": 15.223,
+          "dc_offset": [
+            0.00000804,
+            0.00000681
+          ],
+          "duration_seconds": 256.72,
+          "integrated_lufs": -13.484,
+          "rms_dbfs": -16.123,
+          "sample_peak_dbfs": -0.9,
+          "sample_rate": 48000,
+          "silence_regions": [],
+          "spectral_energy_distribution": {
+            "air": 0.0041656,
+            "bass": 0.3696063,
+            "high": 0.0359597,
+            "low_mid": 0.07156,
+            "mid": 0.1355961,
+            "presence": 0.0647643,
+            "sub": 0.3082711
+          },
+          "stereo_correlation": 0.760671,
+          "timeline_10s": [
+            {
+              "crest_factor_db": 17.423,
+              "end_seconds": 10,
+              "peak_dbfs": -3.71,
+              "rms_dbfs": -21.133,
+              "start_seconds": 0,
+              "stereo_correlation": 0.19012
+            },
+            {
+              "crest_factor_db": 15.748,
+              "end_seconds": 20,
+              "peak_dbfs": -1.879,
+              "rms_dbfs": -17.627,
+              "start_seconds": 10,
+              "stereo_correlation": 0.64642
+            },
+            {
+              "crest_factor_db": 14.087,
+              "end_seconds": 30,
+              "peak_dbfs": -2.19,
+              "rms_dbfs": -16.276,
+              "start_seconds": 20,
+              "stereo_correlation": 0.68055
+            },
+            {
+              "crest_factor_db": 13.901,
+              "end_seconds": 40,
+              "peak_dbfs": -3.073,
+              "rms_dbfs": -16.974,
+              "start_seconds": 30,
+              "stereo_correlation": 0.7983
+            },
+            {
+              "crest_factor_db": 14.739,
+              "end_seconds": 50,
+              "peak_dbfs": -2.35,
+              "rms_dbfs": -17.088,
+              "start_seconds": 40,
+              "stereo_correlation": 0.83942
+            },
+            {
+              "crest_factor_db": 13.895,
+              "end_seconds": 60,
+              "peak_dbfs": -2.991,
+              "rms_dbfs": -16.887,
+              "start_seconds": 50,
+              "stereo_correlation": 0.80078
+            },
+            {
+              "crest_factor_db": 14.057,
+              "end_seconds": 70,
+              "peak_dbfs": -2.708,
+              "rms_dbfs": -16.765,
+              "start_seconds": 60,
+              "stereo_correlation": 0.78356
+            },
+            {
+              "crest_factor_db": 13.708,
+              "end_seconds": 80,
+              "peak_dbfs": -2.828,
+              "rms_dbfs": -16.536,
+              "start_seconds": 70,
+              "stereo_correlation": 0.76257
+            },
+            {
+              "crest_factor_db": 12.703,
+              "end_seconds": 90,
+              "peak_dbfs": -3.818,
+              "rms_dbfs": -16.521,
+              "start_seconds": 80,
+              "stereo_correlation": 0.74057
+            },
+            {
+              "crest_factor_db": 12.859,
+              "end_seconds": 100,
+              "peak_dbfs": -3.364,
+              "rms_dbfs": -16.224,
+              "start_seconds": 90,
+              "stereo_correlation": 0.8442
+            },
+            {
+              "crest_factor_db": 15.297,
+              "end_seconds": 110,
+              "peak_dbfs": -1.855,
+              "rms_dbfs": -17.152,
+              "start_seconds": 100,
+              "stereo_correlation": 0.93008
+            },
+            {
+              "crest_factor_db": 15.245,
+              "end_seconds": 120,
+              "peak_dbfs": -1.018,
+              "rms_dbfs": -16.263,
+              "start_seconds": 110,
+              "stereo_correlation": 0.9039
+            },
+            {
+              "crest_factor_db": 13.524,
+              "end_seconds": 130,
+              "peak_dbfs": -2.464,
+              "rms_dbfs": -15.988,
+              "start_seconds": 120,
+              "stereo_correlation": 0.78448
+            },
+            {
+              "crest_factor_db": 14.547,
+              "end_seconds": 140,
+              "peak_dbfs": -2.016,
+              "rms_dbfs": -16.562,
+              "start_seconds": 130,
+              "stereo_correlation": 0.84319
+            },
+            {
+              "crest_factor_db": 12.816,
+              "end_seconds": 150,
+              "peak_dbfs": -2.297,
+              "rms_dbfs": -15.114,
+              "start_seconds": 140,
+              "stereo_correlation": 0.70227
+            },
+            {
+              "crest_factor_db": 12.772,
+              "end_seconds": 160,
+              "peak_dbfs": -2.629,
+              "rms_dbfs": -15.401,
+              "start_seconds": 150,
+              "stereo_correlation": 0.75471
+            },
+            {
+              "crest_factor_db": 11.525,
+              "end_seconds": 170,
+              "peak_dbfs": -3.623,
+              "rms_dbfs": -15.148,
+              "start_seconds": 160,
+              "stereo_correlation": 0.84315
+            },
+            {
+              "crest_factor_db": 12.513,
+              "end_seconds": 180,
+              "peak_dbfs": -2.937,
+              "rms_dbfs": -15.45,
+              "start_seconds": 170,
+              "stereo_correlation": 0.78707
+            },
+            {
+              "crest_factor_db": 12.722,
+              "end_seconds": 190,
+              "peak_dbfs": -2.652,
+              "rms_dbfs": -15.373,
+              "start_seconds": 180,
+              "stereo_correlation": 0.71609
+            },
+            {
+              "crest_factor_db": 11.582,
+              "end_seconds": 200,
+              "peak_dbfs": -3.808,
+              "rms_dbfs": -15.39,
+              "start_seconds": 190,
+              "stereo_correlation": 0.68321
+            },
+            {
+              "crest_factor_db": 12.636,
+              "end_seconds": 210,
+              "peak_dbfs": -2.546,
+              "rms_dbfs": -15.182,
+              "start_seconds": 200,
+              "stereo_correlation": 0.7405
+            },
+            {
+              "crest_factor_db": 11.143,
+              "end_seconds": 220,
+              "peak_dbfs": -3.798,
+              "rms_dbfs": -14.941,
+              "start_seconds": 210,
+              "stereo_correlation": 0.75465
+            },
+            {
+              "crest_factor_db": 12.638,
+              "end_seconds": 230,
+              "peak_dbfs": -3.132,
+              "rms_dbfs": -15.77,
+              "start_seconds": 220,
+              "stereo_correlation": 0.78975
+            },
+            {
+              "crest_factor_db": 13.693,
+              "end_seconds": 240,
+              "peak_dbfs": -2.253,
+              "rms_dbfs": -15.946,
+              "start_seconds": 230,
+              "stereo_correlation": 0.65915
+            },
+            {
+              "crest_factor_db": 14.342,
+              "end_seconds": 250,
+              "peak_dbfs": -0.9,
+              "rms_dbfs": -15.242,
+              "start_seconds": 240,
+              "stereo_correlation": 0.72456
+            },
+            {
+              "crest_factor_db": 13.138,
+              "end_seconds": 256.72,
+              "peak_dbfs": -2.633,
+              "rms_dbfs": -15.771,
+              "start_seconds": 250,
+              "stereo_correlation": 0.76333
+            }
+          ],
+          "transient_density_per_second": 15.14101,
+          "true_peak_dbtp": -0.894,
+          "waveform_discontinuity_count": 0
+        },
+        "output": {
+          "download_url": null,
+          "filename": "Hypervigilant_dense_master.wav",
+          "local_path": "/runpod-volume/stemforge/output/masters/sounddecay/8ba5111d18af8ce7/Hypervigilant_dense_master.wav",
+          "sha256": "46567be01d893f961a1012f682b7ffcd3c5b68c4eb9868005c8469433c9decea",
+          "size_bytes": 73935404,
+          "storage_mode": "runpod_volume",
+          "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
+          "volume_path": "/runpod-volume/stemforge/output/masters/sounddecay/8ba5111d18af8ce7/Hypervigilant_dense_master.wav"
+        },
+        "profile": "dense",
+        "safety": {
+          "accepted": true,
+          "crest_change_db": 0.475,
+          "reasons": [],
+          "stereo_correlation_change": 0.00869
+        }
+      }
+    ],
+    "mastering_report_output": {
+      "download_url": null,
+      "filename": "mastering_report.json",
+      "local_path": "/runpod-volume/stemforge/output/masters/sounddecay/281decc4121d54cd/mastering_report.json",
+      "sha256": "4a6d7a540250fdef7bcbec3afa5a6dd1832b62d37b329c480080b88ff5eeb422",
+      "size_bytes": 29959,
+      "storage_mode": "runpod_volume",
+      "storage_note": "Persisted on the RunPod network volume; use volume_file_chunk or configure S3 for signed downloads.",
+      "volume_path": "/runpod-volume/stemforge/output/masters/sounddecay/281decc4121d54cd/mastering_report.json"
+    },
+    "mastering_source": {
+      "naturalize_preset": "Naturalize Balanced",
+      "naturalized_before_mastering": true,
+      "path": "/runpod-volume/stemforge/jobs/full_pass/3e93165618de4979/naturalize/Hypervigilant_Naturalized.wav"
+    },
+    "midi_analysis": {
+      "file_count": 0,
+      "files": [],
+      "primary_tempo_bpm": null,
+      "time_signatures": []
+    },
+    "naturalize": {
+      "agent_log": {
+        "callable_operation": "naturalize",
+        "fallback_without_stems": "quick",
+        "original_retained_for_ab": true,
+        "parameters": {
+          "parameters": {
+            "denoise_reduction_db": 3,
+            "flanger_delay_ms": 1,
+            "flanger_depth": 9,
+            "flanger_feedback": 0.1,
+            "flanger_modulation_rate_hz": 0.9,
+            "flanger_wet_mix": 0.3,
+            "multiband_compression": false,
+            "noise_floor_dbfs": -66,
+            "noise_floor_enabled": true,
+            "noise_floor_shape": "pink",
+            "noise_profile_ms": 200,
+            "primary_vibrato_depth_cents": 10,
+            "primary_vibrato_rate_hz": 15,
+            "saturation_drive": 0.1,
+            "saturation_enabled": true,
+            "secondary_vibrato_depth_cents": 9,
+            "secondary_vibrato_rate_hz": 10,
+            "timing_jitter_enabled": true,
+            "timing_jitter_ms": 2.25,
+            "tremolo_depth_percent": 10,
+            "tremolo_rate_hz": 15,
+            "tremolo_waveform": "sine"
+          },
+          "passes": {
+            "applied": 1,
+            "maximum": 2,
+            "requested": 1,
+            "second_pass_maximum_scale": 0.7,
+            "second_pass_scale": 0.65
+          },
+          "requested_intensity": 1.4,
+          "selected_intensity": 1.4,
+          "stem_routing": [
+            {
+              "name": "Lead Vocals",
+              "role": "vocal"
+            },
+            {
+              "name": "Backing Vocals",
+              "role": "vocal"
+            },
+            {
+              "name": "Other",
+              "role": "harmonic"
+            },
+            {
+              "name": "Percussion",
+              "role": "percussion"
+            },
+            {
+              "name": "Drums",
+              "role": "percussion"
+            },
+            {
+              "name": "Synth",
+              "role": "harmonic"
+            },
+            {
+              "name": "Bass",
+              "role": "harmonic"
+            },
+            {
+              "name": "Guitar",
+              "role": "harmonic"
+            }
+          ],
+          "vocoder": {
+            "backend": "vocos",
+            "compute_budget": "auto",
+            "enabled": true,
+            "feature_perturbation": 0.0025,
+            "model": "charactr/vocos-mel-24khz",
+            "requested": "auto",
+            "required": false,
+            "wet_by_role": {
+              "full_mix": 0.35,
+              "harmonic": 0.6,
+              "other": 0.45,
+              "percussion": 0.2,
+              "vocal": 0.85
+            }
+          }
+        },
+        "pre_denoise_retained_for_ab": true,
+        "preferred_mode_when_stems_available": "surgical",
+        "preset": "Naturalize Balanced",
+        "resulting_characteristics": {
+          "crest_factor_delta_db": 2.82,
+          "derivative_rms_delta_db": 0.4014,
+          "envelope": {
+            "correlation": 0.907051,
+            "pumping_index": 0.132131,
+            "transient_retention": 0.892558
+          },
+          "high_band_energy_ratio_delta_db": -0.0291,
+          "level_matched_residual_relative_db": -7.8414,
+          "spectral_cosine_similarity": 0.994194,
+          "waveform_correlation": 0.9271083
+        }
+      },
+      "anchor_decision": {
+        "delta_amount": 0.7,
+        "instrumental_source": "supplied_stems",
+        "mix_source": "master_anchored_stem_delta",
+        "reason": "Supplied stems failed reconstruction, so Naturalize applied their processing deltas around the coherent master."
+      },
+      "applied": true,
+      "attempts": [
+        {
+          "accepted": true,
+          "attempt": 1,
+          "intensity": 1.4,
+          "reasons": []
+        }
+      ],
+      "engine": "StemForge Naturalize pipeline v2.0",
+      "honesty_note": "Naturalize is a fidelity and authenticity enhancement. It does not identify, conceal, or guarantee the origin of audio and is not a detection-evasion tool.",
+      "intensity": 1.4,
+      "intensity_was_reduced": false,
+      "label": "Naturalness / Authenticity enhancement",
+      "naturalness_characteristics": {
+        "crest_factor_delta_db": 2.82,
+        "derivative_rms_delta_db": 0.4014,
+        "envelope": {
+          "correlation": 0.907051,
+          "pumping_index": 0.132131,
+          "transient_retention": 0.892558
+        },
+        "high_band_energy_ratio_delta_db": -0.0291,
+        "level_matched_residual_relative_db": -7.8414,
+        "spectral_cosine_similarity": 0.994194,
+        "waveform_correlation": 0.9271083
+      },
+      "nominal_cocktail": {
+        "denoise": {
+          "maximum_reduction_db": 5,
+          "position": "post_cocktail_only",
+          "quiet_profile_ms": 350,
+          "type": "adaptive_music_spectral"
+        },
+        "flanger": {
+          "delay_ms": 1,
+          "depth": 9,
+          "feedback": 0.1,
+          "modulation_rate_hz": 0.9,
+          "wet_mix": 0.3
+        },
+        "primary_vibrato": {
+          "depth_cents": 10,
+          "rate_hz": 15,
+          "waveform": "sine"
+        },
+        "secondary_vibrato": {
+          "depth_cents": 9,
+          "rate_hz": 10,
+          "waveform": "sine"
+        },
+        "tremolo": {
+          "depth_percent": 10,
+          "rate_hz": 15,
+          "waveform": "sine"
+        }
+      },
+      "original_reference_path": "/runpod-volume/stemforge/jobs/full_pass/3e93165618de4979/naturalize/Hypervigilant_Original_AB_Reference.wav",
+      "parameters": {
+        "denoise_reduction_db": 3,
+        "flanger_delay_ms": 1,
+        "flanger_depth": 9,
+        "flanger_feedback": 0.1,
+        "flanger_modulation_rate_hz": 0.9,
+        "flanger_wet_mix": 0.3,
+        "multiband_compression": false,
+        "noise_floor_dbfs": -66,
+        "noise_floor_enabled": true,
+        "noise_floor_shape": "pink",
+        "noise_profile_ms": 200,
+        "primary_vibrato_depth_cents": 10,
+        "primary_vibrato_rate_hz": 15,
+        "saturation_drive": 0.1,
+        "saturation_enabled": true,
+        "secondary_vibrato_depth_cents": 9,
+        "secondary_vibrato_rate_hz": 10,
+        "timing_jitter_enabled": true,
+        "timing_jitter_ms": 2.25,
+        "tremolo_depth_percent": 10,
+        "tremolo_rate_hz": 15,
+        "tremolo_waveform": "sine"
+      },
+      "passes": {
+        "applied": 1,
+        "maximum": 2,
+        "requested": 1,
+        "second_pass_maximum_scale": 0.7,
+        "second_pass_scale": 0.65
+      },
+      "pre_denoise_reference_path": "/runpod-volume/stemforge/jobs/full_pass/3e93165618de4979/naturalize/Hypervigilant_PreDenoise_AB_Reference.wav",
+      "preset": "Naturalize Balanced",
+      "processing_order": [
+        "primary_vibrato_14_16hz_default15_depth8_12c_default10",
+        "tremolo_12_16hz_default15_depth6_12pct_default10",
+        "secondary_vibrato_8_11hz_default10_depth6_10c_default9",
+        "flanger_delay0.8_1.2ms_default1_rate0.6_1.1hz_default0.9",
+        "optional_timing_saturation_multiband_and_noise_floor",
+        "constrained_adaptive_denoise_after_modulation",
+        "optional_neural_vocoder_after_denoise"
+      ],
+      "reconstruction_gate": {
+        "accepted": false,
+        "level_matched_residual_relative_db": -4.3871,
+        "thresholds": {
+          "maximum_residual_relative_db": -24,
+          "minimum_waveform_correlation": 0.985
+        },
+        "waveform_correlation": 0.8639325
+      },
+      "requested_intensity": 1.4,
+      "requested_mode": "auto",
+      "resolved_mode": "surgical",
+      "safety": {
+        "accepted": true,
+        "comparison": {
+          "derivative": {
+            "candidate_maximum": 0.399880086,
+            "candidate_outlier_count": 0,
+            "candidate_p999": 0.181389016,
+            "candidate_rms": 0.045177136,
+            "p999_delta_db": 0.4218,
+            "reference_maximum": 0.303649902,
+            "reference_outlier_count": 0,
+            "reference_p999": 0.172790527,
+            "reference_rms": 0.043137079,
+            "rms_delta_db": 0.4014
+          },
+          "high_band_energy_ratio": {
+            "candidate": 0.016035804421,
+            "delta_db": -0.0291,
+            "meaningful_energy_floor": 0.000001,
+            "raw_delta_db": -0.0291,
+            "reference": 0.016089657131
+          },
+          "level_match_gain_db": -0.0538,
+          "level_matched_residual_relative_db": -7.8414,
+          "non_finite_sample_count": 0,
+          "waveform_correlation": 0.9271083
+        },
+        "crest_factor_delta_db": 2.82,
+        "detectors": {
+          "aliasing_risk": false,
+          "clarity_loss_risk": false,
+          "metallic_risk": false,
+          "pumping_risk": false,
+          "transient_loss_risk": false,
+          "warble_risk": false
+        },
+        "envelope": {
+          "correlation": 0.907051,
+          "pumping_index": 0.132131,
+          "transient_retention": 0.892558
+        },
+        "reasons": [],
+        "spectral_cosine_similarity": 0.994194,
+        "stage": "dsp"
+      },
+      "stem_routing": [
+        {
+          "name": "Lead Vocals",
+          "operations": [
+            {
+              "effective_depth_cents": 16.8,
+              "operation": "vibrato",
+              "rate_hz": 15,
+              "role_multiplier": 1.2,
+              "stage": "primary",
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_percent": 16.8,
+              "operation": "tremolo",
+              "rate_hz": 15,
+              "role_multiplier": 1.2,
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_cents": 15.12,
+              "operation": "vibrato",
+              "rate_hz": 10,
+              "role_multiplier": 1.2,
+              "stage": "secondary",
+              "waveform": "sine"
+            },
+            {
+              "delay_ms": 1,
+              "effective_depth": 15.12,
+              "feedback": 0.1,
+              "modulation_rate_hz": 0.9,
+              "operation": "flanger",
+              "role_multiplier": 1.2,
+              "wet_mix": 0.4
+            },
+            {
+              "bypassed": false,
+              "maximum_ms": 3.15,
+              "onset_count": 256,
+              "operation": "micro_timing_jitter",
+              "seed": 1337,
+              "velocity_sensitive": true
+            },
+            {
+              "bypassed": false,
+              "drive": 0.14,
+              "gain_compensated": true,
+              "level": {
+                "applied_adjustment_db": -0.5,
+                "maximum_adjustment_db": 0.5,
+                "operation": "level_preservation",
+                "requested_adjustment_db": -3.726
+              },
+              "operation": "low_drive_saturation",
+              "style": "tape_tube_soft_clip"
+            },
+            {
+              "bypassed": true,
+              "operation": "gentle_multiband_compression"
+            },
+            {
+              "bypassed": false,
+              "level_dbfs": -66,
+              "operation": "noise_floor_restoration",
+              "position": "after_cocktail_before_denoise",
+              "seed": 1337,
+              "shape": "pink"
+            },
+            {
+              "attack_ms": 10,
+              "dry_microvariation_preservation_mix": 0.1,
+              "exact_mean_reduction_db": 0.0454,
+              "maximum_reduction_db": 3,
+              "noise_profile": {
+                "duration_ms": 200,
+                "selection": "quietest_post_modulation_window",
+                "start_seconds": 221.5
+              },
+              "operation": "constrained_post_cocktail_denoise",
+              "order_requirement": "post_cocktail_only",
+              "release_ms": 190,
+              "spectral_uniformity_restoration": false,
+              "transient_protection": true,
+              "type": "adaptive_music_spectral"
+            }
+          ],
+          "passes": [
+            {
+              "intensity": 1.4,
+              "operations": [
+                {
+                  "effective_depth_cents": 16.8,
+                  "operation": "vibrato",
+                  "rate_hz": 15,
+                  "role_multiplier": 1.2,
+                  "stage": "primary",
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_percent": 16.8,
+                  "operation": "tremolo",
+                  "rate_hz": 15,
+                  "role_multiplier": 1.2,
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_cents": 15.12,
+                  "operation": "vibrato",
+                  "rate_hz": 10,
+                  "role_multiplier": 1.2,
+                  "stage": "secondary",
+                  "waveform": "sine"
+                },
+                {
+                  "delay_ms": 1,
+                  "effective_depth": 15.12,
+                  "feedback": 0.1,
+                  "modulation_rate_hz": 0.9,
+                  "operation": "flanger",
+                  "role_multiplier": 1.2,
+                  "wet_mix": 0.4
+                },
+                {
+                  "bypassed": false,
+                  "maximum_ms": 3.15,
+                  "onset_count": 256,
+                  "operation": "micro_timing_jitter",
+                  "seed": 1337,
+                  "velocity_sensitive": true
+                },
+                {
+                  "bypassed": false,
+                  "drive": 0.14,
+                  "gain_compensated": true,
+                  "level": {
+                    "applied_adjustment_db": -0.5,
+                    "maximum_adjustment_db": 0.5,
+                    "operation": "level_preservation",
+                    "requested_adjustment_db": -3.726
+                  },
+                  "operation": "low_drive_saturation",
+                  "style": "tape_tube_soft_clip"
+                },
+                {
+                  "bypassed": true,
+                  "operation": "gentle_multiband_compression"
+                },
+                {
+                  "bypassed": false,
+                  "level_dbfs": -66,
+                  "operation": "noise_floor_restoration",
+                  "position": "after_cocktail_before_denoise",
+                  "seed": 1337,
+                  "shape": "pink"
+                },
+                {
+                  "attack_ms": 10,
+                  "dry_microvariation_preservation_mix": 0.1,
+                  "exact_mean_reduction_db": 0.0454,
+                  "maximum_reduction_db": 3,
+                  "noise_profile": {
+                    "duration_ms": 200,
+                    "selection": "quietest_post_modulation_window",
+                    "start_seconds": 221.5
+                  },
+                  "operation": "constrained_post_cocktail_denoise",
+                  "order_requirement": "post_cocktail_only",
+                  "release_ms": 190,
+                  "spectral_uniformity_restoration": false,
+                  "transient_protection": true,
+                  "type": "adaptive_music_spectral"
+                }
+              ],
+              "pass": 1,
+              "scale": 1
+            }
+          ],
+          "role": "vocal",
+          "role_multiplier": 1.2,
+          "vocoder": {
+            "backend": "vocos",
+            "bypassed": true,
+            "enabled": true,
+            "level": {
+              "applied_adjustment_db": 0.5146,
+              "maximum_adjustment_db": 0.75,
+              "operation": "level_preservation",
+              "requested_adjustment_db": 0.5146
+            },
+            "model": "charactr/vocos-mel-24khz",
+            "model_report": {
+              "backend": "vocos",
+              "chunk_seconds": 12,
+              "device": "cuda",
+              "feature_perturbation": 0.0035,
+              "model": "charactr/vocos-mel-24khz",
+              "model_sample_rate": 24000,
+              "overlap_seconds": 0.25
+            },
+            "reason": "quality_gate_fallback_to_dsp",
+            "safety": {
+              "accepted": false,
+              "comparison": {
+                "derivative": {
+                  "candidate_maximum": 0.165332316,
+                  "candidate_outlier_count": 0,
+                  "candidate_p999": 0.07033273,
+                  "candidate_rms": 0.013443095,
+                  "p999_delta_db": -0.057,
+                  "reference_maximum": 0.23789699,
+                  "reference_outlier_count": 6,
+                  "reference_p999": 0.070796149,
+                  "reference_rms": 0.013419628,
+                  "rms_delta_db": 0.0152
+                },
+                "high_band_energy_ratio": {
+                  "candidate": 0.007064632665,
+                  "delta_db": -0.3519,
+                  "meaningful_energy_floor": 0.000001,
+                  "raw_delta_db": -0.3519,
+                  "reference": 0.007356727846
+                },
+                "level_match_gain_db": -0,
+                "level_matched_residual_relative_db": 2.7765,
+                "non_finite_sample_count": 0,
+                "waveform_correlation": 0.0076736
+              },
+              "crest_factor_delta_db": 0.692,
+              "detectors": {
+                "aliasing_risk": false,
+                "clarity_loss_risk": true,
+                "metallic_risk": false,
+                "pumping_risk": false,
+                "transient_loss_risk": true,
+                "warble_risk": true
+              },
+              "envelope": {
+                "correlation": 0.951397,
+                "pumping_index": 0.189133,
+                "transient_retention": 0.584924
+              },
+              "reasons": [
+                "clarity_loss_or_excess_source_deviation",
+                "transient_loss",
+                "audible_warble_risk"
+              ],
+              "spectral_cosine_similarity": 0.9981632,
+              "stage": "vocoder"
+            },
+            "wet_mix": 1
+          }
+        },
+        {
+          "name": "Backing Vocals",
+          "operations": [
+            {
+              "effective_depth_cents": 16.8,
+              "operation": "vibrato",
+              "rate_hz": 15,
+              "role_multiplier": 1.2,
+              "stage": "primary",
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_percent": 16.8,
+              "operation": "tremolo",
+              "rate_hz": 15,
+              "role_multiplier": 1.2,
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_cents": 15.12,
+              "operation": "vibrato",
+              "rate_hz": 10,
+              "role_multiplier": 1.2,
+              "stage": "secondary",
+              "waveform": "sine"
+            },
+            {
+              "delay_ms": 1,
+              "effective_depth": 15.12,
+              "feedback": 0.1,
+              "modulation_rate_hz": 0.9,
+              "operation": "flanger",
+              "role_multiplier": 1.2,
+              "wet_mix": 0.4
+            },
+            {
+              "bypassed": false,
+              "maximum_ms": 3.15,
+              "onset_count": 256,
+              "operation": "micro_timing_jitter",
+              "seed": 2346,
+              "velocity_sensitive": true
+            },
+            {
+              "bypassed": false,
+              "drive": 0.14,
+              "gain_compensated": true,
+              "level": {
+                "applied_adjustment_db": -0.5,
+                "maximum_adjustment_db": 0.5,
+                "operation": "level_preservation",
+                "requested_adjustment_db": -3.7759
+              },
+              "operation": "low_drive_saturation",
+              "style": "tape_tube_soft_clip"
+            },
+            {
+              "bypassed": true,
+              "operation": "gentle_multiband_compression"
+            },
+            {
+              "bypassed": false,
+              "level_dbfs": -66,
+              "operation": "noise_floor_restoration",
+              "position": "after_cocktail_before_denoise",
+              "seed": 2346,
+              "shape": "pink"
+            },
+            {
+              "attack_ms": 10,
+              "dry_microvariation_preservation_mix": 0.1,
+              "exact_mean_reduction_db": 1.6499,
+              "maximum_reduction_db": 3,
+              "noise_profile": {
+                "duration_ms": 200,
+                "selection": "quietest_post_modulation_window",
+                "start_seconds": 191.2
+              },
+              "operation": "constrained_post_cocktail_denoise",
+              "order_requirement": "post_cocktail_only",
+              "release_ms": 190,
+              "spectral_uniformity_restoration": false,
+              "transient_protection": true,
+              "type": "adaptive_music_spectral"
+            }
+          ],
+          "passes": [
+            {
+              "intensity": 1.4,
+              "operations": [
+                {
+                  "effective_depth_cents": 16.8,
+                  "operation": "vibrato",
+                  "rate_hz": 15,
+                  "role_multiplier": 1.2,
+                  "stage": "primary",
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_percent": 16.8,
+                  "operation": "tremolo",
+                  "rate_hz": 15,
+                  "role_multiplier": 1.2,
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_cents": 15.12,
+                  "operation": "vibrato",
+                  "rate_hz": 10,
+                  "role_multiplier": 1.2,
+                  "stage": "secondary",
+                  "waveform": "sine"
+                },
+                {
+                  "delay_ms": 1,
+                  "effective_depth": 15.12,
+                  "feedback": 0.1,
+                  "modulation_rate_hz": 0.9,
+                  "operation": "flanger",
+                  "role_multiplier": 1.2,
+                  "wet_mix": 0.4
+                },
+                {
+                  "bypassed": false,
+                  "maximum_ms": 3.15,
+                  "onset_count": 256,
+                  "operation": "micro_timing_jitter",
+                  "seed": 2346,
+                  "velocity_sensitive": true
+                },
+                {
+                  "bypassed": false,
+                  "drive": 0.14,
+                  "gain_compensated": true,
+                  "level": {
+                    "applied_adjustment_db": -0.5,
+                    "maximum_adjustment_db": 0.5,
+                    "operation": "level_preservation",
+                    "requested_adjustment_db": -3.7759
+                  },
+                  "operation": "low_drive_saturation",
+                  "style": "tape_tube_soft_clip"
+                },
+                {
+                  "bypassed": true,
+                  "operation": "gentle_multiband_compression"
+                },
+                {
+                  "bypassed": false,
+                  "level_dbfs": -66,
+                  "operation": "noise_floor_restoration",
+                  "position": "after_cocktail_before_denoise",
+                  "seed": 2346,
+                  "shape": "pink"
+                },
+                {
+                  "attack_ms": 10,
+                  "dry_microvariation_preservation_mix": 0.1,
+                  "exact_mean_reduction_db": 1.6499,
+                  "maximum_reduction_db": 3,
+                  "noise_profile": {
+                    "duration_ms": 200,
+                    "selection": "quietest_post_modulation_window",
+                    "start_seconds": 191.2
+                  },
+                  "operation": "constrained_post_cocktail_denoise",
+                  "order_requirement": "post_cocktail_only",
+                  "release_ms": 190,
+                  "spectral_uniformity_restoration": false,
+                  "transient_protection": true,
+                  "type": "adaptive_music_spectral"
+                }
+              ],
+              "pass": 1,
+              "scale": 1
+            }
+          ],
+          "role": "vocal",
+          "role_multiplier": 1.2,
+          "vocoder": {
+            "backend": "vocos",
+            "bypassed": true,
+            "enabled": true,
+            "level": {
+              "applied_adjustment_db": 0.0509,
+              "maximum_adjustment_db": 0.75,
+              "operation": "level_preservation",
+              "requested_adjustment_db": 0.0509
+            },
+            "model": "charactr/vocos-mel-24khz",
+            "model_report": {
+              "backend": "vocos",
+              "chunk_seconds": 12,
+              "device": "cuda",
+              "feature_perturbation": 0.0035,
+              "model": "charactr/vocos-mel-24khz",
+              "model_sample_rate": 24000,
+              "overlap_seconds": 0.25
+            },
+            "reason": "quality_gate_fallback_to_dsp",
+            "safety": {
+              "accepted": false,
+              "comparison": {
+                "derivative": {
+                  "candidate_maximum": 0.003563592,
+                  "candidate_outlier_count": 0,
+                  "candidate_p999": 0.000740328,
+                  "candidate_rms": 0.000052051,
+                  "p999_delta_db": -0.1501,
+                  "reference_maximum": 0.00435861,
+                  "reference_outlier_count": 0,
+                  "reference_p999": 0.00075323,
+                  "reference_rms": 0.000071525,
+                  "rms_delta_db": -2.7605
+                },
+                "high_band_energy_ratio": {
+                  "candidate": 0.000286707635,
+                  "delta_db": -25.8067,
+                  "meaningful_energy_floor": 0.000001,
+                  "raw_delta_db": -25.8067,
+                  "reference": 0.005594653821
+                },
+                "level_match_gain_db": -0,
+                "level_matched_residual_relative_db": -0.049,
+                "non_finite_sample_count": 0,
+                "waveform_correlation": 0.0051619
+              },
+              "crest_factor_delta_db": -3.077,
+              "detectors": {
+                "aliasing_risk": false,
+                "clarity_loss_risk": true,
+                "metallic_risk": false,
+                "pumping_risk": true,
+                "transient_loss_risk": false,
+                "warble_risk": false
+              },
+              "envelope": {
+                "correlation": 0.88092,
+                "pumping_index": 0.21305,
+                "transient_retention": 0.767072
+              },
+              "reasons": [
+                "clarity_loss_or_excess_source_deviation",
+                "pumping",
+                "dynamic_clarity_loss"
+              ],
+              "spectral_cosine_similarity": 0.9954903,
+              "stage": "vocoder"
+            },
+            "wet_mix": 1
+          }
+        },
+        {
+          "name": "Other",
+          "operations": [
+            {
+              "effective_depth_cents": 14,
+              "operation": "vibrato",
+              "rate_hz": 15,
+              "role_multiplier": 1,
+              "stage": "primary",
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_percent": 14,
+              "operation": "tremolo",
+              "rate_hz": 15,
+              "role_multiplier": 1,
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_cents": 12.6,
+              "operation": "vibrato",
+              "rate_hz": 10,
+              "role_multiplier": 1,
+              "stage": "secondary",
+              "waveform": "sine"
+            },
+            {
+              "delay_ms": 1,
+              "effective_depth": 12.6,
+              "feedback": 0.1,
+              "modulation_rate_hz": 0.9,
+              "operation": "flanger",
+              "role_multiplier": 1,
+              "wet_mix": 0.4
+            },
+            {
+              "bypassed": false,
+              "maximum_ms": 2.3625,
+              "onset_count": 256,
+              "operation": "micro_timing_jitter",
+              "seed": 3355,
+              "velocity_sensitive": true
+            },
+            {
+              "bypassed": false,
+              "drive": 0.14,
+              "gain_compensated": true,
+              "level": {
+                "applied_adjustment_db": -0.5,
+                "maximum_adjustment_db": 0.5,
+                "operation": "level_preservation",
+                "requested_adjustment_db": -3.57
+              },
+              "operation": "low_drive_saturation",
+              "style": "tape_tube_soft_clip"
+            },
+            {
+              "bypassed": true,
+              "operation": "gentle_multiband_compression"
+            },
+            {
+              "bypassed": false,
+              "level_dbfs": -66,
+              "operation": "noise_floor_restoration",
+              "position": "after_cocktail_before_denoise",
+              "seed": 3355,
+              "shape": "pink"
+            },
+            {
+              "attack_ms": 10,
+              "dry_microvariation_preservation_mix": 0.1,
+              "exact_mean_reduction_db": 0.3628,
+              "maximum_reduction_db": 3,
+              "noise_profile": {
+                "duration_ms": 200,
+                "selection": "quietest_post_modulation_window",
+                "start_seconds": 34.4
+              },
+              "operation": "constrained_post_cocktail_denoise",
+              "order_requirement": "post_cocktail_only",
+              "release_ms": 190,
+              "spectral_uniformity_restoration": false,
+              "transient_protection": true,
+              "type": "adaptive_music_spectral"
+            }
+          ],
+          "passes": [
+            {
+              "intensity": 1.4,
+              "operations": [
+                {
+                  "effective_depth_cents": 14,
+                  "operation": "vibrato",
+                  "rate_hz": 15,
+                  "role_multiplier": 1,
+                  "stage": "primary",
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_percent": 14,
+                  "operation": "tremolo",
+                  "rate_hz": 15,
+                  "role_multiplier": 1,
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_cents": 12.6,
+                  "operation": "vibrato",
+                  "rate_hz": 10,
+                  "role_multiplier": 1,
+                  "stage": "secondary",
+                  "waveform": "sine"
+                },
+                {
+                  "delay_ms": 1,
+                  "effective_depth": 12.6,
+                  "feedback": 0.1,
+                  "modulation_rate_hz": 0.9,
+                  "operation": "flanger",
+                  "role_multiplier": 1,
+                  "wet_mix": 0.4
+                },
+                {
+                  "bypassed": false,
+                  "maximum_ms": 2.3625,
+                  "onset_count": 256,
+                  "operation": "micro_timing_jitter",
+                  "seed": 3355,
+                  "velocity_sensitive": true
+                },
+                {
+                  "bypassed": false,
+                  "drive": 0.14,
+                  "gain_compensated": true,
+                  "level": {
+                    "applied_adjustment_db": -0.5,
+                    "maximum_adjustment_db": 0.5,
+                    "operation": "level_preservation",
+                    "requested_adjustment_db": -3.57
+                  },
+                  "operation": "low_drive_saturation",
+                  "style": "tape_tube_soft_clip"
+                },
+                {
+                  "bypassed": true,
+                  "operation": "gentle_multiband_compression"
+                },
+                {
+                  "bypassed": false,
+                  "level_dbfs": -66,
+                  "operation": "noise_floor_restoration",
+                  "position": "after_cocktail_before_denoise",
+                  "seed": 3355,
+                  "shape": "pink"
+                },
+                {
+                  "attack_ms": 10,
+                  "dry_microvariation_preservation_mix": 0.1,
+                  "exact_mean_reduction_db": 0.3628,
+                  "maximum_reduction_db": 3,
+                  "noise_profile": {
+                    "duration_ms": 200,
+                    "selection": "quietest_post_modulation_window",
+                    "start_seconds": 34.4
+                  },
+                  "operation": "constrained_post_cocktail_denoise",
+                  "order_requirement": "post_cocktail_only",
+                  "release_ms": 190,
+                  "spectral_uniformity_restoration": false,
+                  "transient_protection": true,
+                  "type": "adaptive_music_spectral"
+                }
+              ],
+              "pass": 1,
+              "scale": 1
+            }
+          ],
+          "role": "harmonic",
+          "role_multiplier": 1,
+          "vocoder": {
+            "backend": "vocos",
+            "bypassed": true,
+            "enabled": true,
+            "level": {
+              "applied_adjustment_db": 0.75,
+              "maximum_adjustment_db": 0.75,
+              "operation": "level_preservation",
+              "requested_adjustment_db": 1.6337
+            },
+            "model": "charactr/vocos-mel-24khz",
+            "model_report": {
+              "backend": "vocos",
+              "chunk_seconds": 12,
+              "device": "cuda",
+              "feature_perturbation": 0.0035,
+              "model": "charactr/vocos-mel-24khz",
+              "model_sample_rate": 24000,
+              "overlap_seconds": 0.25
+            },
+            "reason": "quality_gate_fallback_to_dsp",
+            "safety": {
+              "accepted": false,
+              "comparison": {
+                "derivative": {
+                  "candidate_maximum": 0.129959279,
+                  "candidate_outlier_count": 226,
+                  "candidate_p999": 0.048419673,
+                  "candidate_rms": 0.004540602,
+                  "p999_delta_db": 1.0187,
+                  "reference_maximum": 0.171820112,
+                  "reference_outlier_count": 171,
+                  "reference_p999": 0.043061361,
+                  "reference_rms": 0.004108212,
+                  "rms_delta_db": 0.8692
+                },
+                "high_band_energy_ratio": {
+                  "candidate": 0.002276546678,
+                  "delta_db": -0.612,
+                  "meaningful_energy_floor": 0.000001,
+                  "raw_delta_db": -0.612,
+                  "reference": 0.002442727264
+                },
+                "level_match_gain_db": 0.8837,
+                "level_matched_residual_relative_db": 0.5412,
+                "non_finite_sample_count": 0,
+                "waveform_correlation": 0.2497093
+              },
+              "crest_factor_delta_db": 1.562,
+              "detectors": {
+                "aliasing_risk": false,
+                "clarity_loss_risk": true,
+                "metallic_risk": false,
+                "pumping_risk": false,
+                "transient_loss_risk": false,
+                "warble_risk": true
+              },
+              "envelope": {
+                "correlation": 0.972556,
+                "pumping_index": 0.164324,
+                "transient_retention": 1.090184
+              },
+              "reasons": [
+                "clarity_loss_or_excess_source_deviation",
+                "audible_warble_risk"
+              ],
+              "spectral_cosine_similarity": 0.9973304,
+              "stage": "vocoder"
+            },
+            "wet_mix": 0.84
+          }
+        },
+        {
+          "name": "Percussion",
+          "operations": [
+            {
+              "effective_depth_cents": 9.1,
+              "operation": "vibrato",
+              "rate_hz": 15,
+              "role_multiplier": 0.65,
+              "stage": "primary",
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_percent": 9.1,
+              "operation": "tremolo",
+              "rate_hz": 15,
+              "role_multiplier": 0.65,
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_cents": 8.19,
+              "operation": "vibrato",
+              "rate_hz": 10,
+              "role_multiplier": 0.65,
+              "stage": "secondary",
+              "waveform": "sine"
+            },
+            {
+              "delay_ms": 1,
+              "effective_depth": 8.19,
+              "feedback": 0.1,
+              "modulation_rate_hz": 0.9,
+              "operation": "flanger",
+              "role_multiplier": 0.65,
+              "wet_mix": 0.273
+            },
+            {
+              "bypassed": false,
+              "maximum_ms": 1.4175,
+              "onset_count": 256,
+              "operation": "micro_timing_jitter",
+              "seed": 4364,
+              "velocity_sensitive": true
+            },
+            {
+              "bypassed": false,
+              "drive": 0.14,
+              "gain_compensated": true,
+              "level": {
+                "applied_adjustment_db": -0.5,
+                "maximum_adjustment_db": 0.5,
+                "operation": "level_preservation",
+                "requested_adjustment_db": -3.7124
+              },
+              "operation": "low_drive_saturation",
+              "style": "tape_tube_soft_clip"
+            },
+            {
+              "bypassed": true,
+              "operation": "gentle_multiband_compression"
+            },
+            {
+              "bypassed": false,
+              "level_dbfs": -66,
+              "operation": "noise_floor_restoration",
+              "position": "after_cocktail_before_denoise",
+              "seed": 4364,
+              "shape": "pink"
+            },
+            {
+              "attack_ms": 10,
+              "dry_microvariation_preservation_mix": 0.1,
+              "exact_mean_reduction_db": 0.9429,
+              "maximum_reduction_db": 3,
+              "noise_profile": {
+                "duration_ms": 200,
+                "selection": "quietest_post_modulation_window",
+                "start_seconds": 131.65
+              },
+              "operation": "constrained_post_cocktail_denoise",
+              "order_requirement": "post_cocktail_only",
+              "release_ms": 190,
+              "spectral_uniformity_restoration": false,
+              "transient_protection": true,
+              "type": "adaptive_music_spectral"
+            }
+          ],
+          "passes": [
+            {
+              "intensity": 1.4,
+              "operations": [
+                {
+                  "effective_depth_cents": 9.1,
+                  "operation": "vibrato",
+                  "rate_hz": 15,
+                  "role_multiplier": 0.65,
+                  "stage": "primary",
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_percent": 9.1,
+                  "operation": "tremolo",
+                  "rate_hz": 15,
+                  "role_multiplier": 0.65,
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_cents": 8.19,
+                  "operation": "vibrato",
+                  "rate_hz": 10,
+                  "role_multiplier": 0.65,
+                  "stage": "secondary",
+                  "waveform": "sine"
+                },
+                {
+                  "delay_ms": 1,
+                  "effective_depth": 8.19,
+                  "feedback": 0.1,
+                  "modulation_rate_hz": 0.9,
+                  "operation": "flanger",
+                  "role_multiplier": 0.65,
+                  "wet_mix": 0.273
+                },
+                {
+                  "bypassed": false,
+                  "maximum_ms": 1.4175,
+                  "onset_count": 256,
+                  "operation": "micro_timing_jitter",
+                  "seed": 4364,
+                  "velocity_sensitive": true
+                },
+                {
+                  "bypassed": false,
+                  "drive": 0.14,
+                  "gain_compensated": true,
+                  "level": {
+                    "applied_adjustment_db": -0.5,
+                    "maximum_adjustment_db": 0.5,
+                    "operation": "level_preservation",
+                    "requested_adjustment_db": -3.7124
+                  },
+                  "operation": "low_drive_saturation",
+                  "style": "tape_tube_soft_clip"
+                },
+                {
+                  "bypassed": true,
+                  "operation": "gentle_multiband_compression"
+                },
+                {
+                  "bypassed": false,
+                  "level_dbfs": -66,
+                  "operation": "noise_floor_restoration",
+                  "position": "after_cocktail_before_denoise",
+                  "seed": 4364,
+                  "shape": "pink"
+                },
+                {
+                  "attack_ms": 10,
+                  "dry_microvariation_preservation_mix": 0.1,
+                  "exact_mean_reduction_db": 0.9429,
+                  "maximum_reduction_db": 3,
+                  "noise_profile": {
+                    "duration_ms": 200,
+                    "selection": "quietest_post_modulation_window",
+                    "start_seconds": 131.65
+                  },
+                  "operation": "constrained_post_cocktail_denoise",
+                  "order_requirement": "post_cocktail_only",
+                  "release_ms": 190,
+                  "spectral_uniformity_restoration": false,
+                  "transient_protection": true,
+                  "type": "adaptive_music_spectral"
+                }
+              ],
+              "pass": 1,
+              "scale": 1
+            }
+          ],
+          "role": "percussion",
+          "role_multiplier": 0.65,
+          "vocoder": {
+            "backend": "vocos",
+            "bypassed": true,
+            "enabled": true,
+            "level": {
+              "applied_adjustment_db": 0.75,
+              "maximum_adjustment_db": 0.75,
+              "operation": "level_preservation",
+              "requested_adjustment_db": 1.97
+            },
+            "model": "charactr/vocos-mel-24khz",
+            "model_report": {
+              "backend": "vocos",
+              "chunk_seconds": 12,
+              "device": "cuda",
+              "feature_perturbation": 0.0035,
+              "model": "charactr/vocos-mel-24khz",
+              "model_sample_rate": 24000,
+              "overlap_seconds": 0.25
+            },
+            "reason": "quality_gate_fallback_to_dsp",
+            "safety": {
+              "accepted": false,
+              "comparison": {
+                "derivative": {
+                  "candidate_maximum": 0.156120686,
+                  "candidate_outlier_count": 4,
+                  "candidate_p999": 0.006191375,
+                  "candidate_rms": 0.000533033,
+                  "p999_delta_db": 0.5453,
+                  "reference_maximum": 0.152104883,
+                  "reference_outlier_count": 2,
+                  "reference_p999": 0.005814647,
+                  "reference_rms": 0.00049825,
+                  "rms_delta_db": 0.5861
+                },
+                "high_band_energy_ratio": {
+                  "candidate": 0.000762495363,
+                  "delta_db": -1.1301,
+                  "meaningful_energy_floor": 0.000001,
+                  "raw_delta_db": -1.1301,
+                  "reference": 0.000868443107
+                },
+                "level_match_gain_db": 1.22,
+                "level_matched_residual_relative_db": -7.9486,
+                "non_finite_sample_count": 0,
+                "waveform_correlation": 0.9153077
+              },
+              "crest_factor_delta_db": -0.33,
+              "detectors": {
+                "aliasing_risk": false,
+                "clarity_loss_risk": false,
+                "metallic_risk": false,
+                "pumping_risk": false,
+                "transient_loss_risk": false,
+                "warble_risk": true
+              },
+              "envelope": {
+                "correlation": 0.963532,
+                "pumping_index": 0.137712,
+                "transient_retention": 1.006519
+              },
+              "reasons": [
+                "audible_warble_risk"
+              ],
+              "spectral_cosine_similarity": 0.9999178,
+              "stage": "vocoder"
+            },
+            "wet_mix": 0.28
+          }
+        },
+        {
+          "name": "Drums",
+          "operations": [
+            {
+              "effective_depth_cents": 9.1,
+              "operation": "vibrato",
+              "rate_hz": 15,
+              "role_multiplier": 0.65,
+              "stage": "primary",
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_percent": 9.1,
+              "operation": "tremolo",
+              "rate_hz": 15,
+              "role_multiplier": 0.65,
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_cents": 8.19,
+              "operation": "vibrato",
+              "rate_hz": 10,
+              "role_multiplier": 0.65,
+              "stage": "secondary",
+              "waveform": "sine"
+            },
+            {
+              "delay_ms": 1,
+              "effective_depth": 8.19,
+              "feedback": 0.1,
+              "modulation_rate_hz": 0.9,
+              "operation": "flanger",
+              "role_multiplier": 0.65,
+              "wet_mix": 0.273
+            },
+            {
+              "bypassed": false,
+              "maximum_ms": 1.4175,
+              "onset_count": 256,
+              "operation": "micro_timing_jitter",
+              "seed": 5373,
+              "velocity_sensitive": true
+            },
+            {
+              "bypassed": false,
+              "drive": 0.14,
+              "gain_compensated": true,
+              "level": {
+                "applied_adjustment_db": -0.5,
+                "maximum_adjustment_db": 0.5,
+                "operation": "level_preservation",
+                "requested_adjustment_db": -3.5562
+              },
+              "operation": "low_drive_saturation",
+              "style": "tape_tube_soft_clip"
+            },
+            {
+              "bypassed": true,
+              "operation": "gentle_multiband_compression"
+            },
+            {
+              "bypassed": false,
+              "level_dbfs": -66,
+              "operation": "noise_floor_restoration",
+              "position": "after_cocktail_before_denoise",
+              "seed": 5373,
+              "shape": "pink"
+            },
+            {
+              "attack_ms": 10,
+              "dry_microvariation_preservation_mix": 0.1,
+              "exact_mean_reduction_db": 0.2959,
+              "maximum_reduction_db": 3,
+              "noise_profile": {
+                "duration_ms": 200,
+                "selection": "quietest_post_modulation_window",
+                "start_seconds": 233.4
+              },
+              "operation": "constrained_post_cocktail_denoise",
+              "order_requirement": "post_cocktail_only",
+              "release_ms": 190,
+              "spectral_uniformity_restoration": false,
+              "transient_protection": true,
+              "type": "adaptive_music_spectral"
+            }
+          ],
+          "passes": [
+            {
+              "intensity": 1.4,
+              "operations": [
+                {
+                  "effective_depth_cents": 9.1,
+                  "operation": "vibrato",
+                  "rate_hz": 15,
+                  "role_multiplier": 0.65,
+                  "stage": "primary",
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_percent": 9.1,
+                  "operation": "tremolo",
+                  "rate_hz": 15,
+                  "role_multiplier": 0.65,
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_cents": 8.19,
+                  "operation": "vibrato",
+                  "rate_hz": 10,
+                  "role_multiplier": 0.65,
+                  "stage": "secondary",
+                  "waveform": "sine"
+                },
+                {
+                  "delay_ms": 1,
+                  "effective_depth": 8.19,
+                  "feedback": 0.1,
+                  "modulation_rate_hz": 0.9,
+                  "operation": "flanger",
+                  "role_multiplier": 0.65,
+                  "wet_mix": 0.273
+                },
+                {
+                  "bypassed": false,
+                  "maximum_ms": 1.4175,
+                  "onset_count": 256,
+                  "operation": "micro_timing_jitter",
+                  "seed": 5373,
+                  "velocity_sensitive": true
+                },
+                {
+                  "bypassed": false,
+                  "drive": 0.14,
+                  "gain_compensated": true,
+                  "level": {
+                    "applied_adjustment_db": -0.5,
+                    "maximum_adjustment_db": 0.5,
+                    "operation": "level_preservation",
+                    "requested_adjustment_db": -3.5562
+                  },
+                  "operation": "low_drive_saturation",
+                  "style": "tape_tube_soft_clip"
+                },
+                {
+                  "bypassed": true,
+                  "operation": "gentle_multiband_compression"
+                },
+                {
+                  "bypassed": false,
+                  "level_dbfs": -66,
+                  "operation": "noise_floor_restoration",
+                  "position": "after_cocktail_before_denoise",
+                  "seed": 5373,
+                  "shape": "pink"
+                },
+                {
+                  "attack_ms": 10,
+                  "dry_microvariation_preservation_mix": 0.1,
+                  "exact_mean_reduction_db": 0.2959,
+                  "maximum_reduction_db": 3,
+                  "noise_profile": {
+                    "duration_ms": 200,
+                    "selection": "quietest_post_modulation_window",
+                    "start_seconds": 233.4
+                  },
+                  "operation": "constrained_post_cocktail_denoise",
+                  "order_requirement": "post_cocktail_only",
+                  "release_ms": 190,
+                  "spectral_uniformity_restoration": false,
+                  "transient_protection": true,
+                  "type": "adaptive_music_spectral"
+                }
+              ],
+              "pass": 1,
+              "scale": 1
+            }
+          ],
+          "role": "percussion",
+          "role_multiplier": 0.65,
+          "vocoder": {
+            "backend": "vocos",
+            "bypassed": false,
+            "enabled": true,
+            "feature_perturbation": 0.0035,
+            "level": {
+              "applied_adjustment_db": 0.75,
+              "maximum_adjustment_db": 0.75,
+              "operation": "level_preservation",
+              "requested_adjustment_db": 2.4288
+            },
+            "model": "charactr/vocos-mel-24khz",
+            "model_report": {
+              "backend": "vocos",
+              "chunk_seconds": 12,
+              "device": "cuda",
+              "feature_perturbation": 0.0035,
+              "model": "charactr/vocos-mel-24khz",
+              "model_sample_rate": 24000,
+              "overlap_seconds": 0.25
+            },
+            "safety": {
+              "accepted": true,
+              "comparison": {
+                "derivative": {
+                  "candidate_maximum": 0.325386427,
+                  "candidate_outlier_count": 502,
+                  "candidate_p999": 0.079474555,
+                  "candidate_rms": 0.01216352,
+                  "p999_delta_db": 0.3527,
+                  "reference_maximum": 0.273581918,
+                  "reference_outlier_count": 777,
+                  "reference_p999": 0.076312189,
+                  "reference_rms": 0.011056027,
+                  "rms_delta_db": 0.8292
+                },
+                "high_band_energy_ratio": {
+                  "candidate": 0.001030959434,
+                  "delta_db": 0.0652,
+                  "meaningful_energy_floor": 0.000001,
+                  "raw_delta_db": 0.0652,
+                  "reference": 0.001023251867
+                },
+                "level_match_gain_db": 1.6788,
+                "level_matched_residual_relative_db": -9.8157,
+                "non_finite_sample_count": 0,
+                "waveform_correlation": 0.9476328
+              },
+              "crest_factor_delta_db": 0.264,
+              "detectors": {
+                "aliasing_risk": false,
+                "clarity_loss_risk": false,
+                "metallic_risk": false,
+                "pumping_risk": false,
+                "transient_loss_risk": false,
+                "warble_risk": false
+              },
+              "envelope": {
+                "correlation": 0.969503,
+                "pumping_index": 0.156745,
+                "transient_retention": 0.796102
+              },
+              "reasons": [],
+              "spectral_cosine_similarity": 0.9997234,
+              "stage": "vocoder"
+            },
+            "wet_mix": 0.28
+          }
+        },
+        {
+          "name": "Synth",
+          "operations": [
+            {
+              "effective_depth_cents": 14,
+              "operation": "vibrato",
+              "rate_hz": 15,
+              "role_multiplier": 1,
+              "stage": "primary",
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_percent": 14,
+              "operation": "tremolo",
+              "rate_hz": 15,
+              "role_multiplier": 1,
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_cents": 12.6,
+              "operation": "vibrato",
+              "rate_hz": 10,
+              "role_multiplier": 1,
+              "stage": "secondary",
+              "waveform": "sine"
+            },
+            {
+              "delay_ms": 1,
+              "effective_depth": 12.6,
+              "feedback": 0.1,
+              "modulation_rate_hz": 0.9,
+              "operation": "flanger",
+              "role_multiplier": 1,
+              "wet_mix": 0.4
+            },
+            {
+              "bypassed": false,
+              "maximum_ms": 2.3625,
+              "onset_count": 256,
+              "operation": "micro_timing_jitter",
+              "seed": 6382,
+              "velocity_sensitive": true
+            },
+            {
+              "bypassed": false,
+              "drive": 0.14,
+              "gain_compensated": true,
+              "level": {
+                "applied_adjustment_db": -0.5,
+                "maximum_adjustment_db": 0.5,
+                "operation": "level_preservation",
+                "requested_adjustment_db": -3.765
+              },
+              "operation": "low_drive_saturation",
+              "style": "tape_tube_soft_clip"
+            },
+            {
+              "bypassed": true,
+              "operation": "gentle_multiband_compression"
+            },
+            {
+              "bypassed": false,
+              "level_dbfs": -66,
+              "operation": "noise_floor_restoration",
+              "position": "after_cocktail_before_denoise",
+              "seed": 6382,
+              "shape": "pink"
+            },
+            {
+              "attack_ms": 10,
+              "dry_microvariation_preservation_mix": 0.1,
+              "exact_mean_reduction_db": 0.0362,
+              "maximum_reduction_db": 3,
+              "noise_profile": {
+                "duration_ms": 200,
+                "selection": "quietest_post_modulation_window",
+                "start_seconds": 38.05
+              },
+              "operation": "constrained_post_cocktail_denoise",
+              "order_requirement": "post_cocktail_only",
+              "release_ms": 190,
+              "spectral_uniformity_restoration": false,
+              "transient_protection": true,
+              "type": "adaptive_music_spectral"
+            }
+          ],
+          "passes": [
+            {
+              "intensity": 1.4,
+              "operations": [
+                {
+                  "effective_depth_cents": 14,
+                  "operation": "vibrato",
+                  "rate_hz": 15,
+                  "role_multiplier": 1,
+                  "stage": "primary",
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_percent": 14,
+                  "operation": "tremolo",
+                  "rate_hz": 15,
+                  "role_multiplier": 1,
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_cents": 12.6,
+                  "operation": "vibrato",
+                  "rate_hz": 10,
+                  "role_multiplier": 1,
+                  "stage": "secondary",
+                  "waveform": "sine"
+                },
+                {
+                  "delay_ms": 1,
+                  "effective_depth": 12.6,
+                  "feedback": 0.1,
+                  "modulation_rate_hz": 0.9,
+                  "operation": "flanger",
+                  "role_multiplier": 1,
+                  "wet_mix": 0.4
+                },
+                {
+                  "bypassed": false,
+                  "maximum_ms": 2.3625,
+                  "onset_count": 256,
+                  "operation": "micro_timing_jitter",
+                  "seed": 6382,
+                  "velocity_sensitive": true
+                },
+                {
+                  "bypassed": false,
+                  "drive": 0.14,
+                  "gain_compensated": true,
+                  "level": {
+                    "applied_adjustment_db": -0.5,
+                    "maximum_adjustment_db": 0.5,
+                    "operation": "level_preservation",
+                    "requested_adjustment_db": -3.765
+                  },
+                  "operation": "low_drive_saturation",
+                  "style": "tape_tube_soft_clip"
+                },
+                {
+                  "bypassed": true,
+                  "operation": "gentle_multiband_compression"
+                },
+                {
+                  "bypassed": false,
+                  "level_dbfs": -66,
+                  "operation": "noise_floor_restoration",
+                  "position": "after_cocktail_before_denoise",
+                  "seed": 6382,
+                  "shape": "pink"
+                },
+                {
+                  "attack_ms": 10,
+                  "dry_microvariation_preservation_mix": 0.1,
+                  "exact_mean_reduction_db": 0.0362,
+                  "maximum_reduction_db": 3,
+                  "noise_profile": {
+                    "duration_ms": 200,
+                    "selection": "quietest_post_modulation_window",
+                    "start_seconds": 38.05
+                  },
+                  "operation": "constrained_post_cocktail_denoise",
+                  "order_requirement": "post_cocktail_only",
+                  "release_ms": 190,
+                  "spectral_uniformity_restoration": false,
+                  "transient_protection": true,
+                  "type": "adaptive_music_spectral"
+                }
+              ],
+              "pass": 1,
+              "scale": 1
+            }
+          ],
+          "role": "harmonic",
+          "role_multiplier": 1,
+          "vocoder": {
+            "backend": "vocos",
+            "bypassed": true,
+            "enabled": true,
+            "level": {
+              "applied_adjustment_db": 0.75,
+              "maximum_adjustment_db": 0.75,
+              "operation": "level_preservation",
+              "requested_adjustment_db": 1.0274
+            },
+            "model": "charactr/vocos-mel-24khz",
+            "model_report": {
+              "backend": "vocos",
+              "chunk_seconds": 12,
+              "device": "cuda",
+              "feature_perturbation": 0.0035,
+              "model": "charactr/vocos-mel-24khz",
+              "model_sample_rate": 24000,
+              "overlap_seconds": 0.25
+            },
+            "reason": "quality_gate_fallback_to_dsp",
+            "safety": {
+              "accepted": false,
+              "comparison": {
+                "derivative": {
+                  "candidate_maximum": 0.090926086,
+                  "candidate_outlier_count": 0,
+                  "candidate_p999": 0.032710651,
+                  "candidate_rms": 0.007126868,
+                  "p999_delta_db": -0.2417,
+                  "reference_maximum": 0.093733422,
+                  "reference_outlier_count": 0,
+                  "reference_p999": 0.033633598,
+                  "reference_rms": 0.007082793,
+                  "rms_delta_db": 0.0539
+                },
+                "high_band_energy_ratio": {
+                  "candidate": 0.002918267188,
+                  "delta_db": 0.1477,
+                  "meaningful_energy_floor": 0.000001,
+                  "raw_delta_db": 0.1477,
+                  "reference": 0.002869066103
+                },
+                "level_match_gain_db": 0.2774,
+                "level_matched_residual_relative_db": -0.796,
+                "non_finite_sample_count": 0,
+                "waveform_correlation": 0.204993
+              },
+              "crest_factor_delta_db": 0.901,
+              "detectors": {
+                "aliasing_risk": false,
+                "clarity_loss_risk": true,
+                "metallic_risk": false,
+                "pumping_risk": false,
+                "transient_loss_risk": false,
+                "warble_risk": true
+              },
+              "envelope": {
+                "correlation": 0.971154,
+                "pumping_index": 0.147695,
+                "transient_retention": 0.858896
+              },
+              "reasons": [
+                "clarity_loss_or_excess_source_deviation",
+                "audible_warble_risk"
+              ],
+              "spectral_cosine_similarity": 0.9947958,
+              "stage": "vocoder"
+            },
+            "wet_mix": 0.84
+          }
+        },
+        {
+          "name": "Bass",
+          "operations": [
+            {
+              "effective_depth_cents": 14,
+              "operation": "vibrato",
+              "rate_hz": 15,
+              "role_multiplier": 1,
+              "stage": "primary",
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_percent": 14,
+              "operation": "tremolo",
+              "rate_hz": 15,
+              "role_multiplier": 1,
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_cents": 12.6,
+              "operation": "vibrato",
+              "rate_hz": 10,
+              "role_multiplier": 1,
+              "stage": "secondary",
+              "waveform": "sine"
+            },
+            {
+              "delay_ms": 1,
+              "effective_depth": 12.6,
+              "feedback": 0.1,
+              "modulation_rate_hz": 0.9,
+              "operation": "flanger",
+              "role_multiplier": 1,
+              "wet_mix": 0.4
+            },
+            {
+              "bypassed": false,
+              "maximum_ms": 2.3625,
+              "onset_count": 256,
+              "operation": "micro_timing_jitter",
+              "seed": 7391,
+              "velocity_sensitive": true
+            },
+            {
+              "bypassed": false,
+              "drive": 0.14,
+              "gain_compensated": true,
+              "level": {
+                "applied_adjustment_db": -0.5,
+                "maximum_adjustment_db": 0.5,
+                "operation": "level_preservation",
+                "requested_adjustment_db": -3.6663
+              },
+              "operation": "low_drive_saturation",
+              "style": "tape_tube_soft_clip"
+            },
+            {
+              "bypassed": true,
+              "operation": "gentle_multiband_compression"
+            },
+            {
+              "bypassed": false,
+              "level_dbfs": -66,
+              "operation": "noise_floor_restoration",
+              "position": "after_cocktail_before_denoise",
+              "seed": 7391,
+              "shape": "pink"
+            },
+            {
+              "attack_ms": 10,
+              "dry_microvariation_preservation_mix": 0.1,
+              "exact_mean_reduction_db": 0.0657,
+              "maximum_reduction_db": 3,
+              "noise_profile": {
+                "duration_ms": 200,
+                "selection": "quietest_post_modulation_window",
+                "start_seconds": 6.1
+              },
+              "operation": "constrained_post_cocktail_denoise",
+              "order_requirement": "post_cocktail_only",
+              "release_ms": 190,
+              "spectral_uniformity_restoration": false,
+              "transient_protection": true,
+              "type": "adaptive_music_spectral"
+            }
+          ],
+          "passes": [
+            {
+              "intensity": 1.4,
+              "operations": [
+                {
+                  "effective_depth_cents": 14,
+                  "operation": "vibrato",
+                  "rate_hz": 15,
+                  "role_multiplier": 1,
+                  "stage": "primary",
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_percent": 14,
+                  "operation": "tremolo",
+                  "rate_hz": 15,
+                  "role_multiplier": 1,
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_cents": 12.6,
+                  "operation": "vibrato",
+                  "rate_hz": 10,
+                  "role_multiplier": 1,
+                  "stage": "secondary",
+                  "waveform": "sine"
+                },
+                {
+                  "delay_ms": 1,
+                  "effective_depth": 12.6,
+                  "feedback": 0.1,
+                  "modulation_rate_hz": 0.9,
+                  "operation": "flanger",
+                  "role_multiplier": 1,
+                  "wet_mix": 0.4
+                },
+                {
+                  "bypassed": false,
+                  "maximum_ms": 2.3625,
+                  "onset_count": 256,
+                  "operation": "micro_timing_jitter",
+                  "seed": 7391,
+                  "velocity_sensitive": true
+                },
+                {
+                  "bypassed": false,
+                  "drive": 0.14,
+                  "gain_compensated": true,
+                  "level": {
+                    "applied_adjustment_db": -0.5,
+                    "maximum_adjustment_db": 0.5,
+                    "operation": "level_preservation",
+                    "requested_adjustment_db": -3.6663
+                  },
+                  "operation": "low_drive_saturation",
+                  "style": "tape_tube_soft_clip"
+                },
+                {
+                  "bypassed": true,
+                  "operation": "gentle_multiband_compression"
+                },
+                {
+                  "bypassed": false,
+                  "level_dbfs": -66,
+                  "operation": "noise_floor_restoration",
+                  "position": "after_cocktail_before_denoise",
+                  "seed": 7391,
+                  "shape": "pink"
+                },
+                {
+                  "attack_ms": 10,
+                  "dry_microvariation_preservation_mix": 0.1,
+                  "exact_mean_reduction_db": 0.0657,
+                  "maximum_reduction_db": 3,
+                  "noise_profile": {
+                    "duration_ms": 200,
+                    "selection": "quietest_post_modulation_window",
+                    "start_seconds": 6.1
+                  },
+                  "operation": "constrained_post_cocktail_denoise",
+                  "order_requirement": "post_cocktail_only",
+                  "release_ms": 190,
+                  "spectral_uniformity_restoration": false,
+                  "transient_protection": true,
+                  "type": "adaptive_music_spectral"
+                }
+              ],
+              "pass": 1,
+              "scale": 1
+            }
+          ],
+          "role": "harmonic",
+          "role_multiplier": 1,
+          "vocoder": {
+            "backend": "vocos",
+            "bypassed": true,
+            "enabled": true,
+            "level": {
+              "applied_adjustment_db": 0.75,
+              "maximum_adjustment_db": 0.75,
+              "operation": "level_preservation",
+              "requested_adjustment_db": 1.7782
+            },
+            "model": "charactr/vocos-mel-24khz",
+            "model_report": {
+              "backend": "vocos",
+              "chunk_seconds": 12,
+              "device": "cuda",
+              "feature_perturbation": 0.0035,
+              "model": "charactr/vocos-mel-24khz",
+              "model_sample_rate": 24000,
+              "overlap_seconds": 0.25
+            },
+            "reason": "quality_gate_fallback_to_dsp",
+            "safety": {
+              "accepted": false,
+              "comparison": {
+                "derivative": {
+                  "candidate_maximum": 0.035891502,
+                  "candidate_outlier_count": 0,
+                  "candidate_p999": 0.006456854,
+                  "candidate_rms": 0.001466814,
+                  "p999_delta_db": 0.2329,
+                  "reference_maximum": 0.043679997,
+                  "reference_outlier_count": 0,
+                  "reference_p999": 0.006285989,
+                  "reference_rms": 0.001435659,
+                  "rms_delta_db": 0.1865
+                },
+                "high_band_energy_ratio": {
+                  "candidate": 1.305E-8,
+                  "delta_db": 0,
+                  "meaningful_energy_floor": 0.000001,
+                  "raw_delta_db": -7.6209,
+                  "reference": 3.138E-8
+                },
+                "level_match_gain_db": 1.0282,
+                "level_matched_residual_relative_db": 1.9078,
+                "non_finite_sample_count": 0,
+                "waveform_correlation": 0.2043402
+              },
+              "crest_factor_delta_db": 0.58,
+              "detectors": {
+                "aliasing_risk": false,
+                "clarity_loss_risk": true,
+                "metallic_risk": false,
+                "pumping_risk": true,
+                "transient_loss_risk": true,
+                "warble_risk": false
+              },
+              "envelope": {
+                "correlation": 0.883971,
+                "pumping_index": 0.299784,
+                "transient_retention": 0.250642
+              },
+              "reasons": [
+                "clarity_loss_or_excess_source_deviation",
+                "transient_loss",
+                "pumping"
+              ],
+              "spectral_cosine_similarity": 0.9786549,
+              "stage": "vocoder"
+            },
+            "wet_mix": 0.84
+          }
+        },
+        {
+          "name": "Guitar",
+          "operations": [
+            {
+              "effective_depth_cents": 14,
+              "operation": "vibrato",
+              "rate_hz": 15,
+              "role_multiplier": 1,
+              "stage": "primary",
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_percent": 14,
+              "operation": "tremolo",
+              "rate_hz": 15,
+              "role_multiplier": 1,
+              "waveform": "sine"
+            },
+            {
+              "effective_depth_cents": 12.6,
+              "operation": "vibrato",
+              "rate_hz": 10,
+              "role_multiplier": 1,
+              "stage": "secondary",
+              "waveform": "sine"
+            },
+            {
+              "delay_ms": 1,
+              "effective_depth": 12.6,
+              "feedback": 0.1,
+              "modulation_rate_hz": 0.9,
+              "operation": "flanger",
+              "role_multiplier": 1,
+              "wet_mix": 0.4
+            },
+            {
+              "bypassed": false,
+              "maximum_ms": 2.3625,
+              "onset_count": 256,
+              "operation": "micro_timing_jitter",
+              "seed": 8400,
+              "velocity_sensitive": true
+            },
+            {
+              "bypassed": false,
+              "drive": 0.14,
+              "gain_compensated": true,
+              "level": {
+                "applied_adjustment_db": -0.5,
+                "maximum_adjustment_db": 0.5,
+                "operation": "level_preservation",
+                "requested_adjustment_db": -3.7186
+              },
+              "operation": "low_drive_saturation",
+              "style": "tape_tube_soft_clip"
+            },
+            {
+              "bypassed": true,
+              "operation": "gentle_multiband_compression"
+            },
+            {
+              "bypassed": false,
+              "level_dbfs": -66,
+              "operation": "noise_floor_restoration",
+              "position": "after_cocktail_before_denoise",
+              "seed": 8400,
+              "shape": "pink"
+            },
+            {
+              "attack_ms": 10,
+              "dry_microvariation_preservation_mix": 0.1,
+              "exact_mean_reduction_db": 0.022,
+              "maximum_reduction_db": 3,
+              "noise_profile": {
+                "duration_ms": 200,
+                "selection": "quietest_post_modulation_window",
+                "start_seconds": 255.55
+              },
+              "operation": "constrained_post_cocktail_denoise",
+              "order_requirement": "post_cocktail_only",
+              "release_ms": 190,
+              "spectral_uniformity_restoration": false,
+              "transient_protection": true,
+              "type": "adaptive_music_spectral"
+            }
+          ],
+          "passes": [
+            {
+              "intensity": 1.4,
+              "operations": [
+                {
+                  "effective_depth_cents": 14,
+                  "operation": "vibrato",
+                  "rate_hz": 15,
+                  "role_multiplier": 1,
+                  "stage": "primary",
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_percent": 14,
+                  "operation": "tremolo",
+                  "rate_hz": 15,
+                  "role_multiplier": 1,
+                  "waveform": "sine"
+                },
+                {
+                  "effective_depth_cents": 12.6,
+                  "operation": "vibrato",
+                  "rate_hz": 10,
+                  "role_multiplier": 1,
+                  "stage": "secondary",
+                  "waveform": "sine"
+                },
+                {
+                  "delay_ms": 1,
+                  "effective_depth": 12.6,
+                  "feedback": 0.1,
+                  "modulation_rate_hz": 0.9,
+                  "operation": "flanger",
+                  "role_multiplier": 1,
+                  "wet_mix": 0.4
+                },
+                {
+                  "bypassed": false,
+                  "maximum_ms": 2.3625,
+                  "onset_count": 256,
+                  "operation": "micro_timing_jitter",
+                  "seed": 8400,
+                  "velocity_sensitive": true
+                },
+                {
+                  "bypassed": false,
+                  "drive": 0.14,
+                  "gain_compensated": true,
+                  "level": {
+                    "applied_adjustment_db": -0.5,
+                    "maximum_adjustment_db": 0.5,
+                    "operation": "level_preservation",
+                    "requested_adjustment_db": -3.7186
+                  },
+                  "operation": "low_drive_saturation",
+                  "style": "tape_tube_soft_clip"
+                },
+                {
+                  "bypassed": true,
+                  "operation": "gentle_multiband_compression"
+                },
+                {
+                  "bypassed": false,
+                  "level_dbfs": -66,
+                  "operation": "noise_floor_restoration",
+                  "position": "after_cocktail_before_denoise",
+                  "seed": 8400,
+                  "shape": "pink"
+                },
+                {
+                  "attack_ms": 10,
+                  "dry_microvariation_preservation_mix": 0.1,
+                  "exact_mean_reduction_db": 0.022,
+                  "maximum_reduction_db": 3,
+                  "noise_profile": {
+                    "duration_ms": 200,
+                    "selection": "quietest_post_modulation_window",
+                    "start_seconds": 255.55
+                  },
+                  "operation": "constrained_post_cocktail_denoise",
+                  "order_requirement": "post_cocktail_only",
+                  "release_ms": 190,
+                  "spectral_uniformity_restoration": false,
+                  "transient_protection": true,
+                  "type": "adaptive_music_spectral"
+                }
+              ],
+              "pass": 1,
+              "scale": 1
+            }
+          ],
+          "role": "harmonic",
+          "role_multiplier": 1,
+          "vocoder": {
+            "backend": "vocos",
+            "bypassed": true,
+            "enabled": true,
+            "level": {
+              "applied_adjustment_db": 0.6848,
+              "maximum_adjustment_db": 0.75,
+              "operation": "level_preservation",
+              "requested_adjustment_db": 0.6848
+            },
+            "model": "charactr/vocos-mel-24khz",
+            "model_report": {
+              "backend": "vocos",
+              "chunk_seconds": 12,
+              "device": "cuda",
+              "feature_perturbation": 0.0035,
+              "model": "charactr/vocos-mel-24khz",
+              "model_sample_rate": 24000,
+              "overlap_seconds": 0.25
+            },
+            "reason": "quality_gate_fallback_to_dsp",
+            "safety": {
+              "accepted": false,
+              "comparison": {
+                "derivative": {
+                  "candidate_maximum": 0.186355637,
+                  "candidate_outlier_count": 0,
+                  "candidate_p999": 0.061054817,
+                  "candidate_rms": 0.014681314,
+                  "p999_delta_db": -0.1248,
+                  "reference_maximum": 0.16085618,
+                  "reference_outlier_count": 0,
+                  "reference_p999": 0.061938728,
+                  "reference_rms": 0.014704169,
+                  "rms_delta_db": -0.0135
+                },
+                "high_band_energy_ratio": {
+                  "candidate": 0.000061934003,
+                  "delta_db": -0.2314,
+                  "meaningful_energy_floor": 0.000001,
+                  "raw_delta_db": -0.2314,
+                  "reference": 0.000063606258
+                },
+                "level_match_gain_db": 0,
+                "level_matched_residual_relative_db": -1.8928,
+                "non_finite_sample_count": 0,
+                "waveform_correlation": 0.1770143
+              },
+              "crest_factor_delta_db": 1.24,
+              "detectors": {
+                "aliasing_risk": false,
+                "clarity_loss_risk": true,
+                "metallic_risk": false,
+                "pumping_risk": false,
+                "transient_loss_risk": false,
+                "warble_risk": true
+              },
+              "envelope": {
+                "correlation": 0.962837,
+                "pumping_index": 0.118365,
+                "transient_retention": 1.082033
+              },
+              "reasons": [
+                "clarity_loss_or_excess_source_deviation",
+                "audible_warble_risk"
+              ],
+              "spectral_cosine_similarity": 0.9953663,
+              "stage": "vocoder"
+            },
+            "wet_mix": 0.84
+          }
+        }
+      ],
+      "vocoder": {
+        "request": {
+          "backend": "vocos",
+          "compute_budget": "auto",
+          "enabled": true,
+          "feature_perturbation": 0.0025,
+          "model": "charactr/vocos-mel-24khz",
+          "requested": "auto",
+          "required": false,
+          "wet_by_role": {
+            "full_mix": 0.35,
+            "harmonic": 0.6,
+            "other": 0.45,
+            "percussion": 0.2,
+            "vocal": 0.85
+          }
+        },
+        "routing": [
+          {
+            "name": "Lead Vocals",
+            "role": "vocal",
+            "vocoder": {
+              "backend": "vocos",
+              "bypassed": true,
+              "enabled": true,
+              "level": {
+                "applied_adjustment_db": 0.5146,
+                "maximum_adjustment_db": 0.75,
+                "operation": "level_preservation",
+                "requested_adjustment_db": 0.5146
+              },
+              "model": "charactr/vocos-mel-24khz",
+              "model_report": {
+                "backend": "vocos",
+                "chunk_seconds": 12,
+                "device": "cuda",
+                "feature_perturbation": 0.0035,
+                "model": "charactr/vocos-mel-24khz",
+                "model_sample_rate": 24000,
+                "overlap_seconds": 0.25
+              },
+              "reason": "quality_gate_fallback_to_dsp",
+              "safety": {
+                "accepted": false,
+                "comparison": {
+                  "derivative": {
+                    "candidate_maximum": 0.165332316,
+                    "candidate_outlier_count": 0,
+                    "candidate_p999": 0.07033273,
+                    "candidate_rms": 0.013443095,
+                    "p999_delta_db": -0.057,
+                    "reference_maximum": 0.23789699,
+                    "reference_outlier_count": 6,
+                    "reference_p999": 0.070796149,
+                    "reference_rms": 0.013419628,
+                    "rms_delta_db": 0.0152
+                  },
+                  "high_band_energy_ratio": {
+                    "candidate": 0.007064632665,
+                    "delta_db": -0.3519,
+                    "meaningful_energy_floor": 0.000001,
+                    "raw_delta_db": -0.3519,
+                    "reference": 0.007356727846
+                  },
+                  "level_match_gain_db": -0,
+                  "level_matched_residual_relative_db": 2.7765,
+                  "non_finite_sample_count": 0,
+                  "waveform_correlation": 0.0076736
+                },
+                "crest_factor_delta_db": 0.692,
+                "detectors": {
+                  "aliasing_risk": false,
+                  "clarity_loss_risk": true,
+                  "metallic_risk": false,
+                  "pumping_risk": false,
+                  "transient_loss_risk": true,
+                  "warble_risk": true
+                },
+                "envelope": {
+                  "correlation": 0.951397,
+                  "pumping_index": 0.189133,
+                  "transient_retention": 0.584924
+                },
+                "reasons": [
+                  "clarity_loss_or_excess_source_deviation",
+                  "transient_loss",
+                  "audible_warble_risk"
+                ],
+                "spectral_cosine_similarity": 0.9981632,
+                "stage": "vocoder"
+              },
+              "wet_mix": 1
+            }
+          },
+          {
+            "name": "Backing Vocals",
+            "role": "vocal",
+            "vocoder": {
+              "backend": "vocos",
+              "bypassed": true,
+              "enabled": true,
+              "level": {
+                "applied_adjustment_db": 0.0509,
+                "maximum_adjustment_db": 0.75,
+                "operation": "level_preservation",
+                "requested_adjustment_db": 0.0509
+              },
+              "model": "charactr/vocos-mel-24khz",
+              "model_report": {
+                "backend": "vocos",
+                "chunk_seconds": 12,
+                "device": "cuda",
+                "feature_perturbation": 0.0035,
+                "model": "charactr/vocos-mel-24khz",
+                "model_sample_rate": 24000,
+                "overlap_seconds": 0.25
+              },
+              "reason": "quality_gate_fallback_to_dsp",
+              "safety": {
+                "accepted": false,
+                "comparison": {
+                  "derivative": {
+                    "candidate_maximum": 0.003563592,
+                    "candidate_outlier_count": 0,
+                    "candidate_p999": 0.000740328,
+                    "candidate_rms": 0.000052051,
+                    "p999_delta_db": -0.1501,
+                    "reference_maximum": 0.00435861,
+                    "reference_outlier_count": 0,
+                    "reference_p999": 0.00075323,
+                    "reference_rms": 0.000071525,
+                    "rms_delta_db": -2.7605
+                  },
+                  "high_band_energy_ratio": {
+                    "candidate": 0.000286707635,
+                    "delta_db": -25.8067,
+                    "meaningful_energy_floor": 0.000001,
+                    "raw_delta_db": -25.8067,
+                    "reference": 0.005594653821
+                  },
+                  "level_match_gain_db": -0,
+                  "level_matched_residual_relative_db": -0.049,
+                  "non_finite_sample_count": 0,
+                  "waveform_correlation": 0.0051619
+                },
+                "crest_factor_delta_db": -3.077,
+                "detectors": {
+                  "aliasing_risk": false,
+                  "clarity_loss_risk": true,
+                  "metallic_risk": false,
+                  "pumping_risk": true,
+                  "transient_loss_risk": false,
+                  "warble_risk": false
+                },
+                "envelope": {
+                  "correlation": 0.88092,
+                  "pumping_index": 0.21305,
+                  "transient_retention": 0.767072
+                },
+                "reasons": [
+                  "clarity_loss_or_excess_source_deviation",
+                  "pumping",
+                  "dynamic_clarity_loss"
+                ],
+                "spectral_cosine_similarity": 0.9954903,
+                "stage": "vocoder"
+              },
+              "wet_mix": 1
+            }
+          },
+          {
+            "name": "Other",
+            "role": "harmonic",
+            "vocoder": {
+              "backend": "vocos",
+              "bypassed": true,
+              "enabled": true,
+              "level": {
+                "applied_adjustment_db": 0.75,
+                "maximum_adjustment_db": 0.75,
+                "operation": "level_preservation",
+                "requested_adjustment_db": 1.6337
+              },
+              "model": "charactr/vocos-mel-24khz",
+              "model_report": {
+                "backend": "vocos",
+                "chunk_seconds": 12,
+                "device": "cuda",
+                "feature_perturbation": 0.0035,
+                "model": "charactr/vocos-mel-24khz",
+                "model_sample_rate": 24000,
+                "overlap_seconds": 0.25
+              },
+              "reason": "quality_gate_fallback_to_dsp",
+              "safety": {
+                "accepted": false,
+                "comparison": {
+                  "derivative": {
+                    "candidate_maximum": 0.129959279,
+                    "candidate_outlier_count": 226,
+                    "candidate_p999": 0.048419673,
+                    "candidate_rms": 0.004540602,
+                    "p999_delta_db": 1.0187,
+                    "reference_maximum": 0.171820112,
+                    "reference_outlier_count": 171,
+                    "reference_p999": 0.043061361,
+                    "reference_rms": 0.004108212,
+                    "rms_delta_db": 0.8692
+                  },
+                  "high_band_energy_ratio": {
+                    "candidate": 0.002276546678,
+                    "delta_db": -0.612,
+                    "meaningful_energy_floor": 0.000001,
+                    "raw_delta_db": -0.612,
+                    "reference": 0.002442727264
+                  },
+                  "level_match_gain_db": 0.8837,
+                  "level_matched_residual_relative_db": 0.5412,
+                  "non_finite_sample_count": 0,
+                  "waveform_correlation": 0.2497093
+                },
+                "crest_factor_delta_db": 1.562,
+                "detectors": {
+                  "aliasing_risk": false,
+                  "clarity_loss_risk": true,
+                  "metallic_risk": false,
+                  "pumping_risk": false,
+                  "transient_loss_risk": false,
+                  "warble_risk": true
+                },
+                "envelope": {
+                  "correlation": 0.972556,
+                  "pumping_index": 0.164324,
+                  "transient_retention": 1.090184
+                },
+                "reasons": [
+                  "clarity_loss_or_excess_source_deviation",
+                  "audible_warble_risk"
+                ],
+                "spectral_cosine_similarity": 0.9973304,
+                "stage": "vocoder"
+              },
+              "wet_mix": 0.84
+            }
+          },
+          {
+            "name": "Percussion",
+            "role": "percussion",
+            "vocoder": {
+              "backend": "vocos",
+              "bypassed": true,
+              "enabled": true,
+              "level": {
+                "applied_adjustment_db": 0.75,
+                "maximum_adjustment_db": 0.75,
+                "operation": "level_preservation",
+                "requested_adjustment_db": 1.97
+              },
+              "model": "charactr/vocos-mel-24khz",
+              "model_report": {
+                "backend": "vocos",
+                "chunk_seconds": 12,
+                "device": "cuda",
+                "feature_perturbation": 0.0035,
+                "model": "charactr/vocos-mel-24khz",
+                "model_sample_rate": 24000,
+                "overlap_seconds": 0.25
+              },
+              "reason": "quality_gate_fallback_to_dsp",
+              "safety": {
+                "accepted": false,
+                "comparison": {
+                  "derivative": {
+                    "candidate_maximum": 0.156120686,
+                    "candidate_outlier_count": 4,
+                    "candidate_p999": 0.006191375,
+                    "candidate_rms": 0.000533033,
+                    "p999_delta_db": 0.5453,
+                    "reference_maximum": 0.152104883,
+                    "reference_outlier_count": 2,
+                    "reference_p999": 0.005814647,
+                    "reference_rms": 0.00049825,
+                    "rms_delta_db": 0.5861
+                  },
+                  "high_band_energy_ratio": {
+                    "candidate": 0.000762495363,
+                    "delta_db": -1.1301,
+                    "meaningful_energy_floor": 0.000001,
+                    "raw_delta_db": -1.1301,
+                    "reference": 0.000868443107
+                  },
+                  "level_match_gain_db": 1.22,
+                  "level_matched_residual_relative_db": -7.9486,
+                  "non_finite_sample_count": 0,
+                  "waveform_correlation": 0.9153077
+                },
+                "crest_factor_delta_db": -0.33,
+                "detectors": {
+                  "aliasing_risk": false,
+                  "clarity_loss_risk": false,
+                  "metallic_risk": false,
+                  "pumping_risk": false,
+                  "transient_loss_risk": false,
+                  "warble_risk": true
+                },
+                "envelope": {
+                  "correlation": 0.963532,
+                  "pumping_index": 0.137712,
+                  "transient_retention": 1.006519
+                },
+                "reasons": [
+                  "audible_warble_risk"
+                ],
+                "spectral_cosine_similarity": 0.9999178,
+                "stage": "vocoder"
+              },
+              "wet_mix": 0.28
+            }
+          },
+          {
+            "name": "Drums",
+            "role": "percussion",
+            "vocoder": {
+              "backend": "vocos",
+              "bypassed": false,
+              "enabled": true,
+              "feature_perturbation": 0.0035,
+              "level": {
+                "applied_adjustment_db": 0.75,
+                "maximum_adjustment_db": 0.75,
+                "operation": "level_preservation",
+                "requested_adjustment_db": 2.4288
+              },
+              "model": "charactr/vocos-mel-24khz",
+              "model_report": {
+                "backend": "vocos",
+                "chunk_seconds": 12,
+                "device": "cuda",
+                "feature_perturbation": 0.0035,
+                "model": "charactr/vocos-mel-24khz",
+                "model_sample_rate": 24000,
+                "overlap_seconds": 0.25
+              },
+              "safety": {
+                "accepted": true,
+                "comparison": {
+                  "derivative": {
+                    "candidate_maximum": 0.325386427,
+                    "candidate_outlier_count": 502,
+                    "candidate_p999": 0.079474555,
+                    "candidate_rms": 0.01216352,
+                    "p999_delta_db": 0.3527,
+                    "reference_maximum": 0.273581918,
+                    "reference_outlier_count": 777,
+                    "reference_p999": 0.076312189,
+                    "reference_rms": 0.011056027,
+                    "rms_delta_db": 0.8292
+                  },
+                  "high_band_energy_ratio": {
+                    "candidate": 0.001030959434,
+                    "delta_db": 0.0652,
+                    "meaningful_energy_floor": 0.000001,
+                    "raw_delta_db": 0.0652,
+                    "reference": 0.001023251867
+                  },
+                  "level_match_gain_db": 1.6788,
+                  "level_matched_residual_relative_db": -9.8157,
+                  "non_finite_sample_count": 0,
+                  "waveform_correlation": 0.9476328
+                },
+                "crest_factor_delta_db": 0.264,
+                "detectors": {
+                  "aliasing_risk": false,
+                  "clarity_loss_risk": false,
+                  "metallic_risk": false,
+                  "pumping_risk": false,
+                  "transient_loss_risk": false,
+                  "warble_risk": false
+                },
+                "envelope": {
+                  "correlation": 0.969503,
+                  "pumping_index": 0.156745,
+                  "transient_retention": 0.796102
+                },
+                "reasons": [],
+                "spectral_cosine_similarity": 0.9997234,
+                "stage": "vocoder"
+              },
+              "wet_mix": 0.28
+            }
+          },
+          {
+            "name": "Synth",
+            "role": "harmonic",
+            "vocoder": {
+              "backend": "vocos",
+              "bypassed": true,
+              "enabled": true,
+              "level": {
+                "applied_adjustment_db": 0.75,
+                "maximum_adjustment_db": 0.75,
+                "operation": "level_preservation",
+                "requested_adjustment_db": 1.0274
+              },
+              "model": "charactr/vocos-mel-24khz",
+              "model_report": {
+                "backend": "vocos",
+                "chunk_seconds": 12,
+                "device": "cuda",
+                "feature_perturbation": 0.0035,
+                "model": "charactr/vocos-mel-24khz",
+                "model_sample_rate": 24000,
+                "overlap_seconds": 0.25
+              },
+              "reason": "quality_gate_fallback_to_dsp",
+              "safety": {
+                "accepted": false,
+                "comparison": {
+                  "derivative": {
+                    "candidate_maximum": 0.090926086,
+                    "candidate_outlier_count": 0,
+                    "candidate_p999": 0.032710651,
+                    "candidate_rms": 0.007126868,
+                    "p999_delta_db": -0.2417,
+                    "reference_maximum": 0.093733422,
+                    "reference_outlier_count": 0,
+                    "reference_p999": 0.033633598,
+                    "reference_rms": 0.007082793,
+                    "rms_delta_db": 0.0539
+                  },
+                  "high_band_energy_ratio": {
+                    "candidate": 0.002918267188,
+                    "delta_db": 0.1477,
+                    "meaningful_energy_floor": 0.000001,
+                    "raw_delta_db": 0.1477,
+                    "reference": 0.002869066103
+                  },
+                  "level_match_gain_db": 0.2774,
+                  "level_matched_residual_relative_db": -0.796,
+                  "non_finite_sample_count": 0,
+                  "waveform_correlation": 0.204993
+                },
+                "crest_factor_delta_db": 0.901,
+                "detectors": {
+                  "aliasing_risk": false,
+                  "clarity_loss_risk": true,
+                  "metallic_risk": false,
+                  "pumping_risk": false,
+                  "transient_loss_risk": false,
+                  "warble_risk": true
+                },
+                "envelope": {
+                  "correlation": 0.971154,
+                  "pumping_index": 0.147695,
+                  "transient_retention": 0.858896
+                },
+                "reasons": [
+                  "clarity_loss_or_excess_source_deviation",
+                  "audible_warble_risk"
+                ],
+                "spectral_cosine_similarity": 0.9947958,
+                "stage": "vocoder"
+              },
+              "wet_mix": 0.84
+            }
+          },
+          {
+            "name": "Bass",
+            "role": "harmonic",
+            "vocoder": {
+              "backend": "vocos",
+              "bypassed": true,
+              "enabled": true,
+              "level": {
+                "applied_adjustment_db": 0.75,
+                "maximum_adjustment_db": 0.75,
+                "operation": "level_preservation",
+                "requested_adjustment_db": 1.7782
+              },
+              "model": "charactr/vocos-mel-24khz",
+              "model_report": {
+                "backend": "vocos",
+                "chunk_seconds": 12,
+                "device": "cuda",
+                "feature_perturbation": 0.0035,
+                "model": "charactr/vocos-mel-24khz",
+                "model_sample_rate": 24000,
+                "overlap_seconds": 0.25
+              },
+              "reason": "quality_gate_fallback_to_dsp",
+              "safety": {
+                "accepted": false,
+                "comparison": {
+                  "derivative": {
+                    "candidate_maximum": 0.035891502,
+                    "candidate_outlier_count": 0,
+                    "candidate_p999": 0.006456854,
+                    "candidate_rms": 0.001466814,
+                    "p999_delta_db": 0.2329,
+                    "reference_maximum": 0.043679997,
+                    "reference_outlier_count": 0,
+                    "reference_p999": 0.006285989,
+                    "reference_rms": 0.001435659,
+                    "rms_delta_db": 0.1865
+                  },
+                  "high_band_energy_ratio": {
+                    "candidate": 1.305E-8,
+                    "delta_db": 0,
+                    "meaningful_energy_floor": 0.000001,
+                    "raw_delta_db": -7.6209,
+                    "reference": 3.138E-8
+                  },
+                  "level_match_gain_db": 1.0282,
+                  "level_matched_residual_relative_db": 1.9078,
+                  "non_finite_sample_count": 0,
+                  "waveform_correlation": 0.2043402
+                },
+                "crest_factor_delta_db": 0.58,
+                "detectors": {
+                  "aliasing_risk": false,
+                  "clarity_loss_risk": true,
+                  "metallic_risk": false,
+                  "pumping_risk": true,
+                  "transient_loss_risk": true,
+                  "warble_risk": false
+                },
+                "envelope": {
+                  "correlation": 0.883971,
+                  "pumping_index": 0.299784,
+                  "transient_retention": 0.250642
+                },
+                "reasons": [
+                  "clarity_loss_or_excess_source_deviation",
+                  "transient_loss",
+                  "pumping"
+                ],
+                "spectral_cosine_similarity": 0.9786549,
+                "stage": "vocoder"
+              },
+              "wet_mix": 0.84
+            }
+          },
+          {
+            "name": "Guitar",
+            "role": "harmonic",
+            "vocoder": {
+              "backend": "vocos",
+              "bypassed": true,
+              "enabled": true,
+              "level": {
+                "applied_adjustment_db": 0.6848,
+                "maximum_adjustment_db": 0.75,
+                "operation": "level_preservation",
+                "requested_adjustment_db": 0.6848
+              },
+              "model": "charactr/vocos-mel-24khz",
+              "model_report": {
+                "backend": "vocos",
+                "chunk_seconds": 12,
+                "device": "cuda",
+                "feature_perturbation": 0.0035,
+                "model": "charactr/vocos-mel-24khz",
+                "model_sample_rate": 24000,
+                "overlap_seconds": 0.25
+              },
+              "reason": "quality_gate_fallback_to_dsp",
+              "safety": {
+                "accepted": false,
+                "comparison": {
+                  "derivative": {
+                    "candidate_maximum": 0.186355637,
+                    "candidate_outlier_count": 0,
+                    "candidate_p999": 0.061054817,
+                    "candidate_rms": 0.014681314,
+                    "p999_delta_db": -0.1248,
+                    "reference_maximum": 0.16085618,
+                    "reference_outlier_count": 0,
+                    "reference_p999": 0.061938728,
+                    "reference_rms": 0.014704169,
+                    "rms_delta_db": -0.0135
+                  },
+                  "high_band_energy_ratio": {
+                    "candidate": 0.000061934003,
+                    "delta_db": -0.2314,
+                    "meaningful_energy_floor": 0.000001,
+                    "raw_delta_db": -0.2314,
+                    "reference": 0.000063606258
+                  },
+                  "level_match_gain_db": 0,
+                  "level_matched_residual_relative_db": -1.8928,
+                  "non_finite_sample_count": 0,
+                  "waveform_correlation": 0.1770143
+                },
+                "crest_factor_delta_db": 1.24,
+                "detectors": {
+                  "aliasing_risk": false,
+                  "clarity_loss_risk": true,
+                  "metallic_risk": false,
+                  "pumping_risk": false,
+                  "transient_loss_risk": false,
+                  "warble_risk": true
+                },
+                "envelope": {
+                  "correlation": 0.962837,
+                  "pumping_index": 0.118365,
+                  "transient_retention": 1.082033
+                },
+                "reasons": [
+                  "clarity_loss_or_excess_source_deviation",
+                  "audible_warble_risk"
+                ],
+                "spectral_cosine_similarity": 0.9953663,
+                "stage": "vocoder"
+              },
+              "wet_mix": 0.84
+            }
+          }
+        ]
+      }
+    },
+    "song": "Hypervigilant",
+    "source_metrics": {
+      "channels": 2,
+      "clipped_sample_count": 0,
+      "crest_factor_db": 14.748,
+      "dc_offset": [
+        0.0003568,
+        0.00090167
+      ],
+      "duration_seconds": 256.72,
+      "integrated_lufs": -13.669,
+      "rms_dbfs": -16.16,
+      "sample_peak_dbfs": -1.411,
+      "sample_rate": 48000,
+      "silence_regions": [],
+      "spectral_energy_distribution": {
+        "air": 0.0036044,
+        "bass": 0.3499694,
+        "high": 0.0310785,
+        "low_mid": 0.0622428,
+        "mid": 0.1239192,
+        "presence": 0.0599348,
+        "sub": 0.3580116
+      },
+      "stereo_correlation": 0.751985,
+      "timeline_10s": [
+        {
+          "crest_factor_db": 17.243,
+          "end_seconds": 10,
+          "peak_dbfs": -6.467,
+          "rms_dbfs": -23.71,
+          "start_seconds": 0,
+          "stereo_correlation": 0.14134
+        },
+        {
+          "crest_factor_db": 14.828,
+          "end_seconds": 20,
+          "peak_dbfs": -3.902,
+          "rms_dbfs": -18.731,
+          "start_seconds": 10,
+          "stereo_correlation": 0.6443
+        },
+        {
+          "crest_factor_db": 14.134,
+          "end_seconds": 30,
+          "peak_dbfs": -2.593,
+          "rms_dbfs": -16.726,
+          "start_seconds": 20,
+          "stereo_correlation": 0.66332
+        },
+        {
+          "crest_factor_db": 14.136,
+          "end_seconds": 40,
+          "peak_dbfs": -4.002,
+          "rms_dbfs": -18.138,
+          "start_seconds": 30,
+          "stereo_correlation": 0.78069
+        },
+        {
+          "crest_factor_db": 14.26,
+          "end_seconds": 50,
+          "peak_dbfs": -4.151,
+          "rms_dbfs": -18.411,
+          "start_seconds": 40,
+          "stereo_correlation": 0.82724
+        },
+        {
+          "crest_factor_db": 13.976,
+          "end_seconds": 60,
+          "peak_dbfs": -4.058,
+          "rms_dbfs": -18.034,
+          "start_seconds": 50,
+          "stereo_correlation": 0.78446
+        },
+        {
+          "crest_factor_db": 13.52,
+          "end_seconds": 70,
+          "peak_dbfs": -4.254,
+          "rms_dbfs": -17.774,
+          "start_seconds": 60,
+          "stereo_correlation": 0.77196
+        },
+        {
+          "crest_factor_db": 12.755,
+          "end_seconds": 80,
+          "peak_dbfs": -4.591,
+          "rms_dbfs": -17.346,
+          "start_seconds": 70,
+          "stereo_correlation": 0.74547
+        },
+        {
+          "crest_factor_db": 12.441,
+          "end_seconds": 90,
+          "peak_dbfs": -4.868,
+          "rms_dbfs": -17.309,
+          "start_seconds": 80,
+          "stereo_correlation": 0.72503
+        },
+        {
+          "crest_factor_db": 12.798,
+          "end_seconds": 100,
+          "peak_dbfs": -4.117,
+          "rms_dbfs": -16.915,
+          "start_seconds": 90,
+          "stereo_correlation": 0.83535
+        },
+        {
+          "crest_factor_db": 14.235,
+          "end_seconds": 110,
+          "peak_dbfs": -4.104,
+          "rms_dbfs": -18.339,
+          "start_seconds": 100,
+          "stereo_correlation": 0.91945
+        },
+        {
+          "crest_factor_db": 13.662,
+          "end_seconds": 120,
+          "peak_dbfs": -3.309,
+          "rms_dbfs": -16.972,
+          "start_seconds": 110,
+          "stereo_correlation": 0.89637
+        },
+        {
+          "crest_factor_db": 12.825,
+          "end_seconds": 130,
+          "peak_dbfs": -3.513,
+          "rms_dbfs": -16.338,
+          "start_seconds": 120,
+          "stereo_correlation": 0.77245
+        },
+        {
+          "crest_factor_db": 13.524,
+          "end_seconds": 140,
+          "peak_dbfs": -3.504,
+          "rms_dbfs": -17.028,
+          "start_seconds": 130,
+          "stereo_correlation": 0.83162
+        },
+        {
+          "crest_factor_db": 12.22,
+          "end_seconds": 150,
+          "peak_dbfs": -2.211,
+          "rms_dbfs": -14.431,
+          "start_seconds": 140,
+          "stereo_correlation": 0.69306
+        },
+        {
+          "crest_factor_db": 12.239,
+          "end_seconds": 160,
+          "peak_dbfs": -2.828,
+          "rms_dbfs": -15.067,
+          "start_seconds": 150,
+          "stereo_correlation": 0.75451
+        },
+        {
+          "crest_factor_db": 11.901,
+          "end_seconds": 170,
+          "peak_dbfs": -2.938,
+          "rms_dbfs": -14.839,
+          "start_seconds": 160,
+          "stereo_correlation": 0.8386
+        },
+        {
+          "crest_factor_db": 12.451,
+          "end_seconds": 180,
+          "peak_dbfs": -2.9,
+          "rms_dbfs": -15.351,
+          "start_seconds": 170,
+          "stereo_correlation": 0.77951
+        },
+        {
+          "crest_factor_db": 12.637,
+          "end_seconds": 190,
+          "peak_dbfs": -2.406,
+          "rms_dbfs": -15.043,
+          "start_seconds": 180,
+          "stereo_correlation": 0.70355
+        },
+        {
+          "crest_factor_db": 11.549,
+          "end_seconds": 200,
+          "peak_dbfs": -3.506,
+          "rms_dbfs": -15.055,
+          "start_seconds": 190,
+          "stereo_correlation": 0.66665
+        },
+        {
+          "crest_factor_db": 12.494,
+          "end_seconds": 210,
+          "peak_dbfs": -2.206,
+          "rms_dbfs": -14.7,
+          "start_seconds": 200,
+          "stereo_correlation": 0.72955
+        },
+        {
+          "crest_factor_db": 11.448,
+          "end_seconds": 220,
+          "peak_dbfs": -2.774,
+          "rms_dbfs": -14.222,
+          "start_seconds": 210,
+          "stereo_correlation": 0.74663
+        },
+        {
+          "crest_factor_db": 13.117,
+          "end_seconds": 230,
+          "peak_dbfs": -2.483,
+          "rms_dbfs": -15.6,
+          "start_seconds": 220,
+          "stereo_correlation": 0.78314
+        },
+        {
+          "crest_factor_db": 13.751,
+          "end_seconds": 240,
+          "peak_dbfs": -1.411,
+          "rms_dbfs": -15.163,
+          "start_seconds": 230,
+          "stereo_correlation": 0.66258
+        },
+        {
+          "crest_factor_db": 11.798,
+          "end_seconds": 250,
+          "peak_dbfs": -2.441,
+          "rms_dbfs": -14.239,
+          "start_seconds": 240,
+          "stereo_correlation": 0.74549
+        },
+        {
+          "crest_factor_db": 11.952,
+          "end_seconds": 256.72,
+          "peak_dbfs": -2.134,
+          "rms_dbfs": -14.086,
+          "start_seconds": 250,
+          "stereo_correlation": 0.78364
+        }
+      ],
+      "transient_density_per_second": 15.09427,
+      "true_peak_dbtp": -1.318,
+      "waveform_discontinuity_count": 0
+    },
+    "status": "completed",
+    "stem_integrity": {
+      "possible_duplicates": [],
+      "reconstruction": {
+        "least_squares_gain": 0.990469,
+        "null_residual_relative_db": -4.488,
+        "quality": "poor",
+        "safe_for_stem_remix": false
+      },
+      "stem_count": 8,
+      "stems": [
+        {
+          "clipped": false,
+          "estimated_timeline_offset": {
+            "confidence": 1,
+            "method": "onset-envelope cross-correlation",
+            "offset_seconds": 0
+          },
+          "metrics": {
+            "channels": 2,
+            "clipped_sample_count": 0,
+            "crest_factor_db": 19.859,
+            "duration_seconds": 256.720021,
+            "integrated_lufs": -19.798,
+            "rms_dbfs": -24.626,
+            "sample_peak_dbfs": -4.767,
+            "sample_rate": 48000,
+            "stereo_correlation": 0.916211,
+            "true_peak_dbtp": -4.761
+          },
+          "name": "Lead Vocals",
+          "silent": false
+        },
+        {
+          "clipped": false,
+          "estimated_timeline_offset": {
+            "confidence": 1,
+            "method": "onset-envelope cross-correlation",
+            "offset_seconds": 7.56
+          },
+          "metrics": {
+            "channels": 2,
+            "clipped_sample_count": 0,
+            "crest_factor_db": 39.615,
+            "duration_seconds": 256.720021,
+            "integrated_lufs": -54.364,
+            "rms_dbfs": -77.775,
+            "sample_peak_dbfs": -38.16,
+            "sample_rate": 48000,
+            "stereo_correlation": 0.249352,
+            "true_peak_dbtp": -38.009
+          },
+          "name": "Backing Vocals",
+          "silent": false
+        },
+        {
+          "clipped": false,
+          "estimated_timeline_offset": {
+            "confidence": 1,
+            "method": "onset-envelope cross-correlation",
+            "offset_seconds": 0
+          },
+          "metrics": {
+            "channels": 2,
+            "clipped_sample_count": 0,
+            "crest_factor_db": 32.962,
+            "duration_seconds": 256.720021,
+            "integrated_lufs": -25.305,
+            "rms_dbfs": -36.749,
+            "sample_peak_dbfs": -3.787,
+            "sample_rate": 48000,
+            "stereo_correlation": 0.355874,
+            "true_peak_dbtp": -3.777
+          },
+          "name": "Other",
+          "silent": false
+        },
+        {
+          "clipped": false,
+          "estimated_timeline_offset": {
+            "confidence": 1,
+            "method": "onset-envelope cross-correlation",
+            "offset_seconds": -5.09
+          },
+          "metrics": {
+            "channels": 2,
+            "clipped_sample_count": 0,
+            "crest_factor_db": 39.356,
+            "duration_seconds": 256.720021,
+            "integrated_lufs": -35.954,
+            "rms_dbfs": -49.043,
+            "sample_peak_dbfs": -9.687,
+            "sample_rate": 48000,
+            "stereo_correlation": 0.879057,
+            "true_peak_dbtp": -9.682
+          },
+          "name": "Percussion",
+          "silent": false
+        },
+        {
+          "clipped": false,
+          "estimated_timeline_offset": {
+            "confidence": 1,
+            "method": "onset-envelope cross-correlation",
+            "offset_seconds": 0
+          },
+          "metrics": {
+            "channels": 2,
+            "clipped_sample_count": 0,
+            "crest_factor_db": 20.446,
+            "duration_seconds": 256.720021,
+            "integrated_lufs": -21.332,
+            "rms_dbfs": -23.386,
+            "sample_peak_dbfs": -2.94,
+            "sample_rate": 48000,
+            "stereo_correlation": 0.962561,
+            "true_peak_dbtp": -2.863
+          },
+          "name": "Drums",
+          "silent": false
+        },
+        {
+          "clipped": false,
+          "estimated_timeline_offset": {
+            "confidence": 1,
+            "method": "onset-envelope cross-correlation",
+            "offset_seconds": 1.5
+          },
+          "metrics": {
+            "channels": 2,
+            "clipped_sample_count": 0,
+            "crest_factor_db": 22.185,
+            "duration_seconds": 256.720021,
+            "integrated_lufs": -26.907,
+            "rms_dbfs": -33.024,
+            "sample_peak_dbfs": -10.839,
+            "sample_rate": 48000,
+            "stereo_correlation": 0.136006,
+            "true_peak_dbtp": -10.798
+          },
+          "name": "Synth",
+          "silent": false
+        },
+        {
+          "clipped": false,
+          "estimated_timeline_offset": {
+            "confidence": 1,
+            "method": "onset-envelope cross-correlation",
+            "offset_seconds": 0
+          },
+          "metrics": {
+            "channels": 2,
+            "clipped_sample_count": 0,
+            "crest_factor_db": 18.264,
+            "duration_seconds": 256.720021,
+            "integrated_lufs": -22.69,
+            "rms_dbfs": -24.152,
+            "sample_peak_dbfs": -5.887,
+            "sample_rate": 48000,
+            "stereo_correlation": 0.95349,
+            "true_peak_dbtp": -5.882
+          },
+          "name": "Bass",
+          "silent": false
+        },
+        {
+          "clipped": false,
+          "estimated_timeline_offset": {
+            "confidence": 1,
+            "method": "onset-envelope cross-correlation",
+            "offset_seconds": 0
+          },
+          "metrics": {
+            "channels": 2,
+            "clipped_sample_count": 0,
+            "crest_factor_db": 20.676,
+            "duration_seconds": 256.720021,
+            "integrated_lufs": -21.48,
+            "rms_dbfs": -25.618,
+            "sample_peak_dbfs": -4.942,
+            "sample_rate": 48000,
+            "stereo_correlation": -0.115914,
+            "true_peak_dbtp": -4.935
+          },
+          "name": "Guitar",
+          "silent": false
+        }
+      ]
+    },
+    "stemforge_version": "2.4.0",
+    "tempo_linked_mastering_overrides": {}
+  },
+  "status": "COMPLETED",
+  "workerId": "6qrvhlixrrowi7"
+}
