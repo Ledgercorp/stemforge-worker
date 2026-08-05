@@ -1,0 +1,124 @@
+name: Ingest Audio
+
+# Turns a fragile source URL into a stable storage key.
+#
+# Renders currently take input from Google Drive links, which expire and can
+# serve an HTML quota page instead of audio - a failure that surfaces much
+# later as a confusing decode error. Run this once per file and every later
+# render can reference the resulting `storage_key` instead.
+#
+# The runner has open internet and the RunPod key, so this works from a phone:
+# paste the URLs into the workflow inputs and read the keys off the summary.
+#
+# Requires S3 storage configured on the endpoint. Without it the run fails
+# saying exactly that.
+
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "Source URLs, one per line (Drive links are fine)"
+        required: true
+        type: string
+      names:
+        description: "Optional filenames, one per line, matched in order"
+        required: false
+        type: string
+      artist:
+        description: "Artist prefix for the storage keys"
+        required: false
+        default: "sounddecay"
+        type: string
+      record_as:
+        description: "Optional name to commit the keys under in ingested/"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stemforge-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Ingest each source
+        id: ingest
+        shell: bash
+        env:
+          URLS: ${{ inputs.urls }}
+          NAMES: ${{ inputs.names }}
+          ARTIST: ${{ inputs.artist }}
+        run: |
+          set -euo pipefail
+          test -n "$RUNPOD_API_KEY"
+          mkdir -p ingested
+
+          mapfile -t SOURCES < <(printf '%s\n' "$URLS" | tr -d '\r' | sed '/^[[:space:]]*$/d')
+          mapfile -t LABELS  < <(printf '%s\n' "${NAMES:-}" | tr -d '\r' | sed '/^[[:space:]]*$/d')
+          test "${#SOURCES[@]}" -gt 0
+
+          echo '{"ingested":[]}' > ingested/records.json
+          for INDEX in "${!SOURCES[@]}"; do
+            ARGS=(--from-url "${SOURCES[$INDEX]}" --artist "$ARTIST" --json --quiet)
+            if [ "$INDEX" -lt "${#LABELS[@]}" ]; then
+              ARGS+=(--name "${LABELS[$INDEX]}")
+            fi
+            python tools/ingest_audio.py "${ARGS[@]}" > /tmp/one.json
+            jq -s '{ingested: (.[0].ingested + .[1].ingested)}' \
+              ingested/records.json /tmp/one.json > /tmp/merged.json
+            mv /tmp/merged.json ingested/records.json
+          done
+
+          {
+            echo "### Ingested"
+            echo ""
+            echo "| storage key | filename | bytes |"
+            echo "| --- | --- | --- |"
+            jq -r '.ingested[] | "| `\(.storage_key)` | \(.filename) | \(.size_bytes) |"' \
+              ingested/records.json
+            echo ""
+            echo "Use a key as \`audio_storage_key\`, \`master_storage_key\`,"
+            echo "or a stem's \`storage_key\`. Keys do not expire the way a"
+            echo "share link does."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Record the keys
+        if: ${{ inputs.record_as != '' }}
+        shell: bash
+        env:
+          RECORD_AS: ${{ inputs.record_as }}
+        run: |
+          set -euo pipefail
+          SAFE="$(printf '%s' "$RECORD_AS" | tr -c 'A-Za-z0-9._-' '-')"
+          mv ingested/records.json "ingested/${SAFE}.json"
+          git config user.name "stemforge-ingest"
+          git config user.email "stemforge-ingest@users.noreply.github.com"
+          git add "ingested/${SAFE}.json"
+          git commit -m "Record ingested storage keys for ${SAFE} [skip ci]"
+          git push || {
+            for attempt in 1 2 3; do
+              sleep $((attempt * 5))
+              git pull --rebase --autostash origin main && git push && break
+            done
+          }
+
+      - name: Upload the key record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingested-${{ github.run_id }}
+          path: ingested/
+          retention-days: 90
