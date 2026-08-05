@@ -1,0 +1,12 @@
+{
+  "input": {
+    "action": "create_upload",
+    "filename": "probe.wav",
+    "artist": "sounddecay",
+    "ttl_seconds": 600
+  },
+  "policy": {
+    "ttl": 600000,
+    "executionTimeout": 300000
+  }
+}
