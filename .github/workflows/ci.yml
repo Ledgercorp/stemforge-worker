@@ -79,6 +79,19 @@ jobs:
           python-version: "3.11"
       - name: Validate relay request files
         run: python tools/validate_jobs.py
+      - name: Lint workflow definitions
+        # A workflow can be valid YAML and still be rejected by GitHub, which
+        # shows up as a run with zero jobs and no logs. actionlint catches
+        # those before they reach main.
+        #
+        # shellcheck and pyflakes integration is off: it reports pre-existing
+        # style warnings across the legacy probe and release workflows, which
+        # would block unrelated pull requests. This checks workflow schema and
+        # expression contexts, which is the failure mode that reaches main
+        # silently.
+        run: |
+          python -m pip install --quiet actionlint-py==1.7.12.24
+          actionlint -shellcheck= -pyflakes=
 
   test:
     runs-on: ubuntu-latest
