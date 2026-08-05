@@ -21,19 +21,27 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Fetch requested RunPod status
+      - name: Check or cancel requested RunPod job
         shell: bash
         run: |
           set -euo pipefail
           REQUEST="$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^runpod_status_requests/.+\.json$' | head -n1)"
           test -n "$REQUEST"
           JOB_ID="$(jq -r '.job_id' "$REQUEST")"
+          ACTION="$(jq -r '.action // "status"' "$REQUEST")"
           NAME="$(basename "$REQUEST" .json)"
           mkdir -p runpod_status_results
-          curl --fail --silent --show-error --max-time 120 \
-            "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
-            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
-            > "runpod_status_results/${NAME}.json"
+          if [ "$ACTION" = "cancel" ]; then
+            curl --fail --silent --show-error --max-time 120 -X POST \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/cancel/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              > "runpod_status_results/${NAME}.json"
+          else
+            curl --fail --silent --show-error --max-time 120 \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+              > "runpod_status_results/${NAME}.json"
+          fi
 
       - name: Commit status result
         shell: bash
