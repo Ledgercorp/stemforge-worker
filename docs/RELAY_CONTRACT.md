@@ -176,6 +176,31 @@ rerun distinguishable from the run it replaces.
 The relay submits **every** job file changed in a push. Commit one request at
 a time unless a batch is genuinely intended.
 
+## Getting rendered audio back
+
+This endpoint has **no shared network volume**: `/runpod-volume` is
+container-local and dies with the worker. A render's own report will list
+volume paths and they are real, but a later job runs on a different worker and
+cannot read them - `volume_file_info` returns `FileNotFoundError` minutes
+later. Do not plan on fetching output after the fact.
+
+Instead, put the request in `delivery_requests/` and let
+`run-render-delivered.yml` handle it. The worker uploads to a temporary
+private release while it is still alive; the workflow collects the assets into
+a 90-day artifact and deletes the release. The release token is injected at run
+time and never appears in a committed file.
+
+Supported actions: `full_pass`, `naturalize`, `stem_remix`, `master_audio`,
+`master_audio_github_delivery`.
+
+Download from the workflow run's **Artifacts** section. The run summary also
+carries the naturalize verdict, safety metrics and a per-profile candidate
+table.
+
+Configuring `STEMFORGE_S3_BUCKET` and S3 credentials would remove the need for
+this: every job would return signed download links directly. Until then,
+delivery is the only path that survives worker shutdown.
+
 ## Where requests go
 
 | Directory | Workflow | Purpose |
