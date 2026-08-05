@@ -1,0 +1,186 @@
+name: Run Full Pass With Delivery
+
+# Renders a full pass and gets the audio off the worker before it shuts down.
+#
+# The endpoint has no shared network volume: /runpod-volume is container-local,
+# so a later job on a different worker cannot read what an earlier one wrote,
+# and volume_file_info returns FileNotFoundError minutes after a successful
+# render. Fetching outputs afterwards therefore cannot work. The worker instead
+# uploads directly to a temporary private GitHub release while it is still
+# alive, and this workflow collects those assets and deletes the release.
+#
+# The release token is injected into the payload at run time and never appears
+# in a committed request file.
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_path:
+        description: Repository path to one full-pass request JSON
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - "full_pass_delivery_requests/**/*.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stemforge-full-pass-delivered
+  cancel-in-progress: false
+
+jobs:
+  render-and-deliver:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      RUNPOD_ENDPOINT_ID: dyup1dztjr4u15
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve and validate the request
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RUNPOD_API_KEY"
+
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            REQUEST='${{ inputs.request_path }}'
+          else
+            mapfile -t REQUESTS < <(
+              git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" \
+                | grep -E '^full_pass_delivery_requests/.+\.json$' || true
+            )
+            test "${#REQUESTS[@]}" -eq 1
+            REQUEST="${REQUESTS[0]}"
+          fi
+
+          test -f "$REQUEST"
+          jq -e '.input.action == "full_pass"' "$REQUEST" >/dev/null
+          # Contract check before a release is created or GPU time is spent.
+          python3 tools/validate_jobs.py "$REQUEST"
+
+          NAME="$(basename "$REQUEST" .json)"
+          echo "request=$REQUEST" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Create a temporary private release
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="full-pass-${GITHUB_RUN_ID}"
+          RELEASE_ID="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/releases" \
+            -f tag_name="$TAG" \
+            -f target_commitish="$GITHUB_SHA" \
+            -f name="Temporary full pass output ${GITHUB_RUN_ID}" \
+            -f body='Temporary private container for one full pass. Deleted when the run ends.' \
+            -F draft=true -F prerelease=false --jq '.id')"
+          test -n "$RELEASE_ID"
+          echo "id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Render and export before shutdown
+        id: render
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p delivery
+          REQUEST='${{ steps.meta.outputs.request }}'
+          PAYLOAD="$(mktemp)"
+
+          # The token reaches the worker only here, never in a committed file.
+          jq \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --argjson release_id ${{ steps.release.outputs.id }} \
+            --arg token "$GH_TOKEN" \
+            '.input.github_release_export = {repository:$repository, release_id:$release_id, token:$token}' \
+            "$REQUEST" > "$PAYLOAD"
+
+          JOB_ID="$(curl -sS --max-time 120 \
+            -X POST "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/run" \
+            -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary "@${PAYLOAD}" | jq -r '.id // empty')"
+          rm -f "$PAYLOAD"
+          test -n "$JOB_ID"
+          echo "runpod_job_id=$JOB_ID" | tee delivery/RunPod_Execution.txt
+          echo "job_id=$JOB_ID" >> "$GITHUB_OUTPUT"
+
+          RESULT="delivery/runpod_result.json"
+          TERMINAL=0
+          for _ in $(seq 1 420); do
+            sleep 15
+            curl -sS --max-time 60 \
+              "https://api.runpod.ai/v2/${RUNPOD_ENDPOINT_ID}/status/${JOB_ID}" \
+              -H "Authorization: Bearer ${RUNPOD_API_KEY}" > "$RESULT" || continue
+            case "$(jq -r '.status // empty' "$RESULT")" in
+              COMPLETED|FAILED|TIMED_OUT|CANCELLED) TERMINAL=1; break ;;
+            esac
+          done
+          test "$TERMINAL" -eq 1
+
+          jq -e '.status == "COMPLETED"' "$RESULT" >/dev/null
+          jq -e '.output.status == "completed"' "$RESULT" >/dev/null
+          jq -e '.output.stemforge_version == "2.4.0"' "$RESULT" >/dev/null
+          jq -e '.output.build == "v2.4.0-naturalize-balanced-vocoder"' "$RESULT" >/dev/null
+
+          # Surface the verdicts that decide whether the render is usable.
+          {
+            echo "### Full pass"
+            echo ""
+            echo "- naturalize accepted: $(jq -r '.output.naturalize.safety.accepted' "$RESULT")"
+            echo "- resolved mode: $(jq -r '.output.naturalize.resolved_mode' "$RESULT")"
+            echo "- intensity: $(jq -r '.output.naturalize.intensity' "$RESULT")"
+            echo "- pumping index: $(jq -r '.output.naturalize.safety.envelope.pumping_index' "$RESULT")"
+            echo "- MIDI files: $(jq -r '.output.input_summary.midi_file_count' "$RESULT")"
+            echo "- tempo overrides: $(jq -c '.output.tempo_linked_mastering_overrides' "$RESULT")"
+            echo ""
+            echo "| profile | LUFS | peak dBFS | crest dB | release ms | safe |"
+            echo "| --- | --- | --- | --- | --- | --- |"
+            jq -r '.output.candidates[] | "| \(.profile) | \(.metrics.integrated_lufs) | \(.metrics.sample_peak_dbfs) | \(.metrics.crest_factor_db) | \(.chain.release_ms) | \(.safety.accepted) |"' "$RESULT"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect the delivered assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          COUNT="$(gh api "repos/${GITHUB_REPOSITORY}/releases/${{ steps.release.outputs.id }}/assets" --jq 'length')"
+          if [ "$COUNT" -eq 0 ]; then
+            echo "The worker uploaded no assets. github_release_export may not be wired for this action." >&2
+            jq -r '.output | keys' delivery/runpod_result.json >&2 || true
+            exit 1
+          fi
+          gh api "repos/${GITHUB_REPOSITORY}/releases/${{ steps.release.outputs.id }}/assets" \
+            --jq '.[] | "\(.id) \(.name)"' \
+          | while read -r ASSET_ID ASSET_NAME; do
+              gh api -H "Accept: application/octet-stream" \
+                "repos/${GITHUB_REPOSITORY}/releases/assets/${ASSET_ID}" > "delivery/${ASSET_NAME}"
+              echo "collected ${ASSET_NAME} ($(stat -c%s "delivery/${ASSET_NAME}") bytes)"
+            done
+          ( cd delivery && sha256sum ./* > SHA256SUMS.txt ) || true
+
+      - name: Upload the render
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-pass-${{ steps.meta.outputs.name }}-${{ github.run_id }}
+          path: delivery/
+          retention-days: 14
+
+      - name: Remove the temporary release
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --method DELETE \
+            "repos/${GITHUB_REPOSITORY}/releases/${{ steps.release.outputs.id }}" || true
+          gh api --method DELETE \
+            "repos/${GITHUB_REPOSITORY}/git/refs/tags/${{ steps.release.outputs.tag }}" || true
