@@ -1,0 +1,76 @@
+{
+  "artifact_name": "Hypervigilant_v2.4.0_FullPass_MIDI",
+  "input": {
+    "action": "full_pass",
+    "artist": "sounddecay",
+    "song": "Hypervigilant",
+    "master_url": "https://drive.google.com/uc?export=download&id=19n1my1YeyauEwpQ9Npacx6xftb3Tvrpj",
+    "stems": [
+      {
+        "name": "Lead Vocals",
+        "role": "vocal",
+        "url": "https://drive.google.com/uc?export=download&id=1HRsK6oSFf3D8kRXXsmISRhU55o_StBwR"
+      },
+      {
+        "name": "Backing Vocals",
+        "role": "vocal",
+        "url": "https://drive.google.com/uc?export=download&id=1NSV6sIWuXp9NjwBmHPRX39Uq8AlDCqFt"
+      },
+      {
+        "name": "Other",
+        "role": "harmonic",
+        "url": "https://drive.google.com/uc?export=download&id=1hNxaxOSYN-pg1CczfpFfsTv-piZ2UTlM"
+      },
+      {
+        "name": "Percussion",
+        "role": "percussion",
+        "url": "https://drive.google.com/uc?export=download&id=1LtFhtsjJLhJUEHEG_WlwLDR3vfeloIz1"
+      },
+      {
+        "name": "Drums",
+        "role": "percussion",
+        "url": "https://drive.google.com/uc?export=download&id=1qTVjje_aS7xcL72zTVnWIqBgUtH-b8SQ"
+      },
+      {
+        "name": "Synth",
+        "role": "harmonic",
+        "url": "https://drive.google.com/uc?export=download&id=1n1R0ge4YpijbMnrb932wAeqKw9w0yUJ7"
+      },
+      {
+        "name": "Bass",
+        "role": "harmonic",
+        "url": "https://drive.google.com/uc?export=download&id=1QQvn_qXWDNoG_TTZuG593AfnY8WwWB8k"
+      },
+      {
+        "name": "Guitar",
+        "role": "harmonic",
+        "url": "https://drive.google.com/uc?export=download&id=1LmgRZ88mNBUCkzTfkmfjsz_0oEUHsXly"
+      }
+    ],
+    "midi_zip_url": "https://drive.google.com/uc?export=download&id=1s8O-UMg94JdiKyqkQmhqLQ0WgxtvYAeA",
+    "profiles": [
+      "dynamic",
+      "balanced",
+      "dense"
+    ],
+    "naturalize": {
+      "mode": "auto",
+      "intensity": 1.4,
+      "passes": 1,
+      "vocoder": "auto",
+      "parameters": {
+        "denoise_reduction_db": 3.0,
+        "noise_profile_ms": 200
+      },
+      "retain_original": true,
+      "retain_pre_denoise": true
+    },
+    "minimum_worker_version": "2.4.0",
+    "required_build": "v2.4.0-naturalize-balanced-vocoder",
+    "output_ttl_seconds": 86400
+  },
+  "policy": {
+    "executionTimeout": 5400000,
+    "ttl": 7200000
+  }
+}
