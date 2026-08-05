@@ -1,0 +1,11 @@
+[
+  {
+    "job_id": "8bee40af-f32b-4343-b509-be54a3703407-u1",
+    "http_status": 404,
+    "response": {
+      "status": 404,
+      "title": "Not Found",
+      "detail": "job not found"
+    }
+  }
+]
