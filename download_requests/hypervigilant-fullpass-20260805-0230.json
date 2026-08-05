@@ -1,0 +1,27 @@
+{
+  "files": [
+    {
+      "path": "/runpod-volume/stemforge/output/masters/sounddecay/9bf0191d6e3f0344/Hypervigilant_dynamic_master.wav",
+      "filename": "Hypervigilant_v240_Dynamic.wav",
+      "kind": "audio",
+      "keep_wav": false
+    },
+    {
+      "path": "/runpod-volume/stemforge/output/masters/sounddecay/46bb5d72a611616a/Hypervigilant_balanced_master.wav",
+      "filename": "Hypervigilant_v240_Balanced.wav",
+      "kind": "audio",
+      "keep_wav": true
+    },
+    {
+      "path": "/runpod-volume/stemforge/output/masters/sounddecay/8ba5111d18af8ce7/Hypervigilant_dense_master.wav",
+      "filename": "Hypervigilant_v240_Dense.wav",
+      "kind": "audio",
+      "keep_wav": false
+    },
+    {
+      "path": "/runpod-volume/stemforge/output/full_pass_reports/sounddecay/548c7fbf33d496c5/Hypervigilant_FullPass_Report.json",
+      "filename": "Hypervigilant_FullPass_Report.json",
+      "kind": "json"
+    }
+  ]
+}
