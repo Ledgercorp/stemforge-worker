@@ -55,11 +55,28 @@ jobs:
           if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
             REQUEST='${{ inputs.request_path }}'
           else
+            # Diff against the first parent explicitly. `git diff-tree <sha>`
+            # prints nothing at all for a merge commit, so a request arriving
+            # by pull request resolved to no files and the run died here with
+            # an empty name and no reason. `-m --first-parent` is not the fix
+            # either: it splits the merge and also reports files that differ
+            # against the second parent, which are not part of this push.
+            BASE="$(git rev-parse --verify --quiet "${GITHUB_SHA}^1" || true)"
+            if [ -z "$BASE" ]; then
+              echo "Cannot resolve ${GITHUB_SHA}^1 - the checkout has no parent commit." >&2
+              echo "Raise fetch-depth, or dispatch with request_path instead." >&2
+              exit 1
+            fi
             mapfile -t REQUESTS < <(
-              git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" \
+              git diff --name-only "$BASE" "$GITHUB_SHA" \
                 | grep -E '^(full_pass_)?delivery_requests/.+\.json$' || true
             )
-            test "${#REQUESTS[@]}" -eq 1
+            if [ "${#REQUESTS[@]}" -ne 1 ]; then
+              echo "Expected exactly one request file in $GITHUB_SHA, found ${#REQUESTS[@]}:" >&2
+              printf '  %s\n' "${REQUESTS[@]:-(none)}" >&2
+              echo "Dispatch this workflow with request_path to render one directly." >&2
+              exit 1
+            fi
             REQUEST="${REQUESTS[0]}"
           fi
 
