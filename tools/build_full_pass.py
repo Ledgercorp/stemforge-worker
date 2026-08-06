@@ -86,13 +86,24 @@ def classify(records: list[dict]) -> tuple[dict, dict | None, list[dict]]:
         suffix = Path(lowered).suffix
 
         if suffix == ".zip":
+            # An archive is only the MIDI archive if it says so. Treating every
+            # zip as MIDI meant a stems archive ingested without --expand was
+            # handed to midi_zip_storage_key, and the job rendered whatever
+            # single stem happened to sit beside it - after passing validation
+            # and allocating a GPU.
+            if "midi" not in lowered:
+                raise BuildError(
+                    f"'{filename}' is an archive but its name does not say "
+                    "'midi'. A stems archive must be expanded at ingest time "
+                    "(--expand / expand_zips), not passed as the MIDI input."
+                )
             if midi is not None:
                 raise BuildError(
-                    f"two archives in the record ({midi['filename']} and "
+                    f"two MIDI archives in the record ({midi['filename']} and "
                     f"{filename}); only one can be the MIDI archive."
                 )
             midi = record
-        elif "master" in lowered:
+        elif "master" in lowered and suffix in AUDIO_SUFFIXES:
             if master is not None:
                 raise BuildError(
                     f"two files look like the master ({master['filename']} and "

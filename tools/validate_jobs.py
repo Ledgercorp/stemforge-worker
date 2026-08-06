@@ -55,10 +55,16 @@ SUPPORTED_ACTIONS = _load_supported_actions()
 # skipped by discovery.
 REQUEST_DIRECTORIES = (
     "cancel_requests",
+    # The delivery directories trigger run-render-delivered.yml, which spends
+    # GPU time. They were the only request paths the validator did not cover,
+    # so the most expensive route into the worker was also the unchecked one.
+    "delivery_requests",
     "direct_balanced_requests",
     "direct_master_requests",
     "download_requests",
     "export_requests",
+    "full_pass_delivery_requests",
+    "ingest_requests",
     "full_pass_direct_requests",
     "full_pass_jobs",
     "full_pass_retry_jobs",
@@ -159,6 +165,13 @@ SECRET_PATTERNS = (
     (re.compile(r"\bAKIA[0-9A-Z]{16}\b"), "AWS access key id"),
     (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"), "private key"),
     (re.compile(r"\bBearer\s+[A-Za-z0-9._\-]{20,}"), "bearer token"),
+    # A presigned S3/R2 URL is a bearer credential in query-string form: it
+    # grants whoever holds it direct read - or for a signed PUT, write - access
+    # until it expires, and its X-Amz-Credential carries the access key id in
+    # plaintext, which outlives the signature and stays in git history forever.
+    # Seven of these reached the repository inside committed worker responses.
+    (re.compile(r"X-Amz-Signature=[0-9a-fA-F]{32,}"), "presigned URL signature"),
+    (re.compile(r"X-Amz-Credential=[A-Za-z0-9%_\-]{16,}"), "presigned URL access key id"),
 )
 SECRET_FIELD_NAMES = ("token", "secret", "password", "api_key", "access_key")
 PLACEHOLDER_PATTERN = re.compile(r"^\s*(\$\{\{.*\}\}|\$[A-Z_]+|<.*>|\*+|REDACTED)\s*$")

@@ -211,9 +211,7 @@ def _patch_opener(monkeypatch, handler):
         def open(self, request, timeout=None):
             return handler(request.full_url)
 
-    monkeypatch.setattr(
-        ingest_audio.urllib.request, "build_opener", lambda *a, **k: _Opener()
-    )
+    monkeypatch.setattr(ingest_audio, "_build_opener", lambda: _Opener())
 
 
 def test_html_quota_page_is_rejected_not_uploaded(worker, monkeypatch):
@@ -257,6 +255,82 @@ def test_a_large_file_confirmation_is_followed(worker, monkeypatch):
     assert "confirm=t" in seen[1] and "uuid=abc-123" in seen[1]
     # And the real filename is recovered rather than "download.bin".
     assert record["filename"] == "Stems.zip"
+
+
+def test_a_non_http_confirmation_target_is_refused(worker, monkeypatch):
+    """The confirmation URL comes out of a fetched page, so it is untrusted.
+
+    urllib's default opener speaks file://, ftp:// and data://. A page naming
+    `file:///etc/passwd` as its form action would otherwise be read off local
+    disk and PUT into the bucket.
+    """
+    page = (
+        b'<!DOCTYPE html><html><body>'
+        b'<form id="download-form" action="file:///etc/passwd">'
+        b'<input type="hidden" name="id" value="X">'
+        b'</form></body></html>'
+    )
+    assert ingest_audio._drive_confirm_url(page, DRIVE_URL).startswith("https://")
+
+    # And the fetch itself refuses the scheme even if one reaches it.
+    with pytest.raises(ingest_audio.IngestError, match="non-HTTP"):
+        ingest_audio._fetch("file:///etc/passwd", ingest_audio._build_opener())
+
+
+def test_the_opener_cannot_speak_file_urls_at_all(worker):
+    """Belt and braces: the capability is removed, not merely unused."""
+    handlers = {type(h).__name__ for h in ingest_audio._build_opener().handlers}
+    assert "FileHandler" not in handlers
+    assert "FTPHandler" not in handlers
+    assert "DataHandler" not in handlers
+
+
+def test_hidden_inputs_come_only_from_the_matched_form(worker):
+    """A second form later in the page must not override the real file id.
+
+    Scraping the whole document and building a dict let the LAST occurrence
+    win, which silently fetched a different file.
+    """
+    page = (
+        b'<!DOCTYPE html><html><body>'
+        b'<form id="download-form" action="https://drive.usercontent.google.com/download">'
+        b'<input type="hidden" name="id" value="REAL">'
+        b'<input type="hidden" name="confirm" value="t">'
+        b'</form>'
+        b'<form id="tracking">'
+        b'<input type="hidden" name="id" value="WRONG">'
+        b'</form></body></html>'
+    )
+    url = ingest_audio._drive_confirm_url(page, DRIVE_URL)
+    assert "id=REAL" in url
+    assert "WRONG" not in url
+
+
+def test_a_confirmation_action_with_a_query_string_stays_valid(worker):
+    page = (
+        b'<!DOCTYPE html><html><body>'
+        b'<form id="download-form" action="https://drive.usercontent.google.com/dl?already=1">'
+        b'<input type="hidden" name="id" value="X">'
+        b'</form></body></html>'
+    )
+    url = ingest_audio._drive_confirm_url(page, DRIVE_URL)
+    assert url.count("?") == 1 and "already=1&id=X" in url
+
+
+def test_a_timeout_during_readback_still_reports_the_key(tmp_path, worker, monkeypatch):
+    """The likelier failure: catching only IngestError let this strand an object."""
+    source = tmp_path / "master.wav"
+    source.write_bytes(b"RIFF")
+    real_urlopen = ingest_audio.urllib.request.urlopen
+
+    def times_out(request, timeout=None):
+        if request.get_method() == "GET":
+            raise urllib.error.URLError("timed out")
+        return real_urlopen(request, timeout=timeout)
+
+    monkeypatch.setattr(ingest_audio.urllib.request, "urlopen", times_out)
+    with pytest.raises(ingest_audio.IngestError, match=r"already stored at .*master\.wav"):
+        ingest_audio.ingest(str(source), endpoint="test", api_key="test", quiet=True)
 
 
 def test_confirmation_falls_back_to_the_file_id(worker, monkeypatch):
