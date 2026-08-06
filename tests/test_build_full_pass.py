@@ -186,6 +186,42 @@ def test_roles_are_reported_when_run_as_a_script(tmp_path):
     assert "Drums" in result.stderr and "percussion" in result.stderr
 
 
+def test_profiles_can_be_narrowed_to_speed_a_pass():
+    """Each profile is a separate mastering pass."""
+    job, _ = build_full_pass.build(
+        HYPERVIGILANT, song="X", profiles=["balanced"]
+    )
+    assert job["input"]["profiles"] == ["balanced"]
+    # Naturalize itself is untouched: this trades options, not quality.
+    assert job["input"]["naturalize"]["intensity"] == 1.4
+    assert job["input"]["naturalize"]["mode"] == "auto"
+
+
+def test_ab_references_can_be_dropped():
+    """Each reference is another full-length WAV written and uploaded."""
+    job, _ = build_full_pass.build(HYPERVIGILANT, song="X", ab_references=False)
+    naturalize = job["input"]["naturalize"]
+    assert naturalize["retain_original"] is False
+    assert naturalize["retain_pre_denoise"] is False
+    assert naturalize["intensity"] == 1.4
+
+
+def test_ab_references_are_kept_by_default():
+    job, _ = build_full_pass.build(HYPERVIGILANT, song="X")
+    assert job["input"]["naturalize"]["retain_original"] is True
+    assert job["input"]["naturalize"]["retain_pre_denoise"] is True
+
+
+def test_cli_rejects_an_unknown_profile(tmp_path):
+    """A typo must not silently render a pass with no usable master."""
+    record = tmp_path / "r.json"
+    record.write_text(json.dumps({"ingested": HYPERVIGILANT}), encoding="utf-8")
+    with pytest.raises(SystemExit):
+        build_full_pass.main(
+            [str(record), "--song", "X", "--profiles", "baalanced"]
+        )
+
+
 def test_cli_merges_one_record_per_stem(tmp_path):
     """Sweet Sixteen's keys were recorded as a file per stem, not one file."""
     paths = []
