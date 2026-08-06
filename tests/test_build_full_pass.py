@@ -97,6 +97,34 @@ def test_parenthesised_names_still_route():
     assert roles["Sixteen  (Vocals)"] == "vocal"
 
 
+def test_a_stems_archive_is_refused_not_treated_as_midi():
+    """Every .zip became the MIDI archive, so a stems zip rendered one stem."""
+    records = [
+        _record("Sweet_Sixteen_Master.wav"),
+        _record("Drums.wav"),
+        _record("Sweet_Sixteen_Stems.zip"),
+    ]
+    with pytest.raises(build_full_pass.BuildError, match="does not say 'midi'"):
+        build_full_pass.build(records, song="X")
+
+
+def test_a_midi_archive_is_still_accepted():
+    records = [
+        _record("Sweet_Sixteen_Master.wav"),
+        _record("Drums.wav"),
+        _record("SweetSixteenMIDI.zip"),
+    ]
+    job, _ = build_full_pass.build(records, song="X")
+    assert job["input"]["midi_zip_storage_key"].endswith("SweetSixteenMIDI.zip")
+
+
+def test_a_non_audio_file_cannot_become_the_master():
+    """'master' in the name was checked before the audio-suffix guard."""
+    records = [_record("master_notes.txt"), _record("Drums.wav")]
+    with pytest.raises(build_full_pass.BuildError, match="unrecognised file"):
+        build_full_pass.build(records, song="X")
+
+
 def test_a_missing_master_is_refused():
     with pytest.raises(build_full_pass.BuildError, match="no master"):
         build_full_pass.build([_record("Drums.wav")], song="X")

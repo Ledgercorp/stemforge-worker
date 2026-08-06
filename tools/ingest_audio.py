@@ -138,17 +138,27 @@ def _drive_confirm_url(page: bytes, source: str) -> str:
 
     # Preferred: replay the form the page actually contains, so the token and
     # any per-request uuid come from Google rather than from a guess.
-    form = re.search(r'<form[^>]+id="download-form"[^>]+action="([^"]+)"', text)
+    #
+    # Scan only the matched form's own body. Scraping hidden inputs from the
+    # whole document let a second form later in the page override the real
+    # `id` - dict() keeps the last occurrence - and quietly fetch a different
+    # file. The action is taken from this form, so the fields must be too.
+    form = re.search(
+        r'<form[^>]*\bid="download-form"[^>]*\baction="([^"]+)"(.*?)</form>',
+        text,
+        re.S,
+    )
     if form:
         action = html.unescape(form.group(1))
-        fields = dict(
-            (html.unescape(n), html.unescape(v))
-            for n, v in re.findall(
-                r'<input[^>]+type="hidden"[^>]+name="([^"]+)"[^>]+value="([^"]*)"', text
-            )
-        )
-        if fields:
-            return f"{action}?{urllib.parse.urlencode(fields)}"
+        fields = {}
+        for name, value in re.findall(
+            r'<input[^>]+type="hidden"[^>]+name="([^"]+)"[^>]+value="([^"]*)"',
+            form.group(2),
+        ):
+            fields.setdefault(html.unescape(name), html.unescape(value))
+        if fields and _is_safe_http_url(action):
+            separator = "&" if urllib.parse.urlparse(action).query else "?"
+            return f"{action}{separator}{urllib.parse.urlencode(fields)}"
 
     # Fallback: the documented direct form, which needs only the file id.
     file_id = ""
@@ -167,7 +177,47 @@ def _drive_confirm_url(page: bytes, source: str) -> str:
     )
 
 
+def _is_safe_http_url(url: str) -> bool:
+    """Only http(s). Anything else is refused before it is opened.
+
+    `urllib.request.build_opener` keeps urllib's default handlers, which
+    include file://, ftp:// and data://. The confirmation URL is read out of a
+    fetched page, so a page under someone else's control could name
+    `file:///etc/passwd` as its form action and this tool would read that file
+    and PUT it into the bucket. Restricting the scheme is what stops that; the
+    opener below is also built with an explicit handler list so the capability
+    is gone rather than merely unused.
+    """
+    return urllib.parse.urlparse(url).scheme in ("http", "https")
+
+
+def _build_opener():
+    """An opener that can speak HTTP(S) and nothing else.
+
+    Built from a bare OpenerDirector rather than `build_opener`, because
+    `build_opener` ADDS to urllib's defaults instead of replacing them - it
+    returns an opener that still carries FileHandler, FTPHandler and
+    DataHandler however few handlers you pass it.
+    """
+    opener = urllib.request.OpenerDirector()
+    for handler in (
+        urllib.request.HTTPHandler,
+        urllib.request.HTTPSHandler,
+        urllib.request.HTTPRedirectHandler,
+        urllib.request.HTTPDefaultErrorHandler,
+        urllib.request.HTTPErrorProcessor,
+        urllib.request.UnknownHandler,
+    ):
+        opener.add_handler(handler())
+    opener.add_handler(
+        urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar())
+    )
+    return opener
+
+
 def _fetch(url: str, opener) -> tuple[bytes, str]:
+    if not _is_safe_http_url(url):
+        raise IngestError(f"refusing to fetch a non-HTTP(S) URL: {url.split(':', 1)[0]}:")
     request = urllib.request.Request(url, headers={"User-Agent": "stemforge-ingest"})
     try:
         with opener.open(request, timeout=900) as response:
@@ -183,9 +233,7 @@ def _read_source(source: str, name: str | None) -> tuple[bytes, str]:
     if source.startswith(("http://", "https://")):
         # Drive sets a cookie on the interstitial and expects it back on the
         # confirmed request, so both go through one opener.
-        opener = urllib.request.build_opener(
-            urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar())
-        )
+        opener = _build_opener()
         data, served_name = _fetch(source, opener)
 
         if _looks_like_html(data):
@@ -302,7 +350,12 @@ def _ingest_bytes(
                 raise IngestError(
                     f"stored object is {length} bytes, expected {len(data)}"
                 )
-        except IngestError as exc:
+        except Exception as exc:
+            # Deliberately broad. The point of this handler is that the bytes
+            # are already in the bucket, so ANY failure past the upload must
+            # still name the key - a read timeout during the probe is far more
+            # likely than an HTTP status, and catching only IngestError let
+            # exactly that case escape and strand the object.
             raise IngestError(f"{exc} (already stored at {storage_key})") from exc
         log("  verified readable")
 
