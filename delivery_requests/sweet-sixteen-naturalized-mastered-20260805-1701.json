@@ -1,0 +1,32 @@
+{
+  "artifact_name": "Sweet_Sixteen_Naturalized_Mastered_v240",
+  "input": {
+    "action": "master_audio",
+    "artist": "sounddecay",
+    "song": "Sweet Sixteen Naturalized",
+    "audio_storage_key": "naturalized/sounddecay/8fa63c11031f0791/Sweet_Sixteen_Naturalized.wav",
+    "profiles": [
+      "dynamic",
+      "balanced",
+      "dense"
+    ],
+    "profile_overrides": {
+      "dynamic": {
+        "release_ms": 304.892
+      },
+      "balanced": {
+        "release_ms": 232.827
+      },
+      "dense": {
+        "release_ms": 177.392
+      }
+    },
+    "output_ttl_seconds": 86400,
+    "minimum_worker_version": "2.4.0",
+    "required_build": "v2.4.0-naturalize-balanced-vocoder"
+  },
+  "policy": {
+    "executionTimeout": 3600000,
+    "ttl": 5400000
+  }
+}
