@@ -1,22 +1,22 @@
-# StemForge v2.4
+# Sonaire v2.4
 
-StemForge is a private RunPod Serverless audio-production worker operated through a guarded GitHub relay.
+Sonaire is a private RunPod Serverless audio-production worker operated through a guarded GitHub relay.
 
 ## Release identity
 
 ```text
-stemforge_version: 2.4.0
+sonaire_version: 2.4.0
 build: v2.4.0-naturalize-balanced-vocoder
 ```
 
-A GitHub release or merge does not by itself prove that the live RunPod endpoint has rolled forward. Production work must verify the exact version and build through `system_info` before accepting a render.
+A GitHub release or merge does not by itself prove that the live RunPod endpoint has rolled forward. Production work must verify the exact version and build through `system_info` before accepting [...]
 
 ## Operating this repository
 
 Renders are driven by JSON request files committed to `main` and submitted to RunPod by a workflow.
 
 - `docs/RELAY_CONTRACT.md` — what a request file must contain, which directory routes to which workflow, and how to read a result.
-- `AGENTS.md` — the working agreement between the StemForge GPT (live operator) and Claude Code (engine side).
+- `AGENTS.md` — the working agreement between the Sonaire GPT (live operator) and Claude Code (engine side).
 
 Validate a request before committing it, so contract mistakes cost a second instead of a GPU round trip:
 
@@ -58,7 +58,7 @@ Objective comparison is a DSP proxy, not a substitute for listening.
 
 ### Coherence-safe stem remix
 
-StemForge uses two explicit remix modes:
+Sonaire uses two explicit remix modes:
 
 - `full_stem_mix`: only when supplied stems pass strict reconstruction thresholds
 - `master_anchored_delta`: preserves the coherent stereo master while applying controlled stem-derived changes around it
@@ -66,7 +66,7 @@ StemForge uses two explicit remix modes:
 
 Auxiliary stems such as bass pads can use `"role": "bass_pad"` or `"overlay": true`. They are excluded from reconstruction fitting and mixed directly at the requested level.
 
-The remix path does not use autonomous stereo widening. Every render is rejected for non-finite samples, clipping, excessive derivative energy, new discontinuities, meaningful high-frequency noise growth or unacceptable reference-correlation loss.
+The remix path does not use autonomous stereo widening. Every render is rejected for non-finite samples, clipping, excessive derivative energy, new discontinuities, meaningful high-frequency noise[...]
 
 ## Naturalize Balanced
 
@@ -125,7 +125,7 @@ Modulation depth is frequency-dependent: the musical midrange receives more move
 - `surgical`: processes vocal, harmonic, percussion and other stems independently, then recombines them
 - `auto`: prefers Surgical when vocal stems exist and falls back to Quick only when necessary
 
-Surgical mode validates stem reconstruction. Unsafe stems use a master-anchored processing delta instead of replacing the coherent source. If the anchored result still fails the transparency gate, the operation aborts cleanly.
+Surgical mode validates stem reconstruction. Unsafe stems use a master-anchored processing delta instead of replacing the coherent source. If the anchored result still fails the transparency gate[...]
 
 ### Intensity and iteration
 
@@ -152,7 +152,7 @@ Default wet routing:
 - percussion: 0.20
 - other stems: 0.45
 
-The intensity scaler controls vocoder wetness and optional feature perturbation. Every vocoder result is independently checked for aliasing, metallic artifacts, transient loss and clarity degradation. Unsafe or unavailable backends fall back to the pure DSP render.
+The intensity scaler controls vocoder wetness and optional feature perturbation. Every vocoder result is independently checked for aliasing, metallic artifacts, transient loss and clarity degrada[...]
 
 ### Safety and A/B behavior
 
@@ -173,7 +173,7 @@ Quality gates detect:
 - clipping and non-finite samples
 - spectral and waveform clarity loss
 
-Reports log every resolved parameter, denoise reduction, quiet-profile selection, noise-floor level, pass intensity, stem role and multiplier, reconstruction decision, vocoder model, wet ratio, feature perturbation, quality attempt and fallback decision.
+Reports log every resolved parameter, denoise reduction, quiet-profile selection, noise-floor level, pass intensity, stem role and multiplier, reconstruction decision, vocoder model, wet ratio, f[...]
 
 Naturalize is a fidelity/authenticity enhancement. It is not an audio-origin detector, concealment method or detection-evasion tool.
 
